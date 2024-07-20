@@ -17,7 +17,6 @@ pub(super) fn plugin(app: &mut App) {
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Reflect)]
 pub enum ImageKey {
-    Pixel,
     Ship,
     Button,
 }
@@ -30,15 +29,6 @@ impl FromWorld for HandleMap<ImageKey> {
     fn from_world(world: &mut World) -> Self {
         let asset_server = world.resource::<AssetServer>();
         [
-            (
-                ImageKey::Pixel,
-                asset_server.load_with_settings(
-                    "images/pixel.png",
-                    |settings: &mut ImageLoaderSettings| {
-                        settings.sampler = ImageSampler::nearest();
-                    },
-                ),
-            ),
             (
                 ImageKey::Ship,
                 asset_server.load_with_settings(
