@@ -19,6 +19,10 @@ pub(super) fn plugin(app: &mut App) {
 pub enum ImageKey {
     Ship,
     Button,
+    Bone1,
+    Bone2,
+    Bone3,
+    Bone4,
 }
 
 impl AssetKey for ImageKey {
@@ -42,6 +46,42 @@ impl FromWorld for HandleMap<ImageKey> {
                 ImageKey::Button,
                 asset_server.load_with_settings(
                     "images/Button.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::Bone1,
+                asset_server.load_with_settings(
+                    "images/Bones/Bone1.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::Bone2,
+                asset_server.load_with_settings(
+                    "images/Bones/Bone2.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::Bone3,
+                asset_server.load_with_settings(
+                    "images/Bones/Bone3.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::Bone4,
+                asset_server.load_with_settings(
+                    "images/Bones/Bone4.png",
                     |settings: &mut ImageLoaderSettings| {
                         settings.sampler = ImageSampler::nearest();
                     },

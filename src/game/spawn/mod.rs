@@ -4,7 +4,7 @@
 
 use bevy::prelude::*;
 
-mod journey;
+pub mod journey;
 pub mod level;
 pub mod player;
 

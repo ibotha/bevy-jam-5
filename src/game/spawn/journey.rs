@@ -8,7 +8,8 @@ pub struct CreateJourney;
 
 const JOURNEY_LENGTH: usize = 180;
 
-enum Moisture {
+#[derive(Debug, Hash, Eq, PartialEq, Clone, Copy, Reflect)]
+pub enum Moisture {
     Dry,
     Comfortable,
     Humid,
@@ -24,7 +25,8 @@ impl Moisture {
     }
 }
 
-enum Heat {
+#[derive(Debug, Hash, Eq, PartialEq, Clone, Copy, Reflect)]
+pub enum Heat {
     Blistering,
     Warm,
     Comfortable,
@@ -42,7 +44,8 @@ impl Heat {
     }
 }
 
-enum Rain {
+#[derive(Debug, Hash, Eq, PartialEq, Clone, Copy, Reflect)]
+pub enum Rain {
     None,
     Drizzle,
     Rain,
@@ -57,6 +60,13 @@ impl Rain {
         let storm_ballots = 10;
         Rain::None
     }
+}
+
+#[derive(Debug, Hash, Eq, PartialEq, Clone, Copy, Reflect)]
+pub enum AnyWeather {
+    Heat(Heat),
+    Moisture(Moisture),
+    Rain(Rain),
 }
 
 struct DayWeather {
