@@ -3,7 +3,7 @@ use rand::Rng;
 
 use crate::game::{
     assets::{HandleMap, ImageKey},
-    spawn::journey::{AnyWeather, Heat, Moisture, Rain},
+    spawn::journey::{AnyWeather, Heat, Moisture},
 };
 
 use super::Screen;
@@ -36,25 +36,8 @@ fn generate_random_bone_pattern() -> BonePattern {
 
 impl Default for WeatherControlConditions {
     fn default() -> Self {
-        let mut condition_map: ConditionMap = HashMap::new();
-        for condition in [
-            AnyWeather::Heat(Heat::Blistering),
-            AnyWeather::Heat(Heat::Warm),
-            AnyWeather::Heat(Heat::Comfortable),
-            AnyWeather::Heat(Heat::Chilly),
-            AnyWeather::Heat(Heat::Freezing),
-            AnyWeather::Moisture(Moisture::Dry),
-            AnyWeather::Moisture(Moisture::Comfortable),
-            AnyWeather::Moisture(Moisture::Humid),
-            AnyWeather::Rain(Rain::None),
-            AnyWeather::Rain(Rain::Drizzle),
-            AnyWeather::Rain(Rain::Rain),
-            AnyWeather::Rain(Rain::Storm),
-        ] {
-            condition_map.insert(condition, generate_random_bone_pattern());
-        }
         Self {
-            condition_map,
+            condition_map: HashMap::new(),
             timer: Timer::from_seconds(5.0, TimerMode::Repeating),
         }
     }
@@ -80,17 +63,9 @@ fn enter_weather_maniac(mut commands: Commands) {
     info!("Entering Weather Maniac screen");
     let grid = WeatherControlConditions::default();
 
-    for (offset_x, row) in grid.condition_map[&AnyWeather::Heat(Heat::Comfortable)]
-        .iter()
-        .enumerate()
-    {
-        for (offset_y, cell) in row.iter().enumerate() {
+    for offset_x in 0..COLUMN_COUNT {
+        for offset_y in 0..ROW_COUNT {
             // spawn a sprite at the cell position
-            let color = match cell {
-                0 => Color::WHITE,
-                1 => Color::BLACK,
-                _ => Color::WHITE,
-            };
             commands.spawn((
                 SpriteBundle {
                     sprite: Sprite {
@@ -98,7 +73,7 @@ fn enter_weather_maniac(mut commands: Commands) {
                             x: GRID_BLOCK_SIZE as f32,
                             y: GRID_BLOCK_SIZE as f32,
                         }),
-                        color,
+                        color: Color::WHITE,
                         ..Default::default()
                     },
                     transform: Transform::from_translation(
@@ -136,12 +111,12 @@ struct DisplayPosition {
     pub y: u8,
 }
 
-#[derive(Event, Debug)]
+#[derive(Event, Debug, Clone, Copy)]
 struct UpdateGrid(AnyWeather);
 
 fn render_weather_condition(
-    _trigger: Trigger<UpdateGrid>,
-    conditions: Res<WeatherControlConditions>,
+    trigger: Trigger<UpdateGrid>,
+    mut conditions: ResMut<WeatherControlConditions>,
     mut query: Query<(
         &mut Sprite,
         &mut Handle<Image>,
@@ -150,12 +125,17 @@ fn render_weather_condition(
     )>,
     image_handles: Res<HandleMap<ImageKey>>,
 ) {
-    // Render the weather condition to the screen in a 3x3 grid
-    let condition = conditions.condition_map[&_trigger.event().0];
+    let condition = trigger.event().0;
+    if !conditions.condition_map.contains_key(&condition) {
+        conditions
+            .condition_map
+            .insert(condition, generate_random_bone_pattern());
+    }
+    let bone_pattern = conditions.condition_map[&condition];
     for (mut sprite, mut texture, mut transform, position) in &mut query {
         let pos_x = position.x as usize;
         let pos_y = position.y as usize;
-        sprite.color = match condition[pos_x][pos_y] {
+        sprite.color = match bone_pattern[pos_x][pos_y] {
             0 => Color::srgba(0.0, 0.0, 0.0, 0.0),
             1 => Color::WHITE,
             _ => Color::WHITE,
