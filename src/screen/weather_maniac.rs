@@ -100,9 +100,8 @@ fn enter_weather_maniac(mut commands: Commands) {
                         visibility: Visibility::Hidden,
                         ..Default::default()
                     },
-                    IndexX(offset_x as u8), 
-                    IndexY(offset_y as u8)
-                )
+                    DisplayPosition { x:offset_x as u8, y:offset_y as u8 },
+                )           
             );
         }
     }
@@ -120,20 +119,20 @@ fn update_weather_condition(mut conditions: ResMut<WeatherControlConditions>, ti
     }
 }
 #[derive(Component)]
-struct IndexX(u8);
-
-#[derive(Component)]
-struct IndexY(u8);
+struct DisplayPosition {
+    pub x: u8,
+    pub y: u8,
+}
 
 fn render_weather_condition(
         conditions: Res<WeatherControlConditions>,
-        mut query: Query<(&mut Sprite, &IndexX, &IndexY)>
+        mut query: Query<(&mut Sprite, &DisplayPosition)>
     ) {
     // Render the weather condition to the screen in a 3x3 grid
     let condition = conditions.condition_map[conditions.conditions as usize];
-    for (mut sprite, x, y) in &mut query {
-        let pos_x = x.0 as usize;
-        let pos_y = y.0 as usize;
+    for (mut sprite, position) in &mut query {
+        let pos_x = position.x as usize;
+        let pos_y = position.y as usize;
         let color = match condition[pos_x][pos_y] {
             0 => Color::WHITE,
             1 => Color::BLACK,
@@ -157,10 +156,10 @@ fn toggle_weather_grid(input: Res<ButtonInput<KeyCode>>, mut ev_toggle: EventWri
 
 fn handle_toggle_weather_grid(
     mut ev_toggle: EventReader<ToggleWeatherGridEvent>,
-    mut query: Query<(&mut Visibility, &IndexX, &IndexY)>,
+    mut query: Query<&mut Visibility, With<DisplayPosition>>,
 ) {
     for _ in ev_toggle.read() {
-        for (mut visibility, _, _) in &mut query {
+        for mut visibility in &mut query {
             *visibility = if *visibility == Visibility::Hidden {
                 Visibility::Visible
             } else {
