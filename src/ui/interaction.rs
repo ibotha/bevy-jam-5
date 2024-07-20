@@ -20,10 +20,10 @@ pub struct InteractionPalette {
 }
 
 fn apply_interaction_palette(
-    mut palette_query: InteractionQuery<(&InteractionPalette, &mut BackgroundColor)>,
+    mut palette_query: InteractionQuery<(&InteractionPalette, &mut UiImage)>,
 ) {
-    for (interaction, (palette, mut background)) in &mut palette_query {
-        *background = match interaction {
+    for (interaction, (palette, mut ui_image)) in &mut palette_query {
+        ui_image.color = match interaction {
             Interaction::None => palette.none,
             Interaction::Hovered => palette.hovered,
             Interaction::Pressed => palette.pressed,

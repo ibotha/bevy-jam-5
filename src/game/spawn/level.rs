@@ -2,6 +2,12 @@
 
 use bevy::prelude::*;
 
+use crate::{
+    game::assets::{HandleMap, ImageKey},
+    screen::Screen,
+};
+
+use super::journey::CreateJourney;
 use super::player::SpawnPlayer;
 
 pub(super) fn plugin(app: &mut App) {
@@ -11,8 +17,12 @@ pub(super) fn plugin(app: &mut App) {
 #[derive(Event, Debug)]
 pub struct SpawnLevel;
 
-fn spawn_level(_trigger: Trigger<SpawnLevel>, mut commands: Commands) {
-    // The only thing we have in our level is a player,
-    // but add things like walls etc. here.
+fn spawn_level(
+    _trigger: Trigger<SpawnLevel>,
+    mut commands: Commands,
+
+    image_handles: Res<HandleMap<ImageKey>>,
+) {
     commands.trigger(SpawnPlayer);
+    commands.trigger(CreateJourney);
 }

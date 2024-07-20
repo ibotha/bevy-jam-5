@@ -41,14 +41,14 @@ fn spawn_player(
         Name::new("Player"),
         Player,
         SpriteBundle {
-            texture: image_handles[&ImageKey::Ducky].clone_weak(),
-            transform: Transform::from_scale(Vec2::splat(8.0).extend(1.0)),
+            texture: image_handles[&ImageKey::Ship].clone_weak(),
+            //transform: Transform::from_scale(Vec2::splat(8.0).extend(1.0)),
             ..Default::default()
         },
-        TextureAtlas {
+        /*TextureAtlas {
             layout: texture_atlas_layout.clone(),
             index: player_animation.get_atlas_index(),
-        },
+        },*/
         MovementController::default(),
         Movement { speed: 420.0 },
         WrapWithinWindow,
