@@ -61,18 +61,24 @@ impl Default for WeatherControlConditions {
 }
 
 pub(super) fn plugin(app: &mut App) {
-    app.register_type::<WeatherControlConditions>();
-    app.add_systems(OnEnter(Screen::WeatherManiac), enter_weather_maniac);
-    app.add_systems(
-        Update,
-        (update_weather_condition, render_weather_condition)
-            .run_if(in_state(Screen::WeatherManiac)),
-    );
+    app.register_type::<WeatherControlConditions>()
+       .add_event::<ToggleWeatherGridEvent>()
+       .add_systems(OnEnter(Screen::WeatherManiac), enter_weather_maniac)
+       .add_systems(
+           Update,
+           (
+               update_weather_condition,
+               render_weather_condition,
+               toggle_weather_grid,
+               handle_toggle_weather_grid,
+           )
+               .run_if(in_state(Screen::WeatherManiac)),
+       );
 }
 
 fn enter_weather_maniac(mut commands: Commands) {
     info!("Entering Weather Maniac screen");
-    let grid=WeatherControlConditions::default();
+    let grid = WeatherControlConditions::default();
 
     for (offset_x, row) in grid.condition_map[0].iter().enumerate() {
         for (offset_y, cell) in row.iter().enumerate() {
@@ -91,6 +97,7 @@ fn enter_weather_maniac(mut commands: Commands) {
                             ..Default::default()
                         },
                         transform: Transform::from_translation(Vec3::new(offset_x as f32 * 35.0, offset_y as f32 * 35.0, 0.0)),
+                        visibility: Visibility::Hidden,
                         ..Default::default()
                     },
                     IndexX(offset_x as u8), 
@@ -118,7 +125,10 @@ struct IndexX(u8);
 #[derive(Component)]
 struct IndexY(u8);
 
-fn render_weather_condition(conditions: Res<WeatherControlConditions>, mut query: Query<(&mut Sprite, &IndexX, &IndexY)>) {
+fn render_weather_condition(
+        conditions: Res<WeatherControlConditions>,
+        mut query: Query<(&mut Sprite, &IndexX, &IndexY)>
+    ) {
     // Render the weather condition to the screen in a 3x3 grid
     let condition = conditions.condition_map[conditions.conditions as usize];
     for (mut sprite, x, y) in &mut query {
@@ -130,5 +140,35 @@ fn render_weather_condition(conditions: Res<WeatherControlConditions>, mut query
             _ => Color::WHITE,
         };
         sprite.color = color;
+    }
+}
+
+
+// VISIBILITY - You can blame Justin for this amazing stuff
+#[derive(Event)]
+struct ToggleWeatherGridEvent;
+
+fn toggle_weather_grid(input: Res<ButtonInput<KeyCode>>, mut ev_toggle: EventWriter<ToggleWeatherGridEvent>) {
+    if input.just_pressed(KeyCode::Space) {
+        ev_toggle.send(ToggleWeatherGridEvent);
+        info!("Toggle weather grid event sent");
+    }
+}
+
+fn handle_toggle_weather_grid(
+    mut ev_toggle: EventReader<ToggleWeatherGridEvent>,
+    mut query: Query<(&mut Visibility, &IndexX, &IndexY)>,
+) {
+    for _ in ev_toggle.read() {
+        for (mut visibility, _, _) in &mut query {
+            *visibility = if *visibility == Visibility::Hidden {
+                Visibility::Visible
+            } else {
+                Visibility::Hidden
+            };
+            
+            info!("Weather grid visibility toggled: {:?}", visibility);
+        }
+
     }
 }
