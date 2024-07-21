@@ -48,6 +48,7 @@ pub enum ImageKey {
     Bone3,
     Bone4,
     LeftPanel,
+    BottomPanel,
 }
 
 impl AssetKey for ImageKey {
@@ -125,6 +126,15 @@ impl FromWorld for HandleMap<ImageKey> {
                 ImageKey::LeftPanel,
                 asset_server.load_with_settings(
                     "images/LeftPanel.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::BottomPanel,
+                asset_server.load_with_settings(
+                    "images/BottomPanel.png",
                     |settings: &mut ImageLoaderSettings| {
                         settings.sampler = ImageSampler::nearest();
                     },

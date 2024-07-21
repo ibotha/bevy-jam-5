@@ -54,6 +54,50 @@ fn spawn_game_ui(
                     fonts[&FontKey::PaperCut].clone_weak(),
                 )
                 .insert(GameAction::Menu);
+
+            // Left panel
+            children.spawn((
+                Name::new("Left Panel"),
+                NodeBundle {
+                    style: Style {
+                        width: Val::Auto,
+                        height: Val::Auto,
+                        position_type: PositionType::Absolute,
+                        left: Val::Px(0.0),
+                        top: Val::Px(0.0),
+                        ..default()
+                    },
+                    ..default()
+                },
+            ))
+            .with_children(|panel| {
+                panel.spawn(ImageBundle {
+                    image: UiImage::new(image_handles[&ImageKey::LeftPanel].clone_weak()),
+                    ..default()
+                });
+            });
+
+            // Bottom panel
+            children.spawn((
+                Name::new("Bottom Panel"),
+                NodeBundle {
+                    style: Style {
+                        width: Val::Auto,
+                        height: Val::Auto,
+                        position_type: PositionType::Absolute,
+                        left: Val::Auto,
+                        bottom: Val::Px(0.0),
+                        ..default()
+                    },
+                    ..default()
+                },
+            ))
+            .with_children(|panel| {
+                panel.spawn(ImageBundle {
+                    image: UiImage::new(image_handles[&ImageKey::BottomPanel].clone_weak()),
+                    ..default()
+                });
+            });
         });
 }
 
