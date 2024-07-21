@@ -1,4 +1,15 @@
+use bevy::math;
 use bevy::prelude::*;
+use rand::rngs::StdRng;
+use rand::thread_rng;
+use rand::Rng;
+use rand::RngCore;
+use rand::SeedableRng;
+
+use super::weather::DayWeather;
+use super::weather::Heat;
+use super::weather::Moisture;
+use super::weather::Wind;
 
 #[derive(Event, Debug)]
 pub struct NextDay(DayTask);
@@ -7,84 +18,6 @@ pub struct NextDay(DayTask);
 pub struct CreateJourney;
 
 const JOURNEY_LENGTH: usize = 180;
-
-#[derive(Debug, Hash, Eq, PartialEq, Clone, Copy, Reflect)]
-pub enum Moisture {
-    Dry,
-    Comfortable,
-    Humid,
-}
-
-impl Moisture {
-    fn generate() -> Self {
-        let none_ballots = 10;
-        let drizzle_ballots = 10;
-        let rain_ballots = 10;
-        let storm_ballots = 10;
-        Moisture::Comfortable
-    }
-}
-
-#[derive(Debug, Hash, Eq, PartialEq, Clone, Copy, Reflect)]
-pub enum Heat {
-    Blistering,
-    Warm,
-    Comfortable,
-    Chilly,
-    Freezing,
-}
-
-impl Heat {
-    fn generate() -> Self {
-        let none_ballots = 10;
-        let drizzle_ballots = 10;
-        let rain_ballots = 10;
-        let storm_ballots = 10;
-        Heat::Comfortable
-    }
-}
-
-#[derive(Debug, Hash, Eq, PartialEq, Clone, Copy, Reflect)]
-pub enum Wind {
-    None,
-    Low,
-    Medium,
-    High,
-    GaleForce,
-}
-
-impl Wind {
-    fn generate() -> Self {
-        let none_ballots = 10;
-        let drizzle_ballots = 10;
-        let rain_ballots = 10;
-        let storm_ballots = 10;
-        Wind::None
-    }
-}
-
-#[derive(Debug, Hash, Eq, PartialEq, Clone, Copy, Reflect)]
-pub enum AnyWeather {
-    Heat(Heat),
-    Moisture(Moisture),
-    Wind(Wind),
-}
-
-struct DayWeather {
-    wind: Wind,
-    heat: Heat,
-    moisture: Moisture,
-}
-
-impl DayWeather {
-    fn generate() -> Self {
-        Self {
-            wind: Wind::generate(),
-            heat: Heat::generate(),
-            moisture: Moisture::generate(),
-        }
-    }
-}
 
 enum DayEvent {
     Sailing,
@@ -97,9 +30,15 @@ enum DayEvent {
 pub struct Journey {
     weather: DayWeather,
     event: DayEvent,
-    distance: u32,
-    total_distance: u32,
+    distance: f32,
+    total_distance: f32,
     current_day: u32,
+    moisture_cycle_length: u32,
+    heat_cycle_length: u32,
+    wind_cycle_length: u32,
+    rng: StdRng,
+    difficulty: f32,
+    journey_length: u32, // How many days until max difficulty
 }
 
 #[derive(Debug)]
@@ -112,14 +51,56 @@ enum DayTask {
 }
 
 impl Journey {
-    pub(super) fn generate() -> Self {
+    pub(super) fn generate(distance: f32, difficulty: Option<f32>, seed: Option<u64>) -> Self {
+        let mut rng = StdRng::seed_from_u64(seed.unwrap_or(thread_rng().next_u64()));
+        const AVERAGE_DAILY_DISTANCE: f32 = 5.0;
+        let difficulty = difficulty.unwrap_or(10.0);
         Self {
-            weather: DayWeather::generate(),
+            weather: DayWeather::default(),
             event: DayEvent::Sailing,
-            distance: 0,
-            total_distance: 120,
+            distance: 0.0,
+            total_distance: distance,
             current_day: 0,
+            moisture_cycle_length: rng.gen_range(30..50),
+            heat_cycle_length: rng.gen_range(60..120),
+            wind_cycle_length: rng.gen_range(15..25),
+            rng,
+            difficulty,
+            journey_length: (distance * ((difficulty - 10.0) * 0.1 + 1.0) / AVERAGE_DAILY_DISTANCE)
+                as u32,
         }
+    }
+
+    /// Move on the the next day
+    fn new_day(&mut self) {
+        self.current_day += 1;
+        let intensity = math::FloatExt::lerp(
+            self.current_day as f32 / self.journey_length as f32,
+            0.0,
+            self.difficulty,
+        );
+        self.weather = DayWeather {
+            moisture: Moisture::generate_from_cycle(
+                &mut self.rng,
+                intensity,
+                self.moisture_cycle_length,
+                self.current_day,
+            ),
+            heat: Heat::generate_from_cycle(
+                &mut self.rng,
+                intensity,
+                self.heat_cycle_length,
+                self.current_day,
+            ),
+            wind: Wind::generate_from_cycle(
+                &mut self.rng,
+                intensity,
+                self.wind_cycle_length,
+                self.current_day,
+            ),
+        };
+        // TODO: Generate a new event for each day;
+        self.event = DayEvent::Sailing;
     }
 
     fn get_options(&self) -> Vec<DayTask> {
@@ -156,7 +137,7 @@ struct Ship {
 }
 
 fn create_journey(_trigger: Trigger<CreateJourney>, mut commands: Commands) {
-    commands.insert_resource(Journey::generate());
+    commands.insert_resource(Journey::generate(120.0, None, None));
     commands.insert_resource(Ship {
         crew: 20,
         food: 50,
@@ -174,11 +155,11 @@ fn next_day(trigger: Trigger<NextDay>, mut journey: ResMut<Journey>, mut ship: R
     match trigger.event().0 {
         DayTask::Sail => match journey.weather.wind {
             Wind::None => {
-                journey.distance += 10;
+                journey.distance += 10.0;
                 ship.food -= ship.crew;
             }
             Wind::Low => {
-                journey.distance += 25;
+                journey.distance += 25.0;
                 ship.food -= (ship.crew as f32 * 1.2).floor() as u32;
             }
             Wind::Medium => todo!(),
@@ -190,8 +171,7 @@ fn next_day(trigger: Trigger<NextDay>, mut journey: ResMut<Journey>, mut ship: R
         DayTask::Rest => todo!(),
         DayTask::HunkerDown => todo!(),
     }
-    journey.current_day += 1;
-    journey.weather = DayWeather::generate();
+    journey.new_day();
 }
 
 pub fn plugin(app: &mut App) {

@@ -3,7 +3,7 @@ use rand::Rng;
 
 use crate::game::{
     assets::{HandleMap, ImageKey},
-    spawn::journey::{AnyWeather, Heat, Moisture},
+    spawn::weather::{AnyWeather, Heat, Moisture},
 };
 
 use super::Screen;

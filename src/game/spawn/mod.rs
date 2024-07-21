@@ -7,6 +7,7 @@ use bevy::prelude::*;
 pub mod journey;
 pub mod level;
 pub mod player;
+pub mod weather;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins((level::plugin, player::plugin, journey::plugin));
