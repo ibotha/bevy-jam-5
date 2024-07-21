@@ -41,8 +41,8 @@ impl<T: Spawn> Widgets for T {
             Name::new("Button"),
             ButtonBundle {
                 style: Style {
-                    //width: Px(120.0 * 4f32),
-                    //height: Px(20.0 * 4f32),
+                    width: Px(120.0 * 4f32),
+                    height: Px(20.0 * 4f32),
                     padding: UiRect::new(Px(8.0), Px(8.0), Px(8.0), Px(30.0)),
                     justify_content: JustifyContent::Center,
                     align_items: AlignItems::Center,

@@ -20,12 +20,10 @@ pub(super) fn plugin(app: &mut App) {
 
 fn enter_playing(mut commands: Commands) {
     commands.trigger(SpawnLevel);
-    commands.trigger(PlaySoundtrack::Key(SoundtrackKey::Gameplay));
 }
 
 fn exit_playing(mut commands: Commands) {
     // We could use [`StateScoped`] on the sound playing entites instead.
-    commands.trigger(PlaySoundtrack::Disable);
 }
 
 fn return_to_title_screen(mut next_screen: ResMut<NextState<Screen>>) {
