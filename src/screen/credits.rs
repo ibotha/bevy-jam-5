@@ -54,6 +54,10 @@ fn enter_credits(
             children.label("Music - CC BY 3.0 by Kevin MacLeod",
                     fonts[&FontKey::PaperCut].clone_weak());
 
+            children.label("Music - Piratical Cycle by Isard & Eidean Botha",
+                    fonts[&FontKey::PaperCut].clone_weak());
+            children.label("Art - Justin",
+                    fonts[&FontKey::PaperCut].clone_weak());
             children.button("Back", image_handles[&ImageKey::Button].clone_weak(),
                     fonts[&FontKey::PaperCut].clone_weak()).insert(CreditsAction::Back);
         });

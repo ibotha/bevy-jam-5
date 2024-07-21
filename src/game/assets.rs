@@ -48,6 +48,10 @@ pub enum ImageKey {
     Bone3,
     Bone4,
     LeftPanel,
+    BottomPanel,
+    DetailsPanel,
+    ChoicePanel,
+    BackDrop,
 }
 
 impl AssetKey for ImageKey {
@@ -62,6 +66,42 @@ impl FromWorld for HandleMap<ImageKey> {
                 ImageKey::Ship,
                 asset_server.load_with_settings(
                     "images/Ship.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::BottomPanel,
+                asset_server.load_with_settings(
+                    "images/BottomPanel.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::DetailsPanel,
+                asset_server.load_with_settings(
+                    "images/DetailsPanel.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::ChoicePanel,
+                asset_server.load_with_settings(
+                    "images/ChoicePanel.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::BackDrop,
+                asset_server.load_with_settings(
+                    "images/Backdrop.png",
                     |settings: &mut ImageLoaderSettings| {
                         settings.sampler = ImageSampler::nearest();
                     },
@@ -190,7 +230,7 @@ impl FromWorld for HandleMap<SoundtrackKey> {
             ),
             (
                 SoundtrackKey::Gameplay,
-                asset_server.load("audio/soundtracks/Fluffing A Duck.ogg"),
+                asset_server.load("audio/soundtracks/PiraticalCycle.ogg"),
             ),
         ]
         .into()

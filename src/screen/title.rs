@@ -4,7 +4,10 @@ use bevy::prelude::*;
 
 use super::Screen;
 use crate::{
-    game::assets::{FontKey, HandleMap, ImageKey},
+    game::{
+        assets::{FontKey, HandleMap, ImageKey, SoundtrackKey},
+        audio::soundtrack::PlaySoundtrack,
+    },
     ui::prelude::*,
 };
 
@@ -31,6 +34,13 @@ fn enter_title(
     image_handles: Res<HandleMap<ImageKey>>,
     fonts: Res<HandleMap<FontKey>>,
 ) {
+    commands.spawn((
+        SpriteBundle {
+            texture: image_handles[&ImageKey::BackDrop].clone_weak(),
+            ..default()
+        },
+        StateScoped(Screen::Title),
+    ));
     commands
         .ui_root()
         .insert(StateScoped(Screen::Title))
@@ -66,6 +76,7 @@ fn enter_title(
                 )
                 .insert(TitleAction::Exit);
         });
+    commands.trigger(PlaySoundtrack::Key(SoundtrackKey::Gameplay));
 }
 
 fn handle_title_action(
