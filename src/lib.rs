@@ -8,6 +8,7 @@ use bevy::{
     asset::AssetMetaCheck,
     audio::{AudioPlugin, Volume},
     prelude::*,
+    render::camera::ScalingMode,
 };
 
 pub struct AppPlugin;
@@ -77,6 +78,10 @@ enum AppSet {
 fn spawn_camera(mut commands: Commands) {
     let mut camera_bundle = Camera2dBundle::default();
     camera_bundle.projection.scale = 1f32 / 4f32;
+    camera_bundle.projection.scaling_mode = ScalingMode::AutoMax {
+        max_width: 1080.0,
+        max_height: 720.0,
+    };
     commands.spawn((
         Name::new("Camera"),
         camera_bundle,
