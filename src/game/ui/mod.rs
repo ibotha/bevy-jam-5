@@ -33,71 +33,158 @@ fn spawn_game_ui(
         .ui_root()
         .insert(StateScoped(Screen::Playing))
         .with_children(|children| {
-            children
-                .button(
-                    "",
-                    image_handles[&ImageKey::BoneButton].clone_weak(),
-                    fonts[&FontKey::PaperCut].clone_weak(),
-                )
-                .insert(GameAction::Bones);
-            children
-                .button(
-                    "Sail for the Day",
-                    image_handles[&ImageKey::Button].clone_weak(),
-                    fonts[&FontKey::PaperCut].clone_weak(),
-                )
-                .insert(GameAction::Choose);
-            children
-                .button(
-                    "Menu",
-                    image_handles[&ImageKey::Button].clone_weak(),
-                    fonts[&FontKey::PaperCut].clone_weak(),
-                )
-                .insert(GameAction::Menu);
-
-            // Left panel
-            children.spawn((
-                Name::new("Left Panel"),
-                NodeBundle {
+            children.spawn(NodeBundle {
+                style: Style {
+                    display: Display::Grid,
+                    grid_template_rows: (vec![GridTrack::fr((250.0-80.0)/80.0), GridTrack::fr(1.0)]),
+                    grid_template_columns: (vec![GridTrack::fr(1.0), GridTrack::fr(230.0/70.0)]),
+                    row_gap: Val::Px(0.0),
+                    column_gap: Val::Px(0.0),
+                    height: Val::Percent(100.0),
+                    aspect_ratio: Some(300.0/250.0),
+                    margin: UiRect::new(Val::Auto, Val::Auto, Val::Auto, Val::Auto),
+                    ..default()
+                },
+                ..default()
+            })
+            .with_children(|commands|{
+                //Left pannel
+                commands.spawn(NodeBundle {
                     style: Style {
-                        width: Val::Auto,
-                        height: Val::Auto,
-                        position_type: PositionType::Absolute,
-                        left: Val::Px(0.0),
-                        top: Val::Px(0.0),
+                        grid_row: GridPlacement::start_span(1, 2),
+                        grid_column: GridPlacement::start_span(1, 1),
+                        margin: UiRect::new(Val::Px(0.0), Val::Px(0.0), Val::Px(0.0), Val::Px(0.0)),
                         ..default()
                     },
                     ..default()
-                },
-            ))
-            .with_children(|panel| {
-                panel.spawn(ImageBundle {
-                    image: UiImage::new(image_handles[&ImageKey::LeftPanel].clone_weak()),
-                    ..default()
+                })
+                .with_children(|commands| {
+                    commands.spawn(ImageBundle {
+                        image: UiImage::new(image_handles[&ImageKey::LeftPanel].clone_weak()),
+                        style: Style {
+                            width: Val::Percent(100.0),
+                            ..default()
+                        },
+                        ..default()
+                    });
                 });
-            });
-
-            // Bottom panel
-            children.spawn((
-                Name::new("Bottom Panel"),
-                NodeBundle {
+                
+                //Bottom pannel
+                commands.spawn(NodeBundle {
                     style: Style {
-                        width: Val::Auto,
-                        height: Val::Auto,
-                        position_type: PositionType::Absolute,
-                        left: Val::Auto,
-                        bottom: Val::Px(0.0),
+                        grid_row: GridPlacement::start_span(2, 1),
+                        grid_column: GridPlacement::start_span(2, 1),
+                        margin: UiRect::new(Val::Px(0.0), Val::Px(0.0), Val::Px(0.0), Val::Px(0.0)),
                         ..default()
                     },
                     ..default()
-                },
-            ))
-            .with_children(|panel| {
-                panel.spawn(ImageBundle {
-                    image: UiImage::new(image_handles[&ImageKey::BottomPanel].clone_weak()),
-                    ..default()
+                })
+                .with_children(|commands| {
+                    commands.spawn(ImageBundle {
+                        image: UiImage::new(image_handles[&ImageKey::BottomPanel].clone_weak()),
+                        style: Style {
+                            width: Val::Percent(100.0),
+                            ..default()
+                        },
+                        ..default()
+                    });
                 });
             });
+
+            // children
+            //     .button(
+            //         "",
+            //         image_handles[&ImageKey::BoneButton].clone_weak(),
+            //         fonts[&FontKey::PaperCut].clone_weak(),
+            //     )
+            //     .insert(GameAction::Bones);
+            // children
+            //     .button(
+            //         "Sail for the Day",
+            //         image_handles[&ImageKey::Button].clone_weak(),
+            //         fonts[&FontKey::PaperCut].clone_weak(),
+            //     )
+            //     .insert(GameAction::Choose);
+            // children
+            //     .button(
+            //         "Menu",
+            //         image_handles[&ImageKey::Button].clone_weak(),
+            //         fonts[&FontKey::PaperCut].clone_weak(),
+            //     )
+            //     .insert(GameAction::Menu);
+
+
+
+
+
+            
+
+            
+            // // Left panel
+            // children.spawn((
+            //     Name::new("Left Panel"),
+            //     NodeBundle {
+            //         style: Style {
+            //             width: Val::Auto,
+            //             height: Val::Auto,
+            //             position_type: PositionType::Absolute,
+            //             left: Val::Px(0.0),
+            //             top: Val::Px(0.0),
+            //             ..default()
+            //         },
+            //         ..default()
+            //     },
+            // ))
+            // .with_children(|panel| {
+            //     panel.spawn(ImageBundle {
+            //         image: UiImage::new(image_handles[&ImageKey::LeftPanel].clone_weak()),
+            //         ..default()
+            //     });
+            // });
+
+            // // Left panel
+            // children.spawn((
+            //     Name::new("Left Panel"),
+            //     NodeBundle {
+            //         style: Style {
+            //             width: Val::Auto,
+            //             height: Val::Auto,
+            //             position_type: PositionType::Absolute,
+            //             right: Val::Px(0.0),
+            //             top: Val::Px(0.0),
+            //             ..default()
+            //         },
+            //         ..default()
+            //     },
+            // ))
+            // .with_children(|panel| {
+            //     panel.spawn(ImageBundle {
+            //         image: UiImage::new(image_handles[&ImageKey::LeftPanel].clone_weak()),
+            //         ..default()
+            //     });
+            // });
+
+            // // Bottom panel
+            // children.spawn((
+            //     Name::new("Bottom Panel"),
+            //     NodeBundle {
+            //         style: Style {
+            //             width: Val::Percent(50.0),
+            //             height: Val::Percent(50.0),
+            //             position_type: PositionType::Absolute,
+            //             left: Val::Px(25.0),
+            //             bottom: Val::Px(0.0),
+            //             ..default()
+            //         },
+            //         ..default()
+            //     },
+            // ))
+            // .with_children(|panel| {
+            //     panel.spawn(ImageBundle {
+            //         image: UiImage::new(image_handles[&ImageKey::BottomPanel].clone_weak()),
+            //         ..default()
+            //     });
+            // });
         });
 }
 
