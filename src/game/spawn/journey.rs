@@ -66,7 +66,7 @@ impl Journey {
             wind_cycle_length: rng.gen_range(15..25),
             rng,
             difficulty,
-            journey_length: (distance * ((difficulty - 10.0) * 0.1 + 1.0) / AVERAGE_DAILY_DISTANCE)
+            journey_length: (distance * ((difficulty - 10.0) * -0.1 + 1.0) / AVERAGE_DAILY_DISTANCE)
                 as u32,
         }
     }

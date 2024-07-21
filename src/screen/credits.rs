@@ -5,7 +5,7 @@ use bevy::prelude::*;
 use super::Screen;
 use crate::{
     game::{
-        assets::{HandleMap, ImageKey, SoundtrackKey},
+        assets::{FontKey, HandleMap, ImageKey, SoundtrackKey},
         audio::soundtrack::PlaySoundtrack,
     },
     ui::prelude::*,
@@ -28,21 +28,34 @@ enum CreditsAction {
     Back,
 }
 
-fn enter_credits(mut commands: Commands, image_handles: Res<HandleMap<ImageKey>>) {
+fn enter_credits(
+    mut commands: Commands,
+    image_handles: Res<HandleMap<ImageKey>>,
+    fonts: Res<HandleMap<FontKey>>,
+) {
     commands
         .ui_root()
         .insert(StateScoped(Screen::Credits))
         .with_children(|children| {
-            children.header("Made by");
-            children.label("Julian");
-            children.label("Justin");
-            children.label("Isard");
+            children.header("Made by",
+                    fonts[&FontKey::PaperCut].clone_weak(),
+                );
+            children.label("Julian",
+                    fonts[&FontKey::PaperCut].clone_weak());
+            children.label("Justin",
+                    fonts[&FontKey::PaperCut].clone_weak());
+            children.label("Isard",
+                    fonts[&FontKey::PaperCut].clone_weak());
 
-            children.header("Assets");
-            children.label("Bevy logo - All rights reserved by the Bevy Foundation. Permission granted for splash screen use when unmodified.");
-            children.label("Music - CC BY 3.0 by Kevin MacLeod");
+            children.header("Assets",
+                    fonts[&FontKey::PaperCut].clone_weak());
+            children.label("Bevy logo - All rights reserved by the Bevy Foundation. Permission granted for splash screen use when unmodified.",
+                    fonts[&FontKey::PaperCut].clone_weak());
+            children.label("Music - CC BY 3.0 by Kevin MacLeod",
+                    fonts[&FontKey::PaperCut].clone_weak());
 
-            children.button("Back", image_handles[&ImageKey::Button].clone_weak()).insert(CreditsAction::Back);
+            children.button("Back", image_handles[&ImageKey::Button].clone_weak(),
+                    fonts[&FontKey::PaperCut].clone_weak()).insert(CreditsAction::Back);
         });
 
     commands.trigger(PlaySoundtrack::Key(SoundtrackKey::Credits));

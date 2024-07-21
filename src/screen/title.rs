@@ -4,7 +4,7 @@ use bevy::prelude::*;
 
 use super::Screen;
 use crate::{
-    game::assets::{HandleMap, ImageKey},
+    game::assets::{FontKey, HandleMap, ImageKey},
     ui::prelude::*,
 };
 
@@ -26,27 +26,44 @@ enum TitleAction {
     Exit,
 }
 
-fn enter_title(mut commands: Commands, image_handles: Res<HandleMap<ImageKey>>) {
+fn enter_title(
+    mut commands: Commands,
+    image_handles: Res<HandleMap<ImageKey>>,
+    fonts: Res<HandleMap<FontKey>>,
+) {
     commands
         .ui_root()
         .insert(StateScoped(Screen::Title))
         .with_children(|children| {
             children
-                .button("Play", image_handles[&ImageKey::Button].clone_weak())
+                .button(
+                    "Play",
+                    image_handles[&ImageKey::Button].clone_weak(),
+                    fonts[&FontKey::PaperCut].clone_weak(),
+                )
                 .insert(TitleAction::Play);
             children
-                .button("Credits", image_handles[&ImageKey::Button].clone_weak())
+                .button(
+                    "Credits",
+                    image_handles[&ImageKey::Button].clone_weak(),
+                    fonts[&FontKey::PaperCut].clone_weak(),
+                )
                 .insert(TitleAction::Credits);
             children
                 .button(
                     "Weather Maniac",
                     image_handles[&ImageKey::Button].clone_weak(),
+                    fonts[&FontKey::PaperCut].clone_weak(),
                 )
                 .insert(TitleAction::WeatherManiac);
 
             #[cfg(not(target_family = "wasm"))]
             children
-                .button("Exit", image_handles[&ImageKey::Button].clone_weak())
+                .button(
+                    "Exit",
+                    image_handles[&ImageKey::Button].clone_weak(),
+                    fonts[&FontKey::PaperCut].clone_weak(),
+                )
                 .insert(TitleAction::Exit);
         });
 }

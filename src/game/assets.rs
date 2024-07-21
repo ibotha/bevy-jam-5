@@ -5,6 +5,9 @@ use bevy::{
 };
 
 pub(super) fn plugin(app: &mut App) {
+    app.register_type::<HandleMap<FontKey>>();
+    app.init_resource::<HandleMap<FontKey>>();
+
     app.register_type::<HandleMap<ImageKey>>();
     app.init_resource::<HandleMap<ImageKey>>();
 
@@ -16,13 +19,35 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Reflect)]
+pub enum FontKey {
+    PaperCut,
+}
+
+impl AssetKey for FontKey {
+    type Asset = Font;
+}
+
+impl FromWorld for HandleMap<FontKey> {
+    fn from_world(world: &mut World) -> Self {
+        let asset_server = world.resource::<AssetServer>();
+        [(
+            FontKey::PaperCut,
+            asset_server.load("fonts/paper-cut/papercut.ttf"),
+        )]
+        .into()
+    }
+}
+
+#[derive(Copy, Clone, Eq, PartialEq, Hash, Reflect)]
 pub enum ImageKey {
     Ship,
     Button,
+    BoneButton,
     Bone1,
     Bone2,
     Bone3,
     Bone4,
+    LeftPanel,
 }
 
 impl AssetKey for ImageKey {
@@ -46,6 +71,15 @@ impl FromWorld for HandleMap<ImageKey> {
                 ImageKey::Button,
                 asset_server.load_with_settings(
                     "images/Button.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::BoneButton,
+                asset_server.load_with_settings(
+                    "images/BoneButton.png",
                     |settings: &mut ImageLoaderSettings| {
                         settings.sampler = ImageSampler::nearest();
                     },
@@ -82,6 +116,15 @@ impl FromWorld for HandleMap<ImageKey> {
                 ImageKey::Bone4,
                 asset_server.load_with_settings(
                     "images/Bones/Bone4.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::LeftPanel,
+                asset_server.load_with_settings(
+                    "images/LeftPanel.png",
                     |settings: &mut ImageLoaderSettings| {
                         settings.sampler = ImageSampler::nearest();
                     },

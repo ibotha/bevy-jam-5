@@ -16,5 +16,6 @@ pub(super) fn plugin(app: &mut App) {
         assets::plugin,
         movement::plugin,
         spawn::plugin,
+        ui::plugin,
     ));
 }

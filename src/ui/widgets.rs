@@ -4,6 +4,8 @@ use bevy::{
     ecs::system::EntityCommands, log::tracing_subscriber::reload::Handle, prelude::*, ui::Val::*,
 };
 
+use crate::game::assets::{FontKey, HandleMap, ImageKey};
+
 use super::{interaction::InteractionPalette, palette::*};
 
 /// An extension trait for spawning UI widgets.
@@ -13,13 +15,19 @@ pub trait Widgets {
         &mut self,
         text: impl Into<String>,
         image: bevy::asset::Handle<Image>,
+        font: bevy::asset::Handle<Font>,
     ) -> EntityCommands;
 
     /// Spawn a simple header label. Bigger than [`Widgets::label`].
-    fn header(&mut self, text: impl Into<String>) -> EntityCommands;
+    fn header(
+        &mut self,
+        text: impl Into<String>,
+        font: bevy::asset::Handle<Font>,
+    ) -> EntityCommands;
 
     /// Spawn a simple text label.
-    fn label(&mut self, text: impl Into<String>) -> EntityCommands;
+    fn label(&mut self, text: impl Into<String>, font: bevy::asset::Handle<Font>)
+        -> EntityCommands;
 }
 
 impl<T: Spawn> Widgets for T {
@@ -27,13 +35,15 @@ impl<T: Spawn> Widgets for T {
         &mut self,
         text: impl Into<String>,
         image: bevy::asset::Handle<Image>,
+        font: bevy::asset::Handle<Font>,
     ) -> EntityCommands {
         let mut entity = self.spawn((
             Name::new("Button"),
             ButtonBundle {
                 style: Style {
-                    width: Px(120.0 * 2f32),
-                    height: Px(20.0 * 2f32),
+                    //width: Px(120.0 * 4f32),
+                    //height: Px(20.0 * 4f32),
+                    padding: UiRect::new(Px(8.0), Px(8.0), Px(8.0), Px(30.0)),
                     justify_content: JustifyContent::Center,
                     align_items: AlignItems::Center,
                     ..default()
@@ -57,9 +67,9 @@ impl<T: Spawn> Widgets for T {
                 TextBundle::from_section(
                     text,
                     TextStyle {
-                        font_size: 40.0,
+                        font_size: 60.0,
                         color: BUTTON_TEXT,
-                        ..default()
+                        font,
                     },
                 ),
             ));
@@ -67,7 +77,11 @@ impl<T: Spawn> Widgets for T {
         entity
     }
 
-    fn header(&mut self, text: impl Into<String>) -> EntityCommands {
+    fn header(
+        &mut self,
+        text: impl Into<String>,
+        font: bevy::asset::Handle<Font>,
+    ) -> EntityCommands {
         let mut entity = self.spawn((
             Name::new("Header"),
             NodeBundle {
@@ -90,6 +104,7 @@ impl<T: Spawn> Widgets for T {
                     TextStyle {
                         font_size: 40.0,
                         color: HEADER_TEXT,
+                        font,
                         ..default()
                     },
                 ),
@@ -98,7 +113,11 @@ impl<T: Spawn> Widgets for T {
         entity
     }
 
-    fn label(&mut self, text: impl Into<String>) -> EntityCommands {
+    fn label(
+        &mut self,
+        text: impl Into<String>,
+        font: bevy::asset::Handle<Font>,
+    ) -> EntityCommands {
         let mut entity = self.spawn((
             Name::new("Label"),
             NodeBundle {
@@ -119,6 +138,7 @@ impl<T: Spawn> Widgets for T {
                     TextStyle {
                         font_size: 24.0,
                         color: LABEL_TEXT,
+                        font,
                         ..default()
                     },
                 ),
