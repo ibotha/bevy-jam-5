@@ -170,6 +170,15 @@ impl FromWorld for HandleMap<ImageKey> {
                     },
                 ),
             ),
+            (
+                ImageKey::BottomPanel,
+                asset_server.load_with_settings(
+                    "images/BottomPanel.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
         ]
         .into()
     }
