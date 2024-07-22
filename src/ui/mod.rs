@@ -24,7 +24,7 @@ pub(super) fn plugin(app: &mut App) {
 
 fn resize_ui(mut resize_reader: EventReader<WindowResized>, mut ui_scale: ResMut<UiScale>) {
     for event in resize_reader.read() {
-        ui_scale.0 = event.height as f32 / 250.0;
+        ui_scale.0 = event.height / 250.0;
         info!("Updated UI Scale to {scale}", scale = ui_scale.0);
     }
 }

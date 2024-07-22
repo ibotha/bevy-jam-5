@@ -108,7 +108,6 @@ impl<T: Spawn> Widgets for T {
                         font_size: 20.0,
                         color: HEADER_TEXT,
                         font,
-                        ..default()
                     },
                 ),
             ));
@@ -142,7 +141,6 @@ impl<T: Spawn> Widgets for T {
                         font_size: 10.0,
                         color: LABEL_TEXT,
                         font,
-                        ..default()
                     },
                 ),
             ));

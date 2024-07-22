@@ -43,6 +43,7 @@ pub struct Journey {
     rng: StdRng,
     difficulty: f32,
     journey_length: u32, // How many days until max difficulty
+    treasure: u32,
 }
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Reflect)]
@@ -65,6 +66,7 @@ impl Journey {
             distance: 0.0,
             total_distance: distance,
             current_day: 0,
+            treasure: 0,
             moisture_cycle_length: rng.gen_range(30..50),
             heat_cycle_length: rng.gen_range(60..120),
             wind_cycle_length: rng.gen_range(15..25),
@@ -132,21 +134,11 @@ impl Journey {
     }
 }
 
-enum ShipCondition {
-    Perfect,
-    Cosmetic,
-    Battered,
-    Tattered,
-    Immobilised,
-    Sunk,
-}
-
 #[derive(Resource)]
 struct Ship {
-    crew: u32,
-    food: u32,
-    morale: u32,
-    ship_condition: ShipCondition,
+    crew: i32,
+    food: i32,
+    ship_condition: i32,
 }
 
 fn create_journey(_trigger: Trigger<CreateJourney>, mut commands: Commands) {
@@ -156,8 +148,7 @@ fn create_journey(_trigger: Trigger<CreateJourney>, mut commands: Commands) {
     commands.insert_resource(Ship {
         crew: 20,
         food: 50,
-        morale: 100,
-        ship_condition: ShipCondition::Perfect,
+        ship_condition: 100,
     });
     commands.trigger(NextDay(DayTask::Sail));
 }
@@ -168,16 +159,70 @@ fn next_day(
     mut ship: ResMut<Ship>,
     mut commands: Commands,
 ) {
-    let mut hardship: u32 = 0;
-    let mut danger: u32 = 0;
-    let mut speed: u32 = 0;
-    let mut abundance: u32 = 0;
+    let hardship: f32;
+    let danger: f32;
+    let speed: f32;
+    let abundance: f32;
 
+    let DayWeather {
+        wind,
+        heat,
+        moisture,
+    } = journey.weather;
+    match (wind, heat, moisture) {
+        (wind, Heat::Comfortable, Moisture::Comfortable) => {
+            speed = match wind {
+                Wind::None => 0.0,
+                Wind::Low => 2.0,
+                Wind::Medium => 6.0,
+                Wind::High => 8.0,
+                Wind::GaleForce => 10.0,
+            };
+            hardship = 0.0;
+            danger = 0.0;
+            abundance = 10.0;
+        }
+        _ => {
+            speed = 0.0;
+            hardship = 10.0;
+            danger = 10.0;
+            abundance = 0.0;
+        }
+    }
+
+    ship.food -= (ship.crew as f32 * hardship) as i32;
+    if ship.food < 0 {
+        ship.crew += ship.food;
+        ship.food = 0;
+    }
+    match trigger.event().0 {
+        DayTask::Sail => {
+            journey.distance += 10.0 * speed;
+            ship.ship_condition -= danger as i32;
+        }
+        DayTask::Fight => {
+            ship.crew -= danger as i32;
+            journey.treasure += 10;
+        }
+        DayTask::Explore => {
+            journey.treasure += 10;
+        }
+        DayTask::Rest => {
+            ship.crew += (10.0 * abundance) as i32;
+            ship.food += (10.0 * abundance) as i32;
+        }
+        DayTask::HunkerDown => {
+            ship.ship_condition += 10;
+        }
+    }
     info!(
         "You chose to {choice:?}: The weather was {weather:?}",
         choice = trigger.event().0,
         weather = journey.weather
     );
+    if journey.distance > journey.total_distance {
+        todo!("We need to handle them completing the journey!");
+    }
     journey.new_day();
     info!(
         "Its a new day, the captain wants to {event:?}",

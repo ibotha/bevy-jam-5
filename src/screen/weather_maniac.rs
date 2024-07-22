@@ -1,3 +1,5 @@
+use std::f32::consts::PI;
+
 use bevy::{prelude::*, utils::hashbrown::HashMap};
 use rand::Rng;
 
@@ -25,10 +27,10 @@ pub struct WeatherControlConditions {
 fn generate_random_bone_pattern() -> BonePattern {
     let mut ret: BonePattern = BonePattern::default();
     let mut rngeezus = rand::thread_rng();
-    for x in 0..COLUMN_COUNT {
-        for y in 0..ROW_COUNT {
+    for column in ret.iter_mut() {
+        for item in column.iter_mut() {
             let random_number = rngeezus.gen_range(0..2);
-            ret[x][y] = random_number;
+            *item = random_number;
         }
     }
     ret
@@ -143,7 +145,7 @@ fn render_weather_condition(
             2 => image_handles[&ImageKey::Bone3].clone_weak(),
             _ => image_handles[&ImageKey::Bone4].clone_weak(),
         };
-        transform.rotate_z(rng.gen_range(0f32..3.14f32));
+        transform.rotate_z(rng.gen_range(0f32..PI));
     }
 }
 

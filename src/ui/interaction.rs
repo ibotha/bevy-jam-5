@@ -27,8 +27,7 @@ fn apply_interaction_palette(
             Interaction::None => palette.none,
             Interaction::Hovered => palette.hovered,
             Interaction::Pressed => palette.pressed,
-        }
-        .into();
+        };
     }
 }
 
