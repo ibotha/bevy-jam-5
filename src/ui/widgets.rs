@@ -1,7 +1,10 @@
 //! Helper traits for creating common widgets.
 
 use bevy::{
-    ecs::system::EntityCommands, log::tracing_subscriber::reload::Handle, prelude::*, ui::Val::*,
+    ecs::{query, system::EntityCommands},
+    log::tracing_subscriber::reload::Handle,
+    prelude::*,
+    ui::Val::*,
 };
 
 use crate::game::assets::{FontKey, HandleMap, ImageKey};
@@ -67,7 +70,7 @@ impl<T: Spawn> Widgets for T {
                 TextBundle::from_section(
                     text,
                     TextStyle {
-                        font_size: 60.0,
+                        font_size: 12.0,
                         color: BUTTON_TEXT,
                         font,
                     },

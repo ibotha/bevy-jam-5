@@ -52,6 +52,7 @@ pub enum ImageKey {
     DetailsPanel,
     ChoicePanel,
     BackDrop,
+    Logo,
 }
 
 impl AssetKey for ImageKey {
@@ -66,6 +67,15 @@ impl FromWorld for HandleMap<ImageKey> {
                 ImageKey::Ship,
                 asset_server.load_with_settings(
                     "images/Ship.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::Logo,
+                asset_server.load_with_settings(
+                    "images/Logo.png",
                     |settings: &mut ImageLoaderSettings| {
                         settings.sampler = ImageSampler::nearest();
                     },
