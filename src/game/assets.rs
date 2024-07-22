@@ -53,6 +53,9 @@ pub enum ImageKey {
     ChoicePanel,
     BackDrop,
     MissingImage,
+    CrewImage,
+    FoodImage,
+    ShipStatsImage,
 }
 
 impl AssetKey for ImageKey {
@@ -184,6 +187,33 @@ impl FromWorld for HandleMap<ImageKey> {
                 ImageKey::MissingImage,
                 asset_server.load_with_settings(
                     "images/missing_image.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::CrewImage,
+                asset_server.load_with_settings(
+                    "images/Crew.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::FoodImage,
+                asset_server.load_with_settings(
+                    "images/Food.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::ShipStatsImage,
+                asset_server.load_with_settings(
+                    "images/ShipStats.png",
                     |settings: &mut ImageLoaderSettings| {
                         settings.sampler = ImageSampler::nearest();
                     },

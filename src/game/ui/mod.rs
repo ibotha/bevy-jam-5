@@ -141,7 +141,6 @@ fn spawn_game_ui(
                                 });
                         });
 
-                    //Bottom pannel
                     //Bottom panel
                     commands
                         .spawn(NodeBundle {
@@ -210,6 +209,12 @@ fn spawn_game_ui(
                                         });
 
                                         // Add the square details panel to the right
+                                        let image_text_pairs = [
+                                            (ImageKey::CrewImage, "40/40"),
+                                            (ImageKey::FoodImage, "50/50"),
+                                            (ImageKey::ShipStatsImage, "100/100"),
+                                        ];
+
                                         commands
                                             .spawn(ImageBundle {
                                                 image: UiImage::new(
@@ -217,13 +222,49 @@ fn spawn_game_ui(
                                                 ),
                                                 style: Style {
                                                     position_type: PositionType::Absolute,
-                                                    right: Val::Percent(5.0),  // 5% from the right edge
-                                                    top: Val::Percent(12.5),   // Align with the top of the button grid
-                                                    width: Val::Percent(27.0), // Adjust as needed
-                                                    aspect_ratio: Some(1.0),   // Makes it a perfect square
+                                                    right: Val::Percent(5.0),
+                                                    top: Val::Percent(12.5),
+                                                    width: Val::Percent(27.0),
+                                                    aspect_ratio: Some(1.0),
+                                                    display: Display::Grid,
+                                                    grid_template_columns: vec![GridTrack::px(30.0), GridTrack::auto()],
+                                                    grid_template_rows: vec![GridTrack::fr(1.0), GridTrack::fr(1.0), GridTrack::fr(1.0)],
+                                                    column_gap: Val::Px(25.0), // Small gap between image and text
+                                                    row_gap: Val::Px(-50.0), // Negative row gap to bring rows closer
                                                     ..default()
                                                 },
                                                 ..default()
+                                            })
+                                            .with_children(|parent| {
+                                                for (image_key, text) in image_text_pairs.iter() {
+                                                    // Image column
+                                                    parent.spawn(ImageBundle {
+                                                        image: UiImage::new(image_handles[image_key].clone_weak()),
+                                                        style: Style {
+                                                            height: Val::Px(30.0),
+                                                            aspect_ratio: Some(1.0),
+                                                            left: Val::Px(15.0),
+                                                            align_content: AlignContent::Center,
+                                                            margin: UiRect::new(Val::Px(0.0), Val::Auto, Val::Px(10.0), Val::Px(0.0)),
+                                                            ..default()
+                                                        },
+                                                        ..default()
+                                                    });
+                                        
+                                                    // Text column
+                                                    parent.spawn(TextBundle::from_section(
+                                                        text.to_string(),
+                                                        TextStyle {
+                                                            font: fonts[&FontKey::PaperCut].clone_weak(),
+                                                            font_size: 25.0,
+                                                            color: Color::srgb(128.0 / 255.0, 98.0 / 255.0, 62.0 / 255.0),
+                                                        },
+                                                    ).with_style(Style {
+                                                        margin: UiRect::new(Val::Px(0.0), Val::Auto, Val::Px(5.0), Val::Auto),
+                                                        align_self: AlignSelf::Center,
+                                                        ..default()
+                                                    }));
+                                                }
                                             });
                                 });
                         });
