@@ -5,7 +5,7 @@ mod loading;
 mod playing;
 mod splash;
 mod title;
-mod weather_maniac;
+pub mod weather_maniac;
 
 use bevy::prelude::*;
 
@@ -32,5 +32,4 @@ pub enum Screen {
     Title,
     Credits,
     Playing,
-    WeatherManiac,
 }

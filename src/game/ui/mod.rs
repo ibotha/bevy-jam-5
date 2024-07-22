@@ -1,27 +1,79 @@
 use bevy::prelude::*;
 
-use crate::screen::Screen;
+use crate::screen::{weather_maniac::ToggleWeatherGridEvent, Screen};
 use crate::ui::prelude::*;
 
-use super::assets::{FontKey, HandleMap, ImageKey};
+use super::{
+    assets::{FontKey, HandleMap, ImageKey},
+    spawn::journey::{DayTask, NextDay},
+};
 
 #[derive(Event, Debug)]
 pub struct SpawnGameUI;
 
 pub fn plugin(app: &mut App) {
-    app.observe(spawn_game_ui);
-
-    app.register_type::<GameAction>();
-    app.add_systems(Update, handle_game_action.run_if(in_state(Screen::Playing)));
+    app.observe(spawn_game_ui)
+        .observe(update_choices)
+        .add_event::<SpawnGameUI>()
+        .add_event::<UpdateChoices>()
+        .register_type::<GameAction>()
+        .add_systems(Update, handle_game_action.run_if(in_state(Screen::Playing)));
 }
 
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Reflect)]
 #[reflect(Component)]
 pub enum GameAction {
     Bones,
-    Choose,
+    Choose(DayTask),
     Menu,
 }
+
+#[derive(Component)]
+struct ChoicePanel;
+
+fn update_choices(
+    trigger: Trigger<UpdateChoices>,
+    query: Query<(Entity, &ChoicePanel)>,
+    image_handles: Res<HandleMap<ImageKey>>,
+    mut commands: Commands,
+    fonts: Res<HandleMap<FontKey>>,
+) {
+    let (entity, _) = query.single();
+    commands
+        .entity(entity)
+        .despawn_descendants()
+        .with_children(|commands| {
+            // Add 6 buttons
+            for choice in trigger.event().0.iter() {
+                commands
+                    .spawn(ButtonBundle {
+                        image: UiImage::new(image_handles[&ImageKey::ChoicePanel].clone_weak()),
+                        style: Style {
+                            width: Val::Px(70.0),
+                            height: Val::Px(20.0),
+                            ..default()
+                        },
+                        ..default()
+                    })
+                    .insert(GameAction::Choose(*choice))
+                    .with_children(|parent| {
+                        parent.label(
+                            match choice {
+                                DayTask::Sail => "Sail",
+                                DayTask::Fight => "Fight",
+                                DayTask::Explore => "Explore",
+                                DayTask::Rest => "Rest",
+                                DayTask::HunkerDown => "Brace",
+                            },
+                            fonts[&FontKey::PaperCut].clone_weak(),
+                        );
+                    });
+            }
+        });
+}
+
+#[derive(Event, Debug)]
+pub struct UpdateChoices(pub Vec<DayTask>);
 
 fn spawn_game_ui(
     _trigger: Trigger<SpawnGameUI>,
@@ -94,8 +146,14 @@ fn spawn_game_ui(
                                                 top: Val::Percent(5.0),
                                                 left: Val::Percent(10.0),
                                                 display: Display::Grid,
-                                                grid_template_columns: vec![GridTrack::fr(1.0), GridTrack::fr(1.0)],
-                                                grid_template_rows: vec![GridTrack::fr(1.0), GridTrack::fr(1.0)],
+                                                grid_template_columns: vec![
+                                                    GridTrack::fr(1.0),
+                                                    GridTrack::fr(1.0),
+                                                ],
+                                                grid_template_rows: vec![
+                                                    GridTrack::fr(1.0),
+                                                    GridTrack::fr(1.0),
+                                                ],
                                                 column_gap: Val::Percent(2.0),
                                                 row_gap: Val::Percent(2.0),
                                                 ..default()
@@ -114,30 +172,21 @@ fn spawn_game_ui(
                                                 };
 
                                                 commands
-                                                .spawn(ButtonBundle {
-                                                    image: UiImage::new(
-                                                        image_handles[&image_key].clone_weak(),
-                                                    ),
-                                                    style: Style {
-                                                        width: Val::Percent(80.0),
-                                                        height: Val::Percent(80.0),
-                                                        margin: UiRect::all(Val::Auto),
+                                                    .spawn(ButtonBundle {
+                                                        image: UiImage::new(
+                                                            image_handles[&image_key].clone_weak(),
+                                                        ),
+                                                        style: Style {
+                                                            width: Val::Percent(80.0),
+                                                            height: Val::Percent(80.0),
+                                                            margin: UiRect::all(Val::Auto),
+                                                            ..default()
+                                                        },
                                                         ..default()
-                                                    },
-                                                    ..default()
-                                                });
+                                                    })
+                                                    .insert(GameAction::Bones);
                                             }
                                         });
-                        
-                                    // Existing bone button
-                                    commands
-                                        .spawn(ButtonBundle {
-                                            image: UiImage::new(
-                                                image_handles[&ImageKey::BoneButton].clone_weak(),
-                                            ),
-                                            ..default()
-                                        })
-                                        .insert(GameAction::Bones);
                                 });
                         });
 
@@ -164,108 +213,110 @@ fn spawn_game_ui(
                                         image_handles[&ImageKey::BottomPanel].clone_weak(),
                                     ),
                                     style: Style {
-                                        width: Val::Percent(100.0),
-                                        height: Val::Percent(100.0),
+                                        width: Val::Px(230.0),
+                                        height: Val::Px(80.0),
+                                        display: Display::Flex,
+                                        flex_direction: FlexDirection::Row,
+                                        align_items: AlignItems::Center,
+                                        justify_content: JustifyContent::SpaceAround,
+                                        column_gap: Val::Px(2.0),
                                         ..default()
                                     },
                                     ..default()
                                 })
                                 .with_children(|commands| {
-                                    // Container for the 2x2 grid of buttons
-                                    commands
-                                        .spawn(NodeBundle {
+                                    // Container for the choices
+                                    commands.spawn((
+                                        NodeBundle {
                                             style: Style {
-                                                width: Val::Percent(30.0),
-                                                height: Val::Percent(25.0),
-                                                position_type: PositionType::Absolute,
-                                                left: Val::Percent(5.0),
-                                                top: Val::Percent(12.5),
                                                 display: Display::Grid,
-                                                grid_template_columns: vec![GridTrack::fr(1.0), GridTrack::fr(1.0)],
-                                                grid_template_rows: vec![GridTrack::fr(1.0), GridTrack::fr(1.0), GridTrack::fr(1.0)],
-                                                column_gap: Val::Px(5.0),
-                                                row_gap: Val::Px(5.0),
+                                                grid_template_columns: vec![
+                                                    GridTrack::fr(1.0),
+                                                    GridTrack::fr(1.0),
+                                                ],
+                                                grid_template_rows: vec![
+                                                    GridTrack::fr(1.0),
+                                                    GridTrack::fr(1.0),
+                                                    GridTrack::fr(1.0),
+                                                ],
+                                                column_gap: Val::Px(2.0),
+                                                row_gap: Val::Px(2.0),
+                                                justify_items: JustifyItems::Center,
+                                                width: Val::Px(150.0),
+                                                ..default()
+                                            },
+                                            ..default()
+                                        },
+                                        ChoicePanel,
+                                    ));
+
+                                    // Add the square details panel to the right
+                                    let image_text_pairs = [
+                                        (ImageKey::CrewImage, "40/40"),
+                                        (ImageKey::FoodImage, "50/50"),
+                                        (ImageKey::ShipStatsImage, "100/100"),
+                                    ];
+
+                                    commands
+                                        .spawn(ImageBundle {
+                                            image: UiImage::new(
+                                                image_handles[&ImageKey::DetailsPanel].clone_weak(),
+                                            ),
+                                            style: Style {
+                                                width: Val::Px(70.0),
+                                                aspect_ratio: Some(1.0),
                                                 ..default()
                                             },
                                             ..default()
                                         })
-                                        .with_children(|commands| {
-                                            // Add 6 buttons
-                                            for _ in 0..6 {
-                                                commands
-                                                .spawn(ButtonBundle {
-                                                    image: UiImage::new(
-                                                        image_handles[&ImageKey::ChoicePanel].clone_weak(),
-                                                    ),
+                                        .with_children(|parent| {
+                                            parent
+                                                .spawn(NodeBundle {
                                                     style: Style {
-                                                        width: Val::Percent(100.0),
-                                                        height: Val::Percent(100.0),
-                                                        margin: UiRect::all(Val::Auto),
+                                                        margin: UiRect::all(Val::Px(6.0)),
+                                                        display: Display::Grid,
+                                                        grid_template_columns: vec![
+                                                            GridTrack::px(8.0),
+                                                            GridTrack::auto(),
+                                                        ],
+                                                        grid_template_rows: vec![
+                                                            GridTrack::fr(1.0),
+                                                            GridTrack::fr(1.0),
+                                                            GridTrack::fr(1.0),
+                                                        ],
+                                                        column_gap: Val::Px(4.0),
+                                                        align_items: AlignItems::Center,
+                                                        row_gap: Val::Px(1.0),
                                                         ..default()
                                                     },
                                                     ..default()
-                                                });
-                                            }
-                                        });
-
-                                        // Add the square details panel to the right
-                                        let image_text_pairs = [
-                                            (ImageKey::CrewImage, "40/40"),
-                                            (ImageKey::FoodImage, "50/50"),
-                                            (ImageKey::ShipStatsImage, "100/100"),
-                                        ];
-
-                                        commands
-                                            .spawn(ImageBundle {
-                                                image: UiImage::new(
-                                                    image_handles[&ImageKey::DetailsPanel].clone_weak(),
-                                                ),
-                                                style: Style {
-                                                    position_type: PositionType::Absolute,
-                                                    right: Val::Percent(5.0),
-                                                    top: Val::Percent(12.5),
-                                                    width: Val::Percent(27.0),
-                                                    aspect_ratio: Some(1.0),
-                                                    display: Display::Grid,
-                                                    grid_template_columns: vec![GridTrack::px(30.0), GridTrack::auto()],
-                                                    grid_template_rows: vec![GridTrack::fr(1.0), GridTrack::fr(1.0), GridTrack::fr(1.0)],
-                                                    column_gap: Val::Px(25.0), // Small gap between image and text
-                                                    row_gap: Val::Px(-50.0), // Negative row gap to bring rows closer
-                                                    ..default()
-                                                },
-                                                ..default()
-                                            })
-                                            .with_children(|parent| {
-                                                for (image_key, text) in image_text_pairs.iter() {
-                                                    // Image column
-                                                    parent.spawn(ImageBundle {
-                                                        image: UiImage::new(image_handles[image_key].clone_weak()),
-                                                        style: Style {
-                                                            height: Val::Px(30.0),
-                                                            aspect_ratio: Some(1.0),
-                                                            left: Val::Px(15.0),
-                                                            align_content: AlignContent::Center,
-                                                            margin: UiRect::new(Val::Px(0.0), Val::Auto, Val::Px(10.0), Val::Px(0.0)),
+                                                })
+                                                .with_children(|parent| {
+                                                    for (image_key, text) in image_text_pairs.iter()
+                                                    {
+                                                        // Image column
+                                                        parent.spawn(ImageBundle {
+                                                            image: UiImage::new(
+                                                                image_handles[image_key]
+                                                                    .clone_weak(),
+                                                            ),
+                                                            style: Style {
+                                                                height: Val::Px(13.0),
+                                                                aspect_ratio: Some(1.0),
+                                                                align_content: AlignContent::Center,
+                                                                ..default()
+                                                            },
                                                             ..default()
-                                                        },
-                                                        ..default()
-                                                    });
-                                        
-                                                    // Text column
-                                                    parent.spawn(TextBundle::from_section(
-                                                        text.to_string(),
-                                                        TextStyle {
-                                                            font: fonts[&FontKey::PaperCut].clone_weak(),
-                                                            font_size: 25.0,
-                                                            color: Color::srgb(128.0 / 255.0, 98.0 / 255.0, 62.0 / 255.0),
-                                                        },
-                                                    ).with_style(Style {
-                                                        margin: UiRect::new(Val::Px(0.0), Val::Auto, Val::Px(5.0), Val::Auto),
-                                                        align_self: AlignSelf::Center,
-                                                        ..default()
-                                                    }));
-                                                }
-                                            });
+                                                        });
+
+                                                        // Text column
+                                                        parent.label(
+                                                            text.to_string(),
+                                                            fonts[&FontKey::PaperCut].clone_weak(),
+                                                        );
+                                                    }
+                                                });
+                                        });
                                 });
                         });
                 });
@@ -275,13 +326,17 @@ fn spawn_game_ui(
 fn handle_game_action(
     mut next_screen: ResMut<NextState<Screen>>,
     mut button_query: InteractionQuery<&GameAction>,
+    mut commands: Commands,
 ) {
     for (interaction, action) in &mut button_query {
         if matches!(interaction, Interaction::Pressed) {
             match action {
                 GameAction::Menu => next_screen.set(Screen::Title),
-                GameAction::Bones => todo!(),
-                GameAction::Choose => todo!(),
+                GameAction::Bones => {
+                    info!("Bones!!!");
+                    commands.trigger(ToggleWeatherGridEvent);
+                }
+                GameAction::Choose(task) => commands.trigger(NextDay(*task)),
             }
         }
     }

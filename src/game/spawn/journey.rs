@@ -1,10 +1,15 @@
 use bevy::math;
 use bevy::prelude::*;
+use log::info;
 use rand::rngs::StdRng;
 use rand::thread_rng;
 use rand::Rng;
 use rand::RngCore;
 use rand::SeedableRng;
+
+use crate::game::spawn::weather::AnyWeather;
+use crate::game::ui::UpdateChoices;
+use crate::screen::weather_maniac::UpdateBoneGrid;
 
 use super::weather::DayWeather;
 use super::weather::Heat;
@@ -12,13 +17,12 @@ use super::weather::Moisture;
 use super::weather::Wind;
 
 #[derive(Event, Debug)]
-pub struct NextDay(DayTask);
+pub struct NextDay(pub DayTask);
 
 #[derive(Event, Debug)]
 pub struct CreateJourney;
 
-const JOURNEY_LENGTH: usize = 180;
-
+#[derive(Debug)]
 enum DayEvent {
     Sailing,
     Treasure,
@@ -41,8 +45,8 @@ pub struct Journey {
     journey_length: u32, // How many days until max difficulty
 }
 
-#[derive(Debug)]
-enum DayTask {
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Reflect)]
+pub enum DayTask {
     Sail,
     Fight,
     Explore,
@@ -100,7 +104,16 @@ impl Journey {
             ),
         };
         // TODO: Generate a new event for each day;
-        self.event = DayEvent::Sailing;
+        let num = self.rng.gen_range(0..100);
+        self.event = if num < 1 {
+            DayEvent::Treasure
+        } else if num < 2 {
+            DayEvent::Whale
+        } else if num < 5 {
+            DayEvent::Island
+        } else {
+            DayEvent::Sailing
+        };
     }
 
     fn get_options(&self) -> Vec<DayTask> {
@@ -137,44 +150,51 @@ struct Ship {
 }
 
 fn create_journey(_trigger: Trigger<CreateJourney>, mut commands: Commands) {
-    commands.insert_resource(Journey::generate(120.0, None, None));
+    info!("Generating journey...");
+    let journey = Journey::generate(120.0, None, None);
+    commands.insert_resource(journey);
     commands.insert_resource(Ship {
         crew: 20,
         food: 50,
         morale: 100,
         ship_condition: ShipCondition::Perfect,
     });
+    commands.trigger(NextDay(DayTask::Sail));
 }
 
-fn next_day(trigger: Trigger<NextDay>, mut journey: ResMut<Journey>, mut ship: ResMut<Ship>) {
+fn next_day(
+    trigger: Trigger<NextDay>,
+    mut journey: ResMut<Journey>,
+    mut ship: ResMut<Ship>,
+    mut commands: Commands,
+) {
     let mut hardship: u32 = 0;
     let mut danger: u32 = 0;
     let mut speed: u32 = 0;
     let mut abundance: u32 = 0;
 
-    match trigger.event().0 {
-        DayTask::Sail => match journey.weather.wind {
-            Wind::None => {
-                journey.distance += 10.0;
-                ship.food -= ship.crew;
-            }
-            Wind::Low => {
-                journey.distance += 25.0;
-                ship.food -= (ship.crew as f32 * 1.2).floor() as u32;
-            }
-            Wind::Medium => todo!(),
-            Wind::High => todo!(),
-            Wind::GaleForce => todo!(),
-        },
-        DayTask::Fight => todo!(),
-        DayTask::Explore => todo!(),
-        DayTask::Rest => todo!(),
-        DayTask::HunkerDown => todo!(),
-    }
+    info!(
+        "You chose to {choice:?}: The weather was {weather:?}",
+        choice = trigger.event().0,
+        weather = journey.weather
+    );
     journey.new_day();
+    info!(
+        "Its a new day, the captain wants to {event:?}",
+        event = journey.event
+    );
+    commands.trigger(UpdateChoices(journey.get_options()));
+
+    commands.trigger(UpdateBoneGrid(match journey.rng.gen_range(0..3) {
+        0 => AnyWeather::Moisture(journey.weather.moisture),
+        1 => AnyWeather::Heat(journey.weather.heat),
+        _ => AnyWeather::Wind(journey.weather.wind),
+    }));
 }
 
 pub fn plugin(app: &mut App) {
-    app.observe(create_journey);
-    app.observe(next_day);
+    app.observe(create_journey)
+        .add_event::<NextDay>()
+        .add_event::<CreateJourney>()
+        .observe(next_day);
 }

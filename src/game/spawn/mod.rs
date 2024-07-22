@@ -4,6 +4,8 @@
 
 use bevy::prelude::*;
 
+use crate::screen::weather_maniac;
+
 pub mod journey;
 pub mod level;
 pub mod player;

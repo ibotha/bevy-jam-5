@@ -3,7 +3,7 @@ use rand::Rng;
 
 use crate::game::{
     assets::{HandleMap, ImageKey},
-    spawn::weather::{AnyWeather, Heat, Moisture},
+    spawn::weather::{AnyWeather, Heat},
 };
 
 use super::Screen;
@@ -11,7 +11,7 @@ use super::Screen;
 const ROW_COUNT: usize = 4;
 const COLUMN_COUNT: usize = 4;
 const GRID_BLOCK_SIZE: usize = 16;
-const GRID_BLOCK_PADDING: usize = 1;
+const GRID_BLOCK_PADDING: usize = 0;
 
 type BonePattern = [[u8; ROW_COUNT]; COLUMN_COUNT];
 type ConditionMap = HashMap<AnyWeather, BonePattern>;
@@ -43,26 +43,31 @@ impl Default for WeatherControlConditions {
     }
 }
 
-pub(super) fn plugin(app: &mut App) {
+pub fn plugin(app: &mut App) {
     app.register_type::<WeatherControlConditions>()
         .add_event::<ToggleWeatherGridEvent>()
-        .add_systems(OnEnter(Screen::WeatherManiac), enter_weather_maniac)
-        .add_systems(
-            Update,
-            (
-                update_weather_condition,
-                toggle_weather_grid,
-                handle_toggle_weather_grid,
-            )
-                .run_if(in_state(Screen::WeatherManiac)),
-        )
-        .observe(render_weather_condition);
+        .add_systems(OnEnter(Screen::Playing), enter_weather_maniac)
+        .observe(render_weather_condition)
+        .observe(handle_toggle_weather_grid);
 }
 
-fn enter_weather_maniac(mut commands: Commands) {
+fn enter_weather_maniac(mut commands: Commands, images: Res<HandleMap<ImageKey>>) {
     info!("Entering Weather Maniac screen");
     let grid = WeatherControlConditions::default();
 
+    commands.spawn((
+        SpriteBundle {
+            sprite: Sprite {
+                anchor: bevy::sprite::Anchor::BottomLeft,
+                ..Default::default()
+            },
+            texture: images[&ImageKey::DetailsPanel].clone_weak(),
+            transform: Transform::from_translation(Vec3::new(-11.0, -11.0, 1.9)),
+            visibility: Visibility::Hidden,
+            ..Default::default()
+        },
+        ToggleWithBones,
+    ));
     for offset_x in 0..COLUMN_COUNT {
         for offset_y in 0..ROW_COUNT {
             // spawn a sprite at the cell position
@@ -77,12 +82,13 @@ fn enter_weather_maniac(mut commands: Commands) {
                         ..Default::default()
                     },
                     transform: Transform::from_translation(
-                        Vec3::new(offset_x as f32, offset_y as f32, 0.0)
+                        Vec3::new(offset_x as f32, offset_y as f32, 2.0)
                             * (GRID_BLOCK_SIZE + GRID_BLOCK_PADDING) as f32,
                     ),
                     visibility: Visibility::Hidden,
                     ..Default::default()
                 },
+                ToggleWithBones,
                 DisplayPosition {
                     x: offset_x as u8,
                     y: offset_y as u8,
@@ -91,20 +97,9 @@ fn enter_weather_maniac(mut commands: Commands) {
         }
     }
     commands.insert_resource(grid);
-    commands.trigger(UpdateGrid(AnyWeather::Heat(Heat::Comfortable)));
+    commands.trigger(UpdateBoneGrid(AnyWeather::Heat(Heat::Comfortable)));
 }
 
-fn update_weather_condition(
-    mut conditions: ResMut<WeatherControlConditions>,
-    time: Res<Time>,
-    mut commands: Commands,
-) {
-    conditions.timer.tick(time.delta());
-    if conditions.timer.finished() {
-        conditions.timer.reset();
-        commands.trigger(UpdateGrid(AnyWeather::Moisture(Moisture::Dry)));
-    }
-}
 #[derive(Component)]
 struct DisplayPosition {
     pub x: u8,
@@ -112,10 +107,10 @@ struct DisplayPosition {
 }
 
 #[derive(Event, Debug, Clone, Copy)]
-struct UpdateGrid(AnyWeather);
+pub struct UpdateBoneGrid(pub AnyWeather);
 
 fn render_weather_condition(
-    trigger: Trigger<UpdateGrid>,
+    trigger: Trigger<UpdateBoneGrid>,
     mut conditions: ResMut<WeatherControlConditions>,
     mut query: Query<(
         &mut Sprite,
@@ -154,31 +149,23 @@ fn render_weather_condition(
 
 // VISIBILITY - You can blame Justin for this amazing stuff
 #[derive(Event)]
-struct ToggleWeatherGridEvent;
+pub struct ToggleWeatherGridEvent;
 
-fn toggle_weather_grid(
-    input: Res<ButtonInput<KeyCode>>,
-    mut ev_toggle: EventWriter<ToggleWeatherGridEvent>,
-) {
-    if input.just_pressed(KeyCode::Space) {
-        ev_toggle.send(ToggleWeatherGridEvent);
-        info!("Toggle weather grid event sent");
-    }
-}
+#[derive(Component)]
+pub struct ToggleWithBones;
 
 fn handle_toggle_weather_grid(
-    mut ev_toggle: EventReader<ToggleWeatherGridEvent>,
-    mut query: Query<&mut Visibility, With<DisplayPosition>>,
+    _trigger: Trigger<ToggleWeatherGridEvent>,
+    mut query: Query<&mut Visibility, With<ToggleWithBones>>,
 ) {
-    for _ in ev_toggle.read() {
-        for mut visibility in &mut query {
-            *visibility = if *visibility == Visibility::Hidden {
-                Visibility::Visible
-            } else {
-                Visibility::Hidden
-            };
+    info!("Toggling the bones!");
+    for mut visibility in &mut query {
+        *visibility = if *visibility == Visibility::Hidden {
+            Visibility::Visible
+        } else {
+            Visibility::Hidden
+        };
 
-            info!("Weather grid visibility toggled: {:?}", visibility);
-        }
+        info!("Weather grid visibility toggled: {:?}", visibility);
     }
 }

@@ -30,7 +30,7 @@ fn enter_playing(mut commands: Commands, image_handles: Res<HandleMap<ImageKey>>
     commands.trigger(SpawnLevel);
 }
 
-fn exit_playing(mut commands: Commands) {
+fn exit_playing(_commands: Commands) {
     // We could use [`StateScoped`] on the sound playing entites instead.
 }
 
