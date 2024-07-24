@@ -22,18 +22,6 @@ pub struct NextDay(pub DayTask);
 #[derive(Event, Debug)]
 pub struct CreateJourney;
 
-const JOURNEY_LENGTH: usize = 180;
-
-impl DayWeather {
-    fn generate() -> Self {
-        Self {
-            wind: Wind::generate(),
-            heat: Heat::generate(),
-            moisture: Moisture::generate(),
-        }
-    }
-}
-
 #[derive(Debug, PartialEq)]
 enum DayEvent {
     Sailing,
@@ -274,7 +262,7 @@ fn next_day(trigger: Trigger<NextDay>, mut commands: Commands, mut journey: ResM
         _ => {}
     }
 
-    ship.food -= (ship.crew * hardship) as i32;
+    ship.food -= ship.crew * hardship;
     if ship.food < 0 {
         ship.crew += ship.food;
         ship.food = 0;
@@ -282,10 +270,10 @@ fn next_day(trigger: Trigger<NextDay>, mut commands: Commands, mut journey: ResM
     match trigger.event().0 {
         DayTask::Sail => {
             journey.distance += 10.0 * (speed as f32);
-            ship.ship_condition -= danger as i32;
+            ship.ship_condition -= danger;
         }
         DayTask::Fight => {
-            ship.crew -= danger as i32;
+            ship.crew -= danger;
             journey.treasure += 10;
         }
         DayTask::CookDaFood => {

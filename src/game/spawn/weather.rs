@@ -186,33 +186,3 @@ pub struct DayWeather {
     pub heat: Heat,
     pub moisture: Moisture,
 }
-
-impl Moisture {
-    pub fn generate() -> Self {
-        let none_ballots = 10;
-        let drizzle_ballots = 10;
-        let rain_ballots = 10;
-        let storm_ballots = 10;
-        Moisture::Comfortable
-    }
-}
-
-impl Heat {
-    pub fn generate() -> Self {
-        let none_ballots = 10;
-        let drizzle_ballots = 10;
-        let rain_ballots = 10;
-        let storm_ballots = 10;
-        Heat::Comfortable
-    }
-}
-
-impl Wind {
-    pub fn generate() -> Self {
-        let none_ballots = 10;
-        let drizzle_ballots = 10;
-        let rain_ballots = 10;
-        let storm_ballots = 10;
-        Wind::None
-    }
-}
