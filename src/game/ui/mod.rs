@@ -64,6 +64,9 @@ fn update_choices(
                                 DayTask::Explore => "Explore",
                                 DayTask::Rest => "Rest",
                                 DayTask::HunkerDown => "Brace",
+                                DayTask::CleanDaDeck => "Clean",
+                                DayTask::CookDaFood => "Cook",
+                                DayTask::Gamble => "Gamble",
                             },
                             fonts[&FontKey::PaperCut].clone_weak(),
                         );
