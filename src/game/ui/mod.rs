@@ -17,7 +17,8 @@ pub fn plugin(app: &mut App) {
         .add_event::<SpawnGameUI>()
         .add_event::<UpdateChoices>()
         .register_type::<GameAction>()
-        .add_systems(Update, handle_game_action.run_if(in_state(Screen::Playing)));
+        .add_systems(Update, handle_game_action.run_if(in_state(Screen::Playing)))
+        .observe(update_dialogue);
 }
 
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Reflect)]
@@ -74,6 +75,45 @@ fn update_choices(
 
 #[derive(Event, Debug)]
 pub struct UpdateChoices(pub Vec<DayTask>);
+
+#[derive(Debug, Reflect)]
+pub struct Dialogue {
+    pub speaker: String,
+    pub paragraphs: Vec<String>,
+}
+
+#[derive(Component)]
+struct DialogueBox;
+
+#[derive(Event, Debug)]
+pub struct UpdateDialogBox(pub Dialogue);
+
+fn update_dialogue(
+    trigger: Trigger<UpdateDialogBox>,
+    query: Query<Entity, With<DialogueBox>>,
+    mut commands: Commands,
+) {
+    let entity = query.single();
+
+    commands
+        .entity(entity)
+        .despawn_descendants()
+        .with_children(|commands| {
+            // Add 6 buttons
+            commands.spawn(TextBundle {
+                text: Text::from_sections(trigger.event().0.paragraphs.iter().map(|p| {
+                    TextSection {
+                        value: p.to_owned(),
+                        style: TextStyle {
+                            font_size: 10.0,
+                            ..default()
+                        },
+                    }
+                })),
+                ..default()
+            });
+        });
+}
 
 fn spawn_game_ui(
     _trigger: Trigger<SpawnGameUI>,
@@ -189,7 +229,55 @@ fn spawn_game_ui(
                                         });
                                 });
                         });
-
+                    commands
+                        .spawn(NodeBundle {
+                            style: Style {
+                                grid_row: GridPlacement::start_span(1, 1),
+                                grid_column: GridPlacement::start_span(2, 1),
+                                margin: UiRect::new(
+                                    Val::Px(0.0),
+                                    Val::Px(0.0),
+                                    Val::Px(0.0),
+                                    Val::Px(0.0),
+                                ),
+                                ..default()
+                            },
+                            ..default()
+                        })
+                        .with_children(|commands| {
+                            commands
+                                .spawn((
+                                    ImageBundle {
+                                        image: UiImage::new(
+                                            image_handles[&ImageKey::DialogueBox].clone_weak(),
+                                        ),
+                                        style: Style {
+                                            width: Val::Px(204.0),
+                                            height: Val::Px(92.0),
+                                            border: UiRect::all(Val::Px(9.0)),
+                                            column_gap: Val::Px(2.0),
+                                            ..default()
+                                        },
+                                        ..default()
+                                    },
+                                    DialogueBox,
+                                ))
+                                .with_children(|commands| {
+                                    // Container for the choices
+                                    commands.spawn(
+                                        (TextBundle {
+                                            text: Text::from_section(
+                                                "Test dialogue",
+                                                TextStyle {
+                                                    font_size: 10.0,
+                                                    ..default()
+                                                },
+                                            ),
+                                            ..default()
+                                        }),
+                                    );
+                                });
+                        });
                     //Bottom panel
                     commands
                         .spawn(NodeBundle {

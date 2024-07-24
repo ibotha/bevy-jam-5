@@ -57,6 +57,7 @@ pub enum ImageKey {
     CrewImage,
     FoodImage,
     ShipStatsImage,
+    DialogueBox,
 }
 
 impl AssetKey for ImageKey {
@@ -71,6 +72,15 @@ impl FromWorld for HandleMap<ImageKey> {
                 ImageKey::Ship,
                 asset_server.load_with_settings(
                     "images/Ship.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::DialogueBox,
+                asset_server.load_with_settings(
+                    "images/dialoguebox.png",
                     |settings: &mut ImageLoaderSettings| {
                         settings.sampler = ImageSampler::nearest();
                     },
