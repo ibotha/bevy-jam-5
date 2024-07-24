@@ -22,7 +22,7 @@ pub struct NextDay(pub DayTask);
 #[derive(Event, Debug)]
 pub struct CreateJourney;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 enum DayEvent {
     Sailing,
     Treasure,
@@ -30,7 +30,7 @@ enum DayEvent {
     Whale,
 }
 
-#[derive(Resource)]
+#[derive(Resource, Debug, PartialEq)]
 pub struct Journey {
     weather: DayWeather,
     event: DayEvent,
@@ -49,6 +49,11 @@ pub struct Journey {
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Reflect)]
 pub enum DayTask {
     Sail,
+
+    CleanDaDeck,
+    CookDaFood,
+    Gamble,
+
     Fight,
     Explore,
     Rest,
@@ -120,11 +125,23 @@ impl Journey {
 
     fn get_options(&self) -> Vec<DayTask> {
         match self.event {
-            DayEvent::Sailing => vec![DayTask::Sail, DayTask::HunkerDown, DayTask::Rest],
-            DayEvent::Treasure => vec![DayTask::Sail, DayTask::Explore, DayTask::Rest],
+            DayEvent::Sailing => vec![
+                DayTask::Sail,
+                DayTask::CleanDaDeck,
+                DayTask::CookDaFood,
+                DayTask::HunkerDown,
+                DayTask::Rest,
+            ],
+            DayEvent::Treasure => vec![
+                DayTask::Sail,
+                DayTask::Gamble,
+                DayTask::Explore,
+                DayTask::Rest,
+            ],
             DayEvent::Island => vec![DayTask::Sail, DayTask::Explore, DayTask::Rest],
             DayEvent::Whale => vec![
                 DayTask::Sail,
+                DayTask::CookDaFood,
                 DayTask::Explore,
                 DayTask::Rest,
                 DayTask::HunkerDown,
@@ -153,63 +170,179 @@ fn create_journey(_trigger: Trigger<CreateJourney>, mut commands: Commands) {
     commands.trigger(NextDay(DayTask::Sail));
 }
 
+const MONSOON: DayWeather = DayWeather {
+    wind: Wind::GaleForce,
+    heat: Heat::Freezing,
+    moisture: Moisture::Humid,
+};
+const BLISTERING_DEATH: DayWeather = DayWeather {
+    wind: Wind::None,
+    heat: Heat::Blistering,
+    moisture: Moisture::Dry,
+};
+const FREEZING_HELL: DayWeather = DayWeather {
+    wind: Wind::None,
+    heat: Heat::Freezing,
+    moisture: Moisture::Dry,
+};
+const FREEZING_DEATH: DayWeather = DayWeather {
+    wind: Wind::GaleForce,
+    heat: Heat::Freezing,
+    moisture: Moisture::Dry,
+};
+const SCORCHING_DESERT: DayWeather = DayWeather {
+    wind: Wind::Low,
+    heat: Heat::Blistering,
+    moisture: Moisture::Dry,
+};
+const HUMID_SWAMP: DayWeather = DayWeather {
+    wind: Wind::Low,
+    heat: Heat::Blistering,
+    moisture: Moisture::Humid,
+};
+const MILD_SUMMER: DayWeather = DayWeather {
+    wind: Wind::Medium,
+    heat: Heat::Warm,
+    moisture: Moisture::Dry,
+};
+const COLD_FRONT: DayWeather = DayWeather {
+    wind: Wind::High,
+    heat: Heat::Chilly,
+    moisture: Moisture::Dry,
+};
+const TROPICAL_STORM: DayWeather = DayWeather {
+    wind: Wind::GaleForce,
+    heat: Heat::Warm,
+    moisture: Moisture::Humid,
+};
+const AUTUMN_BREEZE: DayWeather = DayWeather {
+    wind: Wind::Medium,
+    heat: Heat::Chilly,
+    moisture: Moisture::Dry,
+};
+const SPRING_SHOWER: DayWeather = DayWeather {
+    wind: Wind::Low,
+    heat: Heat::Warm,
+    moisture: Moisture::Humid,
+};
+const COOL_DRIZZLE: DayWeather = DayWeather {
+    wind: Wind::Medium,
+    heat: Heat::Chilly,
+    moisture: Moisture::Humid,
+};
+
 fn next_day(
     trigger: Trigger<NextDay>,
+    mut commands: Commands,
     mut journey: ResMut<Journey>,
     mut ship: ResMut<Ship>,
-    mut commands: Commands,
 ) {
-    let hardship: f32;
-    let danger: f32;
-    let speed: f32;
-    let abundance: f32;
+    let mut hardship: i32 = 0;
+    let mut danger: i32 = 0;
+    let mut speed: i32 = 0;
+    let mut abundance: i32 = 0;
 
-    let DayWeather {
-        wind,
-        heat,
-        moisture,
-    } = journey.weather;
-    match (wind, heat, moisture) {
-        (wind, Heat::Comfortable, Moisture::Comfortable) => {
-            speed = match wind {
-                Wind::None => 0.0,
-                Wind::Low => 2.0,
-                Wind::Medium => 6.0,
-                Wind::High => 8.0,
-                Wind::GaleForce => 10.0,
-            };
-            hardship = 0.0;
-            danger = 0.0;
-            abundance = 10.0;
+    match journey.weather {
+        BLISTERING_DEATH => {
+            hardship += 1;
+            danger += 1;
+            speed -= 1;
+            abundance -= 1;
         }
-        _ => {
-            speed = 0.0;
-            hardship = 10.0;
-            danger = 10.0;
-            abundance = 0.0;
+        MONSOON => {
+            hardship += 4;
+            danger += 3;
+            speed -= 2;
+            abundance -= 2;
         }
+        FREEZING_HELL => {
+            hardship += 1;
+            danger += 1;
+            speed -= 1;
+            abundance -= 1;
+        }
+        FREEZING_DEATH => {
+            hardship += 4;
+            danger += 3;
+            speed -= 2;
+            abundance -= 2;
+        }
+        SCORCHING_DESERT => {
+            hardship += 1;
+            danger += 1;
+            speed -= 1;
+            abundance -= 1;
+        }
+        HUMID_SWAMP => {
+            hardship += 2;
+            danger += 1;
+        }
+        MILD_SUMMER => {
+            hardship -= 1;
+            danger -= 1;
+            speed += 1;
+            abundance += 1;
+        }
+        COLD_FRONT => {
+            hardship += 1;
+            danger += 1;
+            speed -= 1;
+            abundance -= 1;
+        }
+        TROPICAL_STORM => {
+            hardship += 2;
+            danger += 1;
+        }
+        AUTUMN_BREEZE => {
+            hardship -= 1;
+            danger -= 1;
+            speed += 1;
+            abundance += 1;
+        }
+        SPRING_SHOWER => {
+            hardship -= 1;
+            danger -= 1;
+            speed += 1;
+            abundance += 1;
+        }
+        COOL_DRIZZLE => {
+            hardship -= 1;
+            danger -= 1;
+            speed += 1;
+            abundance += 1;
+        }
+        _ => {}
     }
 
-    ship.food -= (ship.crew as f32 * hardship) as i32;
+    ship.food -= ship.crew * hardship;
     if ship.food < 0 {
         ship.crew += ship.food;
         ship.food = 0;
     }
     match trigger.event().0 {
         DayTask::Sail => {
-            journey.distance += 10.0 * speed;
-            ship.ship_condition -= danger as i32;
+            journey.distance += 10.0 * (speed as f32);
+            ship.ship_condition -= danger;
         }
         DayTask::Fight => {
-            ship.crew -= danger as i32;
+            ship.crew -= danger;
+            journey.treasure += 10;
+        }
+        DayTask::CookDaFood => {
+            ship.food += 10;
+        }
+        DayTask::CleanDaDeck => {
+            ship.ship_condition += 10;
+        }
+        DayTask::Gamble => {
             journey.treasure += 10;
         }
         DayTask::Explore => {
             journey.treasure += 10;
         }
         DayTask::Rest => {
-            ship.crew += (10.0 * abundance) as i32;
-            ship.food += (10.0 * abundance) as i32;
+            ship.crew += 10 * abundance;
+            ship.food += 10 * abundance;
         }
         DayTask::HunkerDown => {
             ship.ship_condition += 10;

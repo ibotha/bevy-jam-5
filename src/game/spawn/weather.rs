@@ -18,9 +18,9 @@ impl Default for Moisture {
 
 impl Moisture {
     /// Generate a random moisture value based off of a cycle.
-    /// [`intensity`] relates to how extreme the cycles are, 10 is the baseline
-    /// [`cycle_length`] Is the number of days needed for a complete cycle
-    /// [`current_day`] where are we now in the cycle
+    /// `intensity` relates to how extreme the cycles are, 10 is the baseline
+    /// `cycle_length` Is the number of days needed for a complete cycle
+    /// `current_day`\ where are we now in the cycle
     pub(super) fn generate_from_cycle(
         rng: &mut StdRng,
         intensity: f32,
@@ -180,7 +180,7 @@ pub enum AnyWeather {
     Wind(Wind),
 }
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, PartialEq)]
 pub struct DayWeather {
     pub wind: Wind,
     pub heat: Heat,
