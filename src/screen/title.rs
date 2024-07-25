@@ -150,7 +150,7 @@ fn enter_title(
                         .button(
                             "Play",
                             image_handles[&ImageKey::Button].clone_weak(),
-                            fonts[&FontKey::PaperCut].clone_weak(),
+                            fonts[&FontKey::LunchDS].clone_weak(),
                         )
                         .insert(Style {
                             grid_row: GridPlacement::start_span(2, 1),
@@ -169,7 +169,7 @@ fn enter_title(
                         .button(
                             "Credits",
                             image_handles[&ImageKey::Button].clone_weak(),
-                            fonts[&FontKey::PaperCut].clone_weak(),
+                            fonts[&FontKey::LunchDS].clone_weak(),
                         )
                         .insert(Style {
                             grid_row: GridPlacement::start_span(2, 1),
@@ -190,7 +190,7 @@ fn enter_title(
                         .button(
                             "Exit",
                             image_handles[&ImageKey::Button].clone_weak(),
-                            fonts[&FontKey::PaperCut].clone_weak(),
+                            fonts[&FontKey::LunchDS].clone_weak(),
                         )
                         .insert(Style {
                             grid_row: GridPlacement::start_span(3, 1),

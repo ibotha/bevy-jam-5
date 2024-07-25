@@ -20,7 +20,7 @@ pub(super) fn plugin(app: &mut App) {
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Reflect)]
 pub enum FontKey {
-    PaperCut,
+    LunchDS,
 }
 
 impl AssetKey for FontKey {
@@ -31,8 +31,8 @@ impl FromWorld for HandleMap<FontKey> {
     fn from_world(world: &mut World) -> Self {
         let asset_server = world.resource::<AssetServer>();
         [(
-            FontKey::PaperCut,
-            asset_server.load("fonts/paper-cut/papercut.ttf"),
+            FontKey::LunchDS,
+            asset_server.load("fonts/lunchds/lunchds.ttf"),
         )]
         .into()
     }

@@ -1,19 +1,40 @@
 use bevy::prelude::*;
+use ui_palette::{HEADER_TEXT, LABEL_TEXT};
 
 use crate::screen::{weather_maniac::ToggleWeatherGridEvent, Screen};
 use crate::ui::prelude::*;
 
+use super::spawn::journey::{Continue, Ship};
 use super::{
     assets::{FontKey, HandleMap, ImageKey},
-    spawn::journey::{DayTask, NextDay},
+    spawn::journey::{ChooseTask, DayTask},
 };
 
 #[derive(Event, Debug)]
 pub struct SpawnGameUI;
 
+#[derive(Event, Debug)]
+pub struct ShowContinue(pub bool);
+
+fn show_continue(
+    trigger: Trigger<ShowContinue>,
+    mut query: Query<&mut Visibility, With<ContinueButton>>,
+) {
+    let mut vis = query.single_mut();
+    *vis = if trigger.event().0 {
+        Visibility::Visible
+    } else {
+        Visibility::Hidden
+    }
+}
+
 pub fn plugin(app: &mut App) {
     app.observe(spawn_game_ui)
         .observe(update_choices)
+        .observe(update_ship_stats)
+        .observe(focus_display)
+        .observe(show_continue)
+        .insert_resource(FocusedDisplay::Dialogue)
         .add_event::<SpawnGameUI>()
         .add_event::<UpdateChoices>()
         .register_type::<GameAction>()
@@ -25,6 +46,7 @@ pub fn plugin(app: &mut App) {
 #[reflect(Component)]
 pub enum GameAction {
     Bones,
+    Continue,
     Choose(DayTask),
     Menu,
 }
@@ -69,13 +91,70 @@ fn update_choices(
                                 DayTask::CookDaFood => "Cook",
                                 DayTask::Gamble => "Gamble",
                             },
-                            fonts[&FontKey::PaperCut].clone_weak(),
+                            fonts[&FontKey::LunchDS].clone_weak(),
                         );
                     });
             }
         });
 }
 
+#[derive(Event, Debug)]
+pub struct UpdateShipStatsUI;
+
+fn update_ship_stats(
+    _trigger: Trigger<UpdateShipStatsUI>,
+    ship: Res<Ship>,
+    mut crew: Query<
+        &mut Text,
+        (
+            With<CrewLabel>,
+            Without<FoodLabel>,
+            Without<ShipHealthLabel>,
+        ),
+    >,
+    mut food: Query<
+        &mut Text,
+        (
+            With<FoodLabel>,
+            Without<CrewLabel>,
+            Without<ShipHealthLabel>,
+        ),
+    >,
+    mut health: Query<
+        &mut Text,
+        (
+            With<ShipHealthLabel>,
+            Without<CrewLabel>,
+            Without<FoodLabel>,
+        ),
+    >,
+    fonts: Res<HandleMap<FontKey>>,
+) {
+    *(crew.single_mut()) = Text::from_section(
+        format!("{c}/{m}", c = ship.crew, m = ship.max_crew),
+        TextStyle {
+            font: fonts[&FontKey::LunchDS].clone_weak(),
+            color: LABEL_TEXT,
+            font_size: 10.0,
+        },
+    );
+    *(food.single_mut()) = Text::from_section(
+        format!("{c}/{m}", c = ship.food, m = ship.max_food),
+        TextStyle {
+            font: fonts[&FontKey::LunchDS].clone_weak(),
+            color: LABEL_TEXT,
+            font_size: 10.0,
+        },
+    );
+    *(health.single_mut()) = Text::from_section(
+        format!("{c}/{m}", c = ship.health, m = ship.max_health),
+        TextStyle {
+            font: fonts[&FontKey::LunchDS].clone_weak(),
+            color: LABEL_TEXT,
+            font_size: 10.0,
+        },
+    );
+}
 #[derive(Event, Debug)]
 pub struct UpdateChoices(pub Vec<DayTask>);
 
@@ -86,37 +165,106 @@ pub struct Dialogue {
 }
 
 #[derive(Component)]
-struct DialogueBox;
+struct ContinueButton;
+
+#[derive(Component)]
+struct DialogueContents;
+
+#[derive(Component)]
+struct DialogueSpeaker;
+
+#[derive(Component, Resource, Debug, PartialEq, Eq, Clone, Copy)]
+enum FocusedDisplay {
+    Dialogue,
+    Bones,
+}
+
+#[derive(Event, Debug)]
+struct Focus(pub FocusedDisplay);
+
+fn focus_display(
+    trigger: Trigger<Focus>,
+    mut query: Query<(&mut Visibility, &FocusedDisplay)>,
+    mut commands: Commands,
+    mut focused: ResMut<FocusedDisplay>,
+) {
+    let focus = trigger.event().0;
+
+    *focused = focus;
+    if focus == FocusedDisplay::Bones {
+        commands.trigger(ToggleWeatherGridEvent(true));
+    } else {
+        commands.trigger(ToggleWeatherGridEvent(false));
+    }
+
+    for (mut vis, display) in &mut query {
+        if *display == focus {
+            *vis = Visibility::Visible;
+        } else {
+            *vis = Visibility::Hidden;
+        }
+    }
+}
 
 #[derive(Event, Debug)]
 pub struct UpdateDialogBox(pub Dialogue);
 
 fn update_dialogue(
     trigger: Trigger<UpdateDialogBox>,
-    query: Query<Entity, With<DialogueBox>>,
+    contents: Query<Entity, With<DialogueContents>>,
+    speaker: Query<Entity, With<DialogueSpeaker>>,
+    fonts: Res<HandleMap<FontKey>>,
     mut commands: Commands,
 ) {
-    let entity = query.single();
+    let contents = contents.single();
+    let speaker = speaker.single();
 
     commands
-        .entity(entity)
+        .entity(speaker)
         .despawn_descendants()
         .with_children(|commands| {
-            // Add 6 buttons
             commands.spawn(TextBundle {
-                text: Text::from_sections(trigger.event().0.paragraphs.iter().map(|p| {
-                    TextSection {
-                        value: p.to_owned(),
-                        style: TextStyle {
-                            font_size: 10.0,
-                            ..default()
-                        },
-                    }
-                })),
+                text: Text::from_section(
+                    format!("{speaker}:", speaker = trigger.event().0.speaker),
+                    TextStyle {
+                        font_size: 12.0,
+                        color: LABEL_TEXT,
+                        font: fonts[&FontKey::LunchDS].clone_weak(),
+                    },
+                ),
+                style: Style { ..default() },
                 ..default()
             });
         });
+    commands
+        .entity(contents)
+        .despawn_descendants()
+        .with_children(|commands| {
+            for p in &trigger.event().0.paragraphs {
+                commands.spawn(TextBundle {
+                    text: Text::from_section(
+                        p.to_owned(),
+                        TextStyle {
+                            font_size: 8.0,
+                            color: LABEL_TEXT,
+                            font: fonts[&FontKey::LunchDS].clone_weak(),
+                        },
+                    ),
+                    style: Style { ..default() },
+                    ..default()
+                });
+            }
+        });
 }
+
+#[derive(Component, Default)]
+struct CrewLabel;
+
+#[derive(Component, Default)]
+struct FoodLabel;
+
+#[derive(Component, Default)]
+struct ShipHealthLabel;
 
 fn spawn_game_ui(
     _trigger: Trigger<SpawnGameUI>,
@@ -232,53 +380,91 @@ fn spawn_game_ui(
                                         });
                                 });
                         });
+                    // ================= Dialogue Box ==============
                     commands
-                        .spawn(NodeBundle {
-                            style: Style {
-                                grid_row: GridPlacement::start_span(1, 1),
-                                grid_column: GridPlacement::start_span(2, 1),
-                                margin: UiRect::new(
-                                    Val::Px(0.0),
-                                    Val::Px(0.0),
-                                    Val::Px(0.0),
-                                    Val::Px(0.0),
-                                ),
+                        .spawn((
+                            NodeBundle {
+                                style: Style {
+                                    grid_row: GridPlacement::start_span(1, 1),
+                                    grid_column: GridPlacement::start_span(2, 1),
+                                    ..default()
+                                },
                                 ..default()
                             },
-                            ..default()
-                        })
+                            FocusedDisplay::Dialogue,
+                        ))
                         .with_children(|commands| {
                             commands
-                                .spawn((
-                                    ImageBundle {
-                                        image: UiImage::new(
-                                            image_handles[&ImageKey::DialogueBox].clone_weak(),
-                                        ),
-                                        style: Style {
-                                            width: Val::Px(204.0),
-                                            height: Val::Px(92.0),
-                                            border: UiRect::all(Val::Px(9.0)),
-                                            column_gap: Val::Px(2.0),
-                                            ..default()
-                                        },
+                                .spawn((ImageBundle {
+                                    image: UiImage::new(
+                                        image_handles[&ImageKey::DialogueBox].clone_weak(),
+                                    ),
+                                    style: Style {
+                                        width: Val::Px(204.0),
+                                        height: Val::Px(92.0),
+                                        display: Display::Flex,
+                                        flex_direction: FlexDirection::Column,
+                                        margin: UiRect::all(Val::Auto).with_top(Val::Px(10.0)),
                                         ..default()
                                     },
-                                    DialogueBox,
-                                ))
+                                    ..default()
+                                },))
                                 .with_children(|commands| {
-                                    // Container for the choices
-                                    commands.spawn(
-                                        (TextBundle {
-                                            text: Text::from_section(
-                                                "Test dialogue",
-                                                TextStyle {
-                                                    font_size: 10.0,
+                                    commands.spawn((
+                                        NodeBundle {
+                                            style: Style {
+                                                padding: UiRect::horizontal(Val::Px(15.0))
+                                                    .with_top(Val::Px(7.0))
+                                                    .with_bottom(Val::Px(7.0)),
+                                                ..default()
+                                            },
+                                            ..default()
+                                        },
+                                        DialogueSpeaker,
+                                    ));
+                                    commands.spawn((
+                                        NodeBundle {
+                                            style: Style {
+                                                margin: UiRect::horizontal(Val::Px(10.0))
+                                                    .with_left(Val::Px(22.0)),
+                                                display: Display::Flex,
+                                                flex_direction: FlexDirection::Column,
+                                                row_gap: Val::Px(3.0),
+                                                ..default()
+                                            },
+                                            ..default()
+                                        },
+                                        DialogueContents,
+                                    ));
+                                    commands
+                                        .spawn((
+                                            ButtonBundle {
+                                                style: Style {
+                                                    margin: UiRect::horizontal(Val::Px(10.0))
+                                                        .with_left(Val::Px(22.0)),
+                                                    display: Display::Flex,
+                                                    flex_direction: FlexDirection::Column,
+                                                    row_gap: Val::Px(3.0),
+                                                    position_type: PositionType::Absolute,
+                                                    right: Val::Px(5.0),
+                                                    bottom: Val::Px(10.0),
                                                     ..default()
                                                 },
-                                            ),
-                                            ..default()
-                                        }),
-                                    );
+                                                ..default()
+                                            },
+                                            ContinueButton,
+                                        ))
+                                        .with_children(|commands| {
+                                            commands.spawn(TextBundle::from_section(
+                                                "Continue...",
+                                                TextStyle {
+                                                    font: fonts[&FontKey::LunchDS].clone_weak(),
+                                                    color: HEADER_TEXT,
+                                                    font_size: 10.0,
+                                                },
+                                            ));
+                                        })
+                                        .insert(GameAction::Continue);
                                 });
                         });
                     //Bottom panel
@@ -401,10 +587,29 @@ fn spawn_game_ui(
                                                         });
 
                                                         // Text column
-                                                        parent.label(
-                                                            text.to_string(),
-                                                            fonts[&FontKey::PaperCut].clone_weak(),
-                                                        );
+                                                        let mut text_section =
+                                                            parent.spawn(TextBundle::from_section(
+                                                                text.to_string(),
+                                                                TextStyle {
+                                                                    font: fonts[&FontKey::LunchDS]
+                                                                        .clone_weak(),
+                                                                    color: LABEL_TEXT,
+                                                                    font_size: 10.0,
+                                                                },
+                                                            ));
+                                                        match image_key {
+                                                            ImageKey::CrewImage => {
+                                                                text_section.insert(CrewLabel);
+                                                            }
+                                                            ImageKey::FoodImage => {
+                                                                text_section.insert(FoodLabel);
+                                                            }
+                                                            ImageKey::ShipStatsImage => {
+                                                                text_section
+                                                                    .insert(ShipHealthLabel);
+                                                            }
+                                                            _ => {}
+                                                        }
                                                     }
                                                 });
                                         });
@@ -418,6 +623,7 @@ fn handle_game_action(
     mut next_screen: ResMut<NextState<Screen>>,
     mut button_query: InteractionQuery<&GameAction>,
     mut commands: Commands,
+    display: Res<FocusedDisplay>,
 ) {
     for (interaction, action) in &mut button_query {
         if matches!(interaction, Interaction::Pressed) {
@@ -425,9 +631,14 @@ fn handle_game_action(
                 GameAction::Menu => next_screen.set(Screen::Title),
                 GameAction::Bones => {
                     info!("Bones!!!");
-                    commands.trigger(ToggleWeatherGridEvent);
+                    commands.trigger(Focus(if *display == FocusedDisplay::Bones {
+                        FocusedDisplay::Dialogue
+                    } else {
+                        FocusedDisplay::Bones
+                    }));
                 }
-                GameAction::Choose(task) => commands.trigger(NextDay(*task)),
+                GameAction::Choose(task) => commands.trigger(ChooseTask(*task)),
+                GameAction::Continue => commands.trigger(Continue),
             }
         }
     }

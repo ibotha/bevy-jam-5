@@ -1,6 +1,5 @@
 use bevy::math;
 use bevy::prelude::*;
-use log::info;
 use rand::rngs::StdRng;
 use rand::thread_rng;
 use rand::Rng;
@@ -8,7 +7,12 @@ use rand::RngCore;
 use rand::SeedableRng;
 
 use crate::game::spawn::weather::AnyWeather;
+use crate::game::ui::Dialogue;
+use crate::game::ui::ShowContinue;
 use crate::game::ui::UpdateChoices;
+use crate::game::ui::UpdateDialogBox;
+use crate::game::ui::UpdateShipStatsUI;
+use crate::game::weighted_random;
 use crate::screen::weather_maniac::UpdateBoneGrid;
 
 use super::weather::DayWeather;
@@ -17,7 +21,13 @@ use super::weather::Moisture;
 use super::weather::Wind;
 
 #[derive(Event, Debug)]
-pub struct NextDay(pub DayTask);
+pub struct ChooseTask(pub DayTask);
+
+#[derive(Event, Debug)]
+pub struct NextDay;
+
+#[derive(Event, Debug)]
+pub struct Continue;
 
 #[derive(Event, Debug)]
 pub struct CreateJourney;
@@ -30,8 +40,14 @@ enum DayEvent {
     Whale,
 }
 
+#[derive(Resource, Debug)]
+struct DialogueQueue {
+    queue: Vec<Dialogue>,
+}
+
 #[derive(Resource, Debug, PartialEq)]
 pub struct Journey {
+    game_over: bool,
     weather: DayWeather,
     event: DayEvent,
     distance: f32,
@@ -60,12 +76,14 @@ pub enum DayTask {
     HunkerDown,
 }
 
+const CAPTAIN: &str = "Captain";
 impl Journey {
     pub(super) fn generate(distance: f32, difficulty: Option<f32>, seed: Option<u64>) -> Self {
         let mut rng = StdRng::seed_from_u64(seed.unwrap_or(thread_rng().next_u64()));
         const AVERAGE_DAILY_DISTANCE: f32 = 5.0;
         let difficulty = difficulty.unwrap_or(10.0);
         Self {
+            game_over: false,
             weather: DayWeather::default(),
             event: DayEvent::Sailing,
             distance: 0.0,
@@ -110,52 +128,101 @@ impl Journey {
                 self.current_day,
             ),
         };
-        // TODO: Generate a new event for each day;
-        let num = self.rng.gen_range(0..100);
-        self.event = if num < 1 {
-            DayEvent::Treasure
-        } else if num < 2 {
-            DayEvent::Whale
-        } else if num < 5 {
-            DayEvent::Island
-        } else {
-            DayEvent::Sailing
-        };
+
+        // TODO: Select specific days from longer quests
+        // Select from the pool of random daily events
+        self.event = weighted_random(
+            Some(&mut self.rng),
+            vec![
+                (DayEvent::Sailing, 14),
+                (DayEvent::Treasure, 2),
+                (DayEvent::Island, 8),
+                (DayEvent::Whale, 1),
+            ],
+        );
     }
 
-    fn get_options(&self) -> Vec<DayTask> {
+    fn get_options(&self) -> (Dialogue, Vec<DayTask>) {
         match self.event {
-            DayEvent::Sailing => vec![
-                DayTask::Sail,
-                DayTask::CleanDaDeck,
-                DayTask::CookDaFood,
-                DayTask::HunkerDown,
-                DayTask::Rest,
-            ],
-            DayEvent::Treasure => vec![
-                DayTask::Sail,
-                DayTask::Gamble,
-                DayTask::Explore,
-                DayTask::Rest,
-            ],
-            DayEvent::Island => vec![DayTask::Sail, DayTask::Explore, DayTask::Rest],
-            DayEvent::Whale => vec![
-                DayTask::Sail,
-                DayTask::CookDaFood,
-                DayTask::Explore,
-                DayTask::Rest,
-                DayTask::HunkerDown,
-                DayTask::Fight,
-            ],
+            DayEvent::Sailing => (
+                Dialogue {
+                    speaker: CAPTAIN.to_string(),
+                    paragraphs: vec![
+                        "Looks like plain sailing today, anything we might want to look out for?"
+                            .to_string(),
+                    ],
+                },
+                vec![
+                    DayTask::Sail,
+                    DayTask::CleanDaDeck,
+                    DayTask::CookDaFood,
+                    DayTask::HunkerDown,
+                    DayTask::Rest,
+                ],
+            ),
+            DayEvent::Treasure => (
+                Dialogue {
+                    speaker: CAPTAIN.to_string(),
+                    paragraphs: vec![
+                        "Looks like there's a sinkin' ship! I smell gold...".to_string()
+                    ],
+                },
+                vec![
+                    DayTask::Sail,
+                    DayTask::Gamble,
+                    DayTask::Explore,
+                    DayTask::Rest,
+                ],
+            ),
+            DayEvent::Island => (
+                Dialogue {
+                    speaker: CAPTAIN.to_string(),
+                    paragraphs: vec![
+                        "Land Ho! Should we go see what's there and re-supply?".to_string()
+                    ],
+                },
+                vec![DayTask::Sail, DayTask::Explore, DayTask::Rest],
+            ),
+            DayEvent::Whale => (
+                Dialogue {
+                    speaker: CAPTAIN.to_string(),
+                    paragraphs: vec!["Shiver me timbers...Is that a whale!?!".to_string()],
+                },
+                vec![
+                    DayTask::Sail,
+                    DayTask::CookDaFood,
+                    DayTask::Explore,
+                    DayTask::Rest,
+                    DayTask::HunkerDown,
+                    DayTask::Fight,
+                ],
+            ),
         }
     }
 }
 
 #[derive(Resource)]
-struct Ship {
-    crew: i32,
-    food: i32,
-    ship_condition: i32,
+pub struct Ship {
+    pub crew: i32,
+    pub max_crew: i32,
+    pub pending_crew: i32,
+    pub food: i32,
+    pub max_food: i32,
+    pub pending_food: i32,
+    pub health: i32,
+    pub max_health: i32,
+    pub pending_health: i32,
+}
+
+impl Ship {
+    fn apply_changes(&mut self) {
+        self.crew += self.pending_crew;
+        self.crew = self.crew.min(self.max_crew);
+        self.health += self.pending_health;
+        self.health = self.health.min(self.max_health);
+        self.food += self.pending_food;
+        self.food = self.food.min(self.max_food);
+    }
 }
 
 fn create_journey(_trigger: Trigger<CreateJourney>, mut commands: Commands) {
@@ -163,11 +230,17 @@ fn create_journey(_trigger: Trigger<CreateJourney>, mut commands: Commands) {
     let journey = Journey::generate(120.0, None, None);
     commands.insert_resource(journey);
     commands.insert_resource(Ship {
-        crew: 20,
-        food: 50,
-        ship_condition: 100,
+        crew: 5,
+        max_crew: 5,
+        pending_crew: 0,
+        food: 100,
+        max_food: 100,
+        pending_food: 0,
+        health: 100,
+        max_health: 100,
+        pending_health: 0,
     });
-    commands.trigger(NextDay(DayTask::Sail));
+    commands.trigger(ChooseTask(DayTask::Sail));
 }
 
 const MONSOON: DayWeather = DayWeather {
@@ -230,48 +303,53 @@ const COOL_DRIZZLE: DayWeather = DayWeather {
     heat: Heat::Chilly,
     moisture: Moisture::Humid,
 };
-
-fn next_day(
-    trigger: Trigger<NextDay>,
+fn choose_task(
+    trigger: Trigger<ChooseTask>,
     mut commands: Commands,
     mut journey: ResMut<Journey>,
     mut ship: ResMut<Ship>,
 ) {
-    let mut hardship: i32 = 0;
+    commands.trigger(UpdateChoices(vec![]));
+    if journey.game_over {
+        return;
+    }
+    let mut hardship: i32 = 1;
     let mut danger: i32 = 0;
-    let mut speed: i32 = 0;
-    let mut abundance: i32 = 0;
+    let mut speed = match journey.weather.wind {
+        Wind::None => 0,
+        Wind::Low => 1,
+        Wind::Medium => 2,
+        Wind::High => 3,
+        Wind::GaleForce => 4,
+    };
 
+    let mut abundance = match journey.weather.heat {
+        Heat::Blistering => 1,
+        Heat::Warm => 2,
+        Heat::Comfortable => 3,
+        Heat::Chilly => 2,
+        Heat::Freezing => 1,
+    };
     match journey.weather {
         BLISTERING_DEATH => {
-            hardship += 1;
-            danger += 1;
-            speed -= 1;
-            abundance -= 1;
+            hardship = 3;
+            danger = 3;
         }
         MONSOON => {
             hardship += 4;
             danger += 3;
-            speed -= 2;
-            abundance -= 2;
         }
         FREEZING_HELL => {
             hardship += 1;
             danger += 1;
-            speed -= 1;
-            abundance -= 1;
         }
         FREEZING_DEATH => {
             hardship += 4;
             danger += 3;
-            speed -= 2;
-            abundance -= 2;
         }
         SCORCHING_DESERT => {
             hardship += 1;
             danger += 1;
-            speed -= 1;
-            abundance -= 1;
         }
         HUMID_SWAMP => {
             hardship += 2;
@@ -280,99 +358,158 @@ fn next_day(
         MILD_SUMMER => {
             hardship -= 1;
             danger -= 1;
-            speed += 1;
-            abundance += 1;
         }
         COLD_FRONT => {
             hardship += 1;
             danger += 1;
-            speed -= 1;
-            abundance -= 1;
         }
         TROPICAL_STORM => {
+            if rand::thread_rng().gen_range(0..100) < 10 {
+                speed = -speed;
+            }
             hardship += 2;
             danger += 1;
         }
         AUTUMN_BREEZE => {
             hardship -= 1;
             danger -= 1;
-            speed += 1;
-            abundance += 1;
         }
         SPRING_SHOWER => {
             hardship -= 1;
             danger -= 1;
-            speed += 1;
-            abundance += 1;
         }
         COOL_DRIZZLE => {
             hardship -= 1;
             danger -= 1;
-            speed += 1;
-            abundance += 1;
         }
         _ => {}
     }
 
-    ship.food -= ship.crew * hardship;
-    if ship.food < 0 {
-        ship.crew += ship.food;
-        ship.food = 0;
-    }
     match trigger.event().0 {
         DayTask::Sail => {
-            journey.distance += 10.0 * (speed as f32);
-            ship.ship_condition -= danger;
+            journey.distance += 2.0 * (speed as f32);
+            ship.health -= danger;
         }
         DayTask::Fight => {
             ship.crew -= danger;
             journey.treasure += 10;
         }
         DayTask::CookDaFood => {
-            ship.food += 10;
+            ship.food += ship.crew * abundance;
         }
-        DayTask::CleanDaDeck => {
-            ship.ship_condition += 10;
-        }
+        DayTask::CleanDaDeck => {}
         DayTask::Gamble => {
             journey.treasure += 10;
         }
         DayTask::Explore => {
             journey.treasure += 10;
+            ship.crew -= danger;
         }
         DayTask::Rest => {
-            ship.crew += 10 * abundance;
-            ship.food += 10 * abundance;
+            ship.crew += 1 * abundance;
         }
-        DayTask::HunkerDown => {
-            ship.ship_condition += 10;
-        }
+        DayTask::HunkerDown => {}
     }
-    info!(
-        "You chose to {choice:?}: The weather was {weather:?}",
-        choice = trigger.event().0,
-        weather = journey.weather
-    );
-    if journey.distance > journey.total_distance {
-        todo!("We need to handle them completing the journey!");
-    }
-    journey.new_day();
-    info!(
-        "Its a new day, the captain wants to {event:?}",
-        event = journey.event
-    );
-    commands.trigger(UpdateChoices(journey.get_options()));
 
+    ship.crew = ship.crew.min(ship.max_crew);
+    ship.food = ship.food.min(ship.max_food);
+    ship.health = ship.health.min(ship.max_health);
+
+    ship.food -= ship.crew * hardship;
+    if ship.food < 0 {
+        ship.crew += ship.food;
+        ship.food = 0;
+    }
+    if ship.crew <= 0 {
+        info!("GAME OVER!");
+        journey.game_over = true;
+        commands.trigger(UpdateDialogBox(Dialogue {
+            speaker: "Game Over".to_string(),
+            paragraphs: vec![
+                "Mutiny!".to_string(),
+                "I followed your advice to the letter sage...".to_string(),
+                "You're a fraud!".to_string(),
+            ],
+        }));
+        return;
+    }
+    if ship.health <= 0 {
+        info!("GAME OVER!");
+        journey.game_over = true;
+        commands.trigger(UpdateDialogBox(Dialogue {
+            speaker: "Game Over".to_string(),
+            paragraphs: vec![
+                "A captain always goes down with his ship...".to_string(),
+                "To hell with that! I'm getting in the last rowboat!".to_string(),
+            ],
+        }));
+        return;
+    }
+    if journey.distance >= journey.total_distance {
+        info!("You Win!");
+        journey.game_over = true;
+        commands.trigger(UpdateDialogBox(Dialogue {
+            speaker: "Tortuga".to_string(),
+            paragraphs: vec![
+                "Looks like we are back home, with a ship full of loot at that!".to_string(),
+                format!("You have {treasure} treasure!", treasure = journey.treasure),
+            ],
+        }));
+        return;
+    }
+    commands.trigger(UpdateDialogBox(Dialogue {
+        speaker: "Night Fall".to_string(),
+        paragraphs: vec![
+            "You'll look at this then carry on!".to_string(),
+            format!("You have {treasure} treasure!", treasure = journey.treasure),
+            format!(
+                "You have {distance} leagues left to go!",
+                distance = journey.total_distance - journey.distance
+            ),
+        ],
+    }));
+    commands.trigger(ShowContinue(true));
+    commands.trigger(UpdateShipStatsUI);
+}
+
+fn continue_journey(
+    _trigger: Trigger<Continue>,
+    mut commands: Commands,
+    mut dialoges: ResMut<DialogueQueue>,
+    mut ship: ResMut<Ship>,
+) {
+    ship.apply_changes();
+    match dialoges.queue.pop() {
+        Some(dialogue) => {
+            commands.trigger(UpdateDialogBox(dialogue));
+        }
+        None => {
+            commands.trigger(NextDay);
+            commands.trigger(ShowContinue(false));
+        }
+    }
+}
+
+fn next_day(_trigger: Trigger<NextDay>, mut commands: Commands, mut journey: ResMut<Journey>) {
+    journey.new_day();
+    let (dialog, choices) = journey.get_options();
+    commands.trigger(UpdateChoices(choices));
+
+    commands.trigger(UpdateDialogBox(dialog));
     commands.trigger(UpdateBoneGrid(match journey.rng.gen_range(0..3) {
         0 => AnyWeather::Moisture(journey.weather.moisture),
         1 => AnyWeather::Heat(journey.weather.heat),
         _ => AnyWeather::Wind(journey.weather.wind),
     }));
+    commands.trigger(UpdateShipStatsUI);
 }
 
 pub fn plugin(app: &mut App) {
     app.observe(create_journey)
-        .add_event::<NextDay>()
+        .add_event::<ChooseTask>()
         .add_event::<CreateJourney>()
+        .insert_resource(DialogueQueue { queue: vec![] })
+        .observe(choose_task)
+        .observe(continue_journey)
         .observe(next_day);
 }

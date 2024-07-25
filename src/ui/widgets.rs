@@ -44,11 +44,10 @@ impl<T: Spawn> Widgets for T {
             Name::new("Button"),
             ButtonBundle {
                 style: Style {
-                    width: Px(120.0 * 4f32),
-                    height: Px(20.0 * 4f32),
-                    padding: UiRect::new(Px(8.0), Px(8.0), Px(8.0), Px(30.0)),
+                    width: Px(120.0),
+                    height: Px(20.0),
+                    padding: UiRect::new(Px(8.0), Px(20.0), Px(8.0), Px(0.0)),
                     justify_content: JustifyContent::Center,
-                    align_items: AlignItems::Center,
                     ..default()
                 },
                 image: UiImage {
@@ -67,14 +66,21 @@ impl<T: Spawn> Widgets for T {
         entity.with_children(|children| {
             children.spawn((
                 Name::new("Button Text"),
-                TextBundle::from_section(
-                    text,
-                    TextStyle {
-                        font_size: 12.0,
-                        color: BUTTON_TEXT,
-                        font,
+                TextBundle {
+                    text: Text::from_section(
+                        text,
+                        TextStyle {
+                            font_size: 10.0,
+                            color: BUTTON_TEXT,
+                            font,
+                        },
+                    ),
+                    style: Style {
+                        margin: UiRect::default().with_top(Val::Px(5.0)),
+                        ..default()
                     },
-                ),
+                    ..default()
+                },
             ));
         });
         entity

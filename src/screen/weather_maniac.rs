@@ -151,23 +151,21 @@ fn render_weather_condition(
 
 // VISIBILITY - You can blame Justin for this amazing stuff
 #[derive(Event)]
-pub struct ToggleWeatherGridEvent;
+pub struct ToggleWeatherGridEvent(pub bool);
 
 #[derive(Component)]
 pub struct ToggleWithBones;
 
 fn handle_toggle_weather_grid(
-    _trigger: Trigger<ToggleWeatherGridEvent>,
+    trigger: Trigger<ToggleWeatherGridEvent>,
     mut query: Query<&mut Visibility, With<ToggleWithBones>>,
 ) {
     info!("Toggling the bones!");
     for mut visibility in &mut query {
-        *visibility = if *visibility == Visibility::Hidden {
+        *visibility = if trigger.event().0 {
             Visibility::Visible
         } else {
             Visibility::Hidden
         };
-
-        info!("Weather grid visibility toggled: {:?}", visibility);
     }
 }

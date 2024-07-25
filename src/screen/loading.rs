@@ -22,7 +22,7 @@ fn enter_loading(mut commands: Commands, fonts: Res<HandleMap<FontKey>>) {
         .ui_root()
         .insert(StateScoped(Screen::Loading))
         .with_children(|children| {
-            children.label("Loading...", fonts[&FontKey::PaperCut].clone_weak());
+            children.label("Loading...", fonts[&FontKey::LunchDS].clone_weak());
         });
 }
 

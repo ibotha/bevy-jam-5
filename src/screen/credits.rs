@@ -1,5 +1,4 @@
-//! A credits screen that can be accessed from the title screen.
-
+/// A credits screen that can be accessed from the title screen.
 use bevy::prelude::*;
 
 use super::Screen;
@@ -38,28 +37,28 @@ fn enter_credits(
         .insert(StateScoped(Screen::Credits))
         .with_children(|children| {
             children.header("Made by",
-                    fonts[&FontKey::PaperCut].clone_weak(),
+                    fonts[&FontKey::LunchDS].clone_weak(),
                 );
             children.label("Julian",
-                    fonts[&FontKey::PaperCut].clone_weak());
+                    fonts[&FontKey::LunchDS].clone_weak());
             children.label("Justin",
-                    fonts[&FontKey::PaperCut].clone_weak());
+                    fonts[&FontKey::LunchDS].clone_weak());
             children.label("Isard",
-                    fonts[&FontKey::PaperCut].clone_weak());
+                    fonts[&FontKey::LunchDS].clone_weak());
 
             children.header("Assets",
-                    fonts[&FontKey::PaperCut].clone_weak());
+                    fonts[&FontKey::LunchDS].clone_weak());
             children.label("Bevy logo - All rights reserved by the Bevy Foundation. Permission granted for splash screen use when unmodified.",
-                    fonts[&FontKey::PaperCut].clone_weak());
+                    fonts[&FontKey::LunchDS].clone_weak());
             children.label("Music - CC BY 3.0 by Kevin MacLeod",
-                    fonts[&FontKey::PaperCut].clone_weak());
+                    fonts[&FontKey::LunchDS].clone_weak());
 
             children.label("Music - Piratical Cycle by Isard & Eidean Botha",
-                    fonts[&FontKey::PaperCut].clone_weak());
+                    fonts[&FontKey::LunchDS].clone_weak());
             children.label("Art - Justin",
-                    fonts[&FontKey::PaperCut].clone_weak());
+                    fonts[&FontKey::LunchDS].clone_weak());
             children.button("Back", image_handles[&ImageKey::Button].clone_weak(),
-                    fonts[&FontKey::PaperCut].clone_weak()).insert(CreditsAction::Back);
+                    fonts[&FontKey::LunchDS].clone_weak()).insert(CreditsAction::Back);
         });
 
     commands.trigger(PlaySoundtrack::Key(SoundtrackKey::Credits));
