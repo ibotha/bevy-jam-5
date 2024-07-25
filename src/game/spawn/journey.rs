@@ -1,3 +1,5 @@
+use std::collections::VecDeque;
+
 use bevy::math;
 use bevy::prelude::*;
 use rand::rngs::StdRng;
@@ -43,7 +45,7 @@ enum DayEvent {
 
 #[derive(Resource, Debug)]
 struct DialogueQueue {
-    queue: Vec<Dialogue>,
+    queue: VecDeque<Dialogue>,
 }
 
 #[derive(Resource, Debug, PartialEq)]
@@ -206,42 +208,33 @@ impl Journey {
 pub struct Ship {
     pub crew: i32,
     pub max_crew: i32,
-    pub pending_crew: i32,
     pub food: i32,
     pub max_food: i32,
-    pub pending_food: i32,
     pub health: i32,
     pub max_health: i32,
-    pub pending_health: i32,
 }
 
-impl Ship {
-    fn apply_changes(&mut self) {
-        self.crew += self.pending_crew;
-        self.crew = self.crew.min(self.max_crew);
-        self.health += self.pending_health;
-        self.health = self.health.min(self.max_health);
-        self.food += self.pending_food;
-        self.food = self.food.min(self.max_food);
-    }
-}
-
-fn create_journey(_trigger: Trigger<CreateJourney>, mut commands: Commands) {
+fn create_journey(
+    _trigger: Trigger<CreateJourney>,
+    mut commands: Commands,
+    mut dialog_queue: ResMut<DialogueQueue>,
+) {
     info!("Generating journey...");
     let journey = Journey::generate(120.0, None, None);
     commands.insert_resource(journey);
     commands.insert_resource(Ship {
         crew: 5,
         max_crew: 5,
-        pending_crew: 0,
         food: 100,
         max_food: 100,
-        pending_food: 0,
         health: 100,
         max_health: 100,
-        pending_health: 0,
     });
-    commands.trigger(ChooseTask(DayTask::Sail));
+    dialog_queue.queue.push_back(Dialogue {
+        speaker: CAPTAIN.to_string(),
+        paragraphs: vec!["You are about to embark on a magical journey!".to_string()],
+    });
+    commands.trigger(Continue);
 }
 
 const MONSOON: DayWeather = DayWeather {
@@ -480,8 +473,7 @@ fn continue_journey(
     mut dialoges: ResMut<DialogueQueue>,
     mut ship: ResMut<Ship>,
 ) {
-    ship.apply_changes();
-    match dialoges.queue.pop() {
+    match dialoges.queue.pop_front() {
         Some(dialogue) => {
             commands.trigger(UpdateDialogBox(dialogue));
         }
@@ -510,7 +502,9 @@ pub fn plugin(app: &mut App) {
     app.observe(create_journey)
         .add_event::<ChooseTask>()
         .add_event::<CreateJourney>()
-        .insert_resource(DialogueQueue { queue: vec![] })
+        .insert_resource(DialogueQueue {
+            queue: VecDeque::new(),
+        })
         .observe(choose_task)
         .observe(continue_journey)
         .observe(next_day);
