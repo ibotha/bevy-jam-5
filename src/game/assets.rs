@@ -43,6 +43,9 @@ pub enum ImageKey {
     Ship,
     Button,
     BoneButton,
+    SpyglassButton,
+    DarkmagicButton,
+    ParrotButton,
     Bone1,
     Bone2,
     Bone3,
@@ -50,6 +53,9 @@ pub enum ImageKey {
     LeftPanel,
     BottomPanel,
     DetailsPanel,
+    WindButton,
+    HeatButton,
+    MoistureButton,
     ChoicePanel,
     BackDrop,
     Logo,
@@ -144,6 +150,60 @@ impl FromWorld for HandleMap<ImageKey> {
                 ImageKey::BoneButton,
                 asset_server.load_with_settings(
                     "images/BoneButton.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::SpyglassButton,
+                asset_server.load_with_settings(
+                    "images/SpyglassButton.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::DarkmagicButton,
+                asset_server.load_with_settings(
+                    "images/DarkmagicButton.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::ParrotButton,
+                asset_server.load_with_settings(
+                    "images/ParrotButton.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::WindButton,
+                asset_server.load_with_settings(
+                    "images/WindButton.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::HeatButton,
+                asset_server.load_with_settings(
+                    "images/HeatButton.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::MoistureButton,
+                asset_server.load_with_settings(
+                    "images/MoistureButton.png",
                     |settings: &mut ImageLoaderSettings| {
                         settings.sampler = ImageSampler::nearest();
                     },

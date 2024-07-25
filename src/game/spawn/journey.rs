@@ -51,7 +51,7 @@ struct DialogueQueue {
 #[derive(Resource, Debug, PartialEq)]
 pub struct Journey {
     game_over: bool,
-    weather: DayWeather,
+    pub weather: DayWeather, // Can use this variable to grab the predicted weather for the coming day
     event: DayEvent,
     distance: f32,
     total_distance: f32,

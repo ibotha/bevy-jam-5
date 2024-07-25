@@ -8,7 +8,8 @@ pub mod journey;
 pub mod level;
 pub mod player;
 pub mod weather;
+pub mod predicitons;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_plugins((level::plugin, player::plugin, journey::plugin));
+    app.add_plugins((level::plugin, player::plugin, journey::plugin, predicitons::plugin));
 }

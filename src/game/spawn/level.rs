@@ -1,10 +1,10 @@
 //! Spawn the main level by triggering other observers.
 
-use bevy::prelude::*;
+use bevy::{prelude::*};
 
-use crate::game::ui::SpawnGameUI;
+use crate::game::ui::{Focus, FocusedDisplay, SpawnGameUI};
 
-use super::journey::CreateJourney;
+use super::{journey::CreateJourney, predicitons::{UpdateDarkMagicUi, UpdateParrotUi, UpdateSpyGlassUi}};
 
 pub(super) fn plugin(app: &mut App) {
     app.observe(spawn_level);
@@ -16,4 +16,9 @@ pub struct SpawnLevel;
 fn spawn_level(_trigger: Trigger<SpawnLevel>, mut commands: Commands) {
     commands.trigger(SpawnGameUI);
     commands.trigger(CreateJourney);
+    commands.trigger(Focus(FocusedDisplay::Dialogue));
+
+    commands.trigger(UpdateDarkMagicUi);
+    commands.trigger(UpdateParrotUi);
+    commands.trigger(UpdateSpyGlassUi);
 }
