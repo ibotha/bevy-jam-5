@@ -2,7 +2,7 @@
 
 use bevy::{input::common_conditions::input_just_pressed, prelude::*};
 
-use super::Screen;
+use super::{title::MenuFloating, Screen};
 use crate::game::{
     assets::{HandleMap, ImageKey},
     spawn::level::SpawnLevel,
@@ -24,6 +24,23 @@ fn enter_playing(mut commands: Commands, image_handles: Res<HandleMap<ImageKey>>
         SpriteBundle {
             texture: image_handles[&ImageKey::BackDrop].clone_weak(),
             ..default()
+        },
+        StateScoped(Screen::Playing),
+    ));
+    commands.spawn((
+        SpriteBundle {
+            texture: image_handles[&ImageKey::Ship].clone_weak(),
+            transform: Transform::from_xyz(0.0, 0.0, 1.0),
+            ..default()
+        },
+        MenuFloating {
+            width: 200.0,
+            height_max: 10.0,
+            height_min: -20.0,
+            speed: 1.0,
+            current_x: -100.0,
+            direction: false,
+            mid_x: 37.0,
         },
         StateScoped(Screen::Playing),
     ));

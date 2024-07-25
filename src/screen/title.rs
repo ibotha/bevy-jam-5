@@ -17,7 +17,10 @@ pub(super) fn plugin(app: &mut App) {
     app.register_type::<TitleAction>();
     app.add_systems(
         Update,
-        (handle_title_action, move_ship).run_if(in_state(Screen::Title)),
+        (
+            move_ship,
+            (handle_title_action,).run_if(in_state(Screen::Title)),
+        ),
     );
 }
 
@@ -32,22 +35,25 @@ enum TitleAction {
 }
 
 #[derive(Component)]
-struct MenuFloating {
+pub struct MenuFloating {
     /// The width of area the ship should float in
-    width: f32,
+    pub width: f32,
     /// The minimum x value for the ship
-    height_min: f32,
+    pub height_min: f32,
     /// The maximum x value for the ship
-    height_max: f32,
+    pub height_max: f32,
     /// How fast in pixels per second the ship will go
-    speed: f32,
+    pub speed: f32,
     /// The current direction of the ship (true is left)
-    direction: bool,
-    current_x: f32,
-    mid_x: f32,
+    pub direction: bool,
+    pub current_x: f32,
+    pub mid_x: f32,
 }
 
 fn move_ship(mut query: Query<(&mut Transform, &mut MenuFloating, &mut Sprite)>, time: Res<Time>) {
+    if query.is_empty() {
+        return;
+    }
     let (mut transform, mut floating, mut sprite) = query.single_mut();
     let octave_base = 1.9;
     let wave_speed = 0.05;

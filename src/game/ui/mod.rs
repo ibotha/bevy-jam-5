@@ -174,13 +174,13 @@ struct DialogueContents;
 struct DialogueSpeaker;
 
 #[derive(Component, Resource, Debug, PartialEq, Eq, Clone, Copy)]
-enum FocusedDisplay {
+pub enum FocusedDisplay {
     Dialogue,
     Bones,
 }
 
 #[derive(Event, Debug)]
-struct Focus(pub FocusedDisplay);
+pub struct Focus(pub FocusedDisplay);
 
 fn focus_display(
     trigger: Trigger<Focus>,

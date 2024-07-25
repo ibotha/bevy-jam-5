@@ -12,6 +12,7 @@ use crate::game::ui::ShowContinue;
 use crate::game::ui::UpdateChoices;
 use crate::game::ui::UpdateDialogBox;
 use crate::game::ui::UpdateShipStatsUI;
+use crate::game::ui::{Focus, FocusedDisplay};
 use crate::game::weighted_random;
 use crate::screen::weather_maniac::UpdateBoneGrid;
 
@@ -310,6 +311,7 @@ fn choose_task(
     mut ship: ResMut<Ship>,
 ) {
     commands.trigger(UpdateChoices(vec![]));
+    commands.trigger(Focus(FocusedDisplay::Dialogue));
     if journey.game_over {
         return;
     }
