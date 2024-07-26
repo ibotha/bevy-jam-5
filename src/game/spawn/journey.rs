@@ -2,6 +2,7 @@ use std::collections::VecDeque;
 
 use bevy::math;
 use bevy::prelude::*;
+use bevy::utils::hashbrown::HashMap;
 use log::info;
 use rand::rngs::StdRng;
 use rand::thread_rng;
@@ -25,6 +26,7 @@ use crate::{
 };
 
 use super::predicitons::UpdateParrotUi;
+use super::quests::treasure::Item;
 use super::quests::Certainty;
 use super::quests::FollowingEvent;
 use super::quests::StoryActions;
@@ -59,6 +61,7 @@ pub struct Journey {
     rng: StdRng,
     difficulty: f32,
     journey_length: u32, // How many days until max difficulty
+    pub inventory: HashMap<Item, i32>,
     pub environment: Environment,
 }
 
@@ -82,6 +85,7 @@ impl Journey {
             journey_length: (distance * ((difficulty - 10.0) * -0.1 + 1.0) / AVERAGE_DAILY_DISTANCE)
                 as u32,
             environment: Environment::Sea,
+            inventory: Default::default(),
         }
     }
 
@@ -190,33 +194,28 @@ fn choose_task(
     }
 
     for strings in updates.as_slice().chunks(4) {
-        dialog_queue.queue.push_back(Dialogue::new_from_strings(
-            "Updates",
-            strings.iter().map(|s| s.to_owned()),
-        ));
+        dialog_queue
+            .queue
+            .push_back(Dialogue::new("Updates").paras(strings));
     }
 
     if ship.crew <= 0 {
         info!("GAME OVER!");
         journey.game_over = true;
-        dialog_queue.queue.push_back(Dialogue::new(
-            "Game Over",
-            &[
-                "I have no crew left!",
-                "I followed your advice to the letter sage...",
-                "You're a fraud!",
-            ],
-        ));
+        dialog_queue.queue.push_back(
+            Dialogue::new("Game Over")
+                .para("I have no crew left!")
+                .para("I followed your advice to the letter sage...")
+                .para("You're a fraud!"),
+        );
     } else if ship.health <= 0 {
         info!("GAME OVER!");
         journey.game_over = true;
-        dialog_queue.queue.push_back(Dialogue::new(
-            "Game Over",
-            &[
-                "A captain always goes down with his ship...",
-                "To hell with that! I'm getting in the last rowboat!",
-            ],
-        ));
+        dialog_queue.queue.push_back(
+            Dialogue::new("Game Over")
+                .para("A captain always goes down with his ship...")
+                .para("To hell with that! I'm getting in the last rowboat!"),
+        );
     }
 
     commands.trigger(UpdateShipStatsUI);
@@ -245,10 +244,10 @@ fn continue_journey(
         return;
     }
 
-    if dialoges.queue.len() == 0 {
+    if dialoges.queue.is_empty() {
         match journey.event.as_ref() {
             Some(e) => {
-                commands.trigger(UpdateChoices(e.choices.keys().map(|s| s.clone()).collect()));
+                commands.trigger(UpdateChoices(e.choices.keys().cloned().collect()));
                 commands.trigger(ShowContinue(false));
             }
             None => {
@@ -280,7 +279,7 @@ fn next_day(_trigger: Trigger<NextDay>, mut commands: Commands, mut journey: Res
         .map(|e| e.event.clone())
         .collect();
 
-    let event = if certain_events.len() != 0 {
+    let event = if !certain_events.is_empty() {
         let event = certain_events[journey.rng.gen_range(0..certain_events.len())].clone();
         let index = journey
             .events

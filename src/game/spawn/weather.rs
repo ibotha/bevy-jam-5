@@ -199,7 +199,7 @@ impl fmt::Display for Wind {
     }
 }
 
-#[derive(Default, Debug, PartialEq)]
+#[derive(Default, Debug, PartialEq, Clone)]
 pub struct DayWeather {
     pub wind: Wind,
     pub heat: Heat,

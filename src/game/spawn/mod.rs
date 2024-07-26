@@ -5,13 +5,17 @@
 use bevy::prelude::*;
 
 pub mod journey;
-pub mod journey_constants;
 pub mod level;
 pub mod player;
+pub mod predicitons;
 pub mod quests;
 pub mod weather;
-pub mod predicitons;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_plugins((level::plugin, player::plugin, journey::plugin, predicitons::plugin));
+    app.add_plugins((
+        level::plugin,
+        player::plugin,
+        journey::plugin,
+        predicitons::plugin,
+    ));
 }

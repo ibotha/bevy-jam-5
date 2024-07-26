@@ -1,12 +1,8 @@
-use std::collections::VecDeque;
-
 use day_event::DayEvent;
-use dialogue::Dialogue;
 use island_events::select_random_island_event;
+use port_events::select_random_port_event;
 use rand::RngCore;
 use sea_events::select_random_sea_event;
-
-use super::journey::Ship;
 
 pub mod actions;
 mod constants;
@@ -14,6 +10,7 @@ pub mod day_event;
 pub mod dialogue;
 mod island_events;
 mod port_events;
+pub mod prelude;
 mod sea_events;
 pub mod treasure;
 pub mod unique_events;
@@ -45,18 +42,11 @@ pub struct FollowingEvent {
     pub environment: Environment,
 }
 
-pub struct ChoiceResult {
-    pub ship: Ship,
-    pub following_events: Vec<FollowingEvent>,
-    pub dialogues: VecDeque<Dialogue>,
-    pub environment: Option<Environment>,
-}
-
 pub type ChoiceFunction = fn(&mut StoryActions) -> ();
 
 pub fn select_random_event(rng: &mut impl RngCore, t: Environment) -> DayEvent {
     match t {
-        Environment::Port => todo!(),
+        Environment::Port => select_random_port_event(rng),
         Environment::Island => select_random_island_event(rng),
         Environment::Sea => select_random_sea_event(rng),
     }

@@ -12,60 +12,37 @@ pub struct DayEvent {
     id: usize,
     pub dialog: Vec<Dialogue>,
     pub choices: HashMap<String, ChoiceFunction>,
-    pub hint: Option<String>,
+    pub hint_string: Option<String>,
 }
 
 impl PartialEq for DayEvent {
     fn eq(&self, other: &Self) -> bool {
-        return self.id == other.id;
+        self.id == other.id
     }
 }
 
 impl DayEvent {
-    /// Create a new event with dialogue options and choices
-    ///
-    /// Here is and example:
-    /// ```rust
-    /// fn embark(ship: Ship, weather: &DayWeather) -> ChoiceResult {
-    ///     ChoiceResult {
-    ///         ship,
-    ///         following_events: vec![
-    ///             FollowingEvent {
-    ///                 event: visit_shady_cove(),
-    ///                 certainty: Certainty::Certain,
-    ///                 distance: 20,
-    ///                 environment: Environment::Sea
-    ///             }
-    ///         ],
-    ///     }
-    /// }
-    ///
-    /// pub fn embark_event() -> DayEvent {
-    ///     DayEvent::new(
-    ///         &[
-    ///             Dialogue::new(CAPTAIN, &["We are headed to get the trident!!!"]),
-    ///             Dialogue::new(CREW_MEMBER, &["What?!?!? The trident!!!"]),
-    ///             Dialogue::new(CAPTAIN, &["Yes! The trident"]),
-    ///         ],
-    ///         &[("Embark!", embark)],
-    ///     )
-    /// }
-    /// ```
-    pub fn new(dialogue: &[Dialogue], choices: &[(&str, ChoiceFunction)]) -> Self {
+    pub fn new() -> Self {
         Self {
-            dialog: dialogue.iter().map(|d| d.to_owned()).collect(),
-            choices: HashMap::from_iter(
-                choices
-                    .iter()
-                    .map(|(label, method)| (label.to_string(), *method)),
-            ),
+            dialog: vec![],
+            choices: HashMap::new(),
             id: get_id(),
-            hint: None,
+            hint_string: None,
         }
     }
 
-    pub fn add_hints<T: ToString>(mut self, hint: T) -> Self {
-        self.hint = Some(hint.to_string());
-        return self;
+    pub fn line(mut self, d: Dialogue) -> Self {
+        self.dialog.push(d);
+        self
+    }
+
+    pub fn choice<T: ToString>(mut self, name: T, action: ChoiceFunction) -> Self {
+        self.choices.insert(name.to_string(), action);
+        self
+    }
+
+    pub fn hint<T: ToString>(mut self, hint: T) -> Self {
+        self.hint_string = Some(hint.to_string());
+        self
     }
 }

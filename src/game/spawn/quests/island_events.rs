@@ -22,10 +22,11 @@ fn woah(actions: &mut StoryActions) {
 }
 
 fn just_walking() -> DayEvent {
-    DayEvent::new(
-        &[Dialogue::new(CAPTAIN, &["Just more and more jungle."])],
-        &[("Walk", walk), ("Rest", rest), ("Woah", woah)],
-    )
+    DayEvent::new()
+        .line(Dialogue::new(CAPTAIN).para("Just more and more jungle."))
+        .choice("Walk", walk)
+        .choice("Rest", rest)
+        .choice("Woah", woah)
 }
 
 pub(super) fn select_random_island_event(rng: &mut impl RngCore) -> DayEvent {

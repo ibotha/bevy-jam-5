@@ -1,8 +1,11 @@
 use bevy::prelude::*;
 
-use crate::game::{assets::{FontKey, HandleMap, ImageKey}, ui::{DarkMagicBox, GameAction, ParrotBox, SpyGlassBox}};
-use super::{journey::{self, Journey}, weather::AnyWeather};
+use super::{journey::Journey, weather::AnyWeather};
 use crate::game::ui::PredictionAction;
+use crate::game::{
+    assets::{FontKey, HandleMap, ImageKey},
+    ui::{DarkMagicBox, GameAction, ParrotBox, SpyGlassBox},
+};
 
 #[derive(Resource, Debug, PartialEq, Default)]
 pub struct Predictions {
@@ -10,13 +13,13 @@ pub struct Predictions {
     pub parrot: Option<AnyWeather>,
     pub spy_glass: Option<AnyWeather>,
 }
-use crate::ui::palette::{LABEL_TEXT};
+use crate::ui::palette::LABEL_TEXT;
 
 pub fn plugin(app: &mut App) {
     app.init_resource::<Predictions>() // Initiallizes by the defaults
-    .observe(dark_magic_predictor)
-    .observe(parrot_predictor)
-    .observe(spyglass_predictor);
+        .observe(dark_magic_predictor)
+        .observe(parrot_predictor)
+        .observe(spyglass_predictor);
 }
 
 #[derive(Event, Debug, PartialEq, Default)]
@@ -30,22 +33,22 @@ pub fn dark_magic_predictor(
     image_handles: Res<HandleMap<ImageKey>>,
     fonts: Res<HandleMap<FontKey>>,
 ) {
-    commands.entity(query.single()).despawn_descendants().with_children(|commands|{
-        match predictions.dark_magic {
-            Some(weather_prediction) => {
-                match weather_prediction {
-                    AnyWeather::Heat(predicted_heat) => {
-                        let predicted_text = format!("Heat: {}", predicted_heat);
-                        predicted_selection(commands, &fonts, predicted_text);
-                    },
-                    AnyWeather::Moisture(predicted_moisture) => {
-                        let predicted_text = format!("Moisture: {}", predicted_moisture);
-                        predicted_selection(commands, &fonts, predicted_text);
-                    },
-                    AnyWeather::Wind(predicted_wind) => {
-                        let predicted_text = format!("Wind: {}", predicted_wind);
-                        predicted_selection(commands, &fonts, predicted_text);
-                    },
+    commands
+        .entity(query.single())
+        .despawn_descendants()
+        .with_children(|commands| match predictions.dark_magic {
+            Some(weather_prediction) => match weather_prediction {
+                AnyWeather::Heat(predicted_heat) => {
+                    let predicted_text = format!("Heat: {}", predicted_heat);
+                    predicted_selection(commands, &fonts, predicted_text);
+                }
+                AnyWeather::Moisture(predicted_moisture) => {
+                    let predicted_text = format!("Moisture: {}", predicted_moisture);
+                    predicted_selection(commands, &fonts, predicted_text);
+                }
+                AnyWeather::Wind(predicted_wind) => {
+                    let predicted_text = format!("Wind: {}", predicted_wind);
+                    predicted_selection(commands, &fonts, predicted_text);
                 }
             },
             None => {
@@ -56,8 +59,7 @@ pub fn dark_magic_predictor(
                 );
                 prediction_buttons(commands, &image_handles, actions);
             }
-        }
-    });
+        });
 }
 
 #[derive(Event, Debug, PartialEq, Default)]
@@ -67,21 +69,23 @@ pub fn parrot_predictor(
     _: Trigger<UpdateParrotUi>,
     mut commands: Commands,
     query: Query<Entity, With<ParrotBox>>,
-    image_handles: Res<HandleMap<ImageKey>>,
     fonts: Res<HandleMap<FontKey>>,
     journey: Res<Journey>,
 ) {
-    commands.entity(query.single()).despawn_descendants().with_children(|commands| {
-        let hint = journey.event.as_ref().and_then(|event| event.hint.as_ref())
-            .map(|hint| hint.to_string())
-            .unwrap_or_else(|| "No hint available".to_string());
+    commands
+        .entity(query.single())
+        .despawn_descendants()
+        .with_children(|commands| {
+            let hint = journey
+                .event
+                .as_ref()
+                .and_then(|event| event.hint_string.as_ref())
+                .map(|hint| hint.to_string())
+                .unwrap_or_else(|| "No hint available".to_string());
 
-        predicted_selection(commands, &fonts, hint);
-    });
+            predicted_selection(commands, &fonts, hint);
+        });
 }
-
-
-
 
 #[derive(Event, Debug, PartialEq, Default)]
 pub struct UpdateSpyGlassUi;
@@ -94,22 +98,22 @@ pub fn spyglass_predictor(
     image_handles: Res<HandleMap<ImageKey>>,
     fonts: Res<HandleMap<FontKey>>,
 ) {
-    commands.entity(query.single()).despawn_descendants().with_children(|commands| {
-        match predictions.spy_glass {
-            Some(weather_prediction) => {
-                match weather_prediction {
-                    AnyWeather::Heat(predicted_heat) => {
-                        let predicted_text = format!("Heat: {}", predicted_heat);
-                        predicted_selection(commands, &fonts, predicted_text);
-                    },
-                    AnyWeather::Moisture(predicted_moisture) => {
-                        let predicted_text = format!("Moisture: {}", predicted_moisture);
-                        predicted_selection(commands, &fonts, predicted_text);
-                    },
-                    AnyWeather::Wind(predicted_wind) => {
-                        let predicted_text = format!("Wind: {}", predicted_wind);
-                        predicted_selection(commands, &fonts, predicted_text);
-                    },
+    commands
+        .entity(query.single())
+        .despawn_descendants()
+        .with_children(|commands| match predictions.spy_glass {
+            Some(weather_prediction) => match weather_prediction {
+                AnyWeather::Heat(predicted_heat) => {
+                    let predicted_text = format!("Heat: {}", predicted_heat);
+                    predicted_selection(commands, &fonts, predicted_text);
+                }
+                AnyWeather::Moisture(predicted_moisture) => {
+                    let predicted_text = format!("Moisture: {}", predicted_moisture);
+                    predicted_selection(commands, &fonts, predicted_text);
+                }
+                AnyWeather::Wind(predicted_wind) => {
+                    let predicted_text = format!("Wind: {}", predicted_wind);
+                    predicted_selection(commands, &fonts, predicted_text);
                 }
             },
             None => {
@@ -120,10 +124,8 @@ pub fn spyglass_predictor(
                 );
                 prediction_buttons(commands, &image_handles, actions);
             }
-        }
-    });
+        });
 }
-
 
 pub fn prediction_buttons(
     commands: &mut ChildBuilder,
@@ -131,65 +133,63 @@ pub fn prediction_buttons(
     actions: (GameAction, GameAction, GameAction),
 ) {
     // Create a parent container for the buttons
-    commands.spawn(NodeBundle {
-        style: Style {
-            width: Val::Percent(100.0),
-            height: Val::Percent(100.0),
-            display: Display::Flex,
-            flex_direction: FlexDirection::Row,
-            justify_content: JustifyContent::Center,
-            align_items: AlignItems::Center,
-            padding: UiRect::all(Val::Px(10.0)),
-            ..default()
-        },
-        ..default()
-    })
-    .with_children(|parent| {
-        // Button 1
-        parent.spawn(ButtonBundle {
-            image: UiImage::new(
-                image_handles[&ImageKey::HeatButton].clone_weak(),
-            ),
+    commands
+        .spawn(NodeBundle {
             style: Style {
-                height: Val::Px(35.0),
-                aspect_ratio: Some(1.0),
-                margin: UiRect::horizontal(Val::Px(5.0)),
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                display: Display::Flex,
+                flex_direction: FlexDirection::Row,
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
+                padding: UiRect::all(Val::Px(10.0)),
                 ..default()
             },
             ..default()
         })
-        .insert(actions.0);
+        .with_children(|parent| {
+            // Button 1
+            parent
+                .spawn(ButtonBundle {
+                    image: UiImage::new(image_handles[&ImageKey::HeatButton].clone_weak()),
+                    style: Style {
+                        height: Val::Px(35.0),
+                        aspect_ratio: Some(1.0),
+                        margin: UiRect::horizontal(Val::Px(5.0)),
+                        ..default()
+                    },
+                    ..default()
+                })
+                .insert(actions.0);
 
-        // Button 2
-        parent.spawn(ButtonBundle {
-            image: UiImage::new(
-                image_handles[&ImageKey::MoistureButton].clone_weak(),
-            ),
-            style: Style {
-                height: Val::Px(35.0),
-                aspect_ratio: Some(1.0),
-                margin: UiRect::horizontal(Val::Px(5.0)),
-                ..default()
-            },
-            ..default()
-        })
-        .insert(actions.1);
+            // Button 2
+            parent
+                .spawn(ButtonBundle {
+                    image: UiImage::new(image_handles[&ImageKey::MoistureButton].clone_weak()),
+                    style: Style {
+                        height: Val::Px(35.0),
+                        aspect_ratio: Some(1.0),
+                        margin: UiRect::horizontal(Val::Px(5.0)),
+                        ..default()
+                    },
+                    ..default()
+                })
+                .insert(actions.1);
 
-        // Button 3
-        parent.spawn(ButtonBundle {
-            image: UiImage::new(
-                image_handles[&ImageKey::WindButton].clone_weak(),
-            ),
-            style: Style {
-                height: Val::Px(35.0),
-                aspect_ratio: Some(1.0),
-                margin: UiRect::horizontal(Val::Px(5.0)),
-                ..default()
-            },
-            ..default()
-        })
-        .insert(actions.2);
-    });
+            // Button 3
+            parent
+                .spawn(ButtonBundle {
+                    image: UiImage::new(image_handles[&ImageKey::WindButton].clone_weak()),
+                    style: Style {
+                        height: Val::Px(35.0),
+                        aspect_ratio: Some(1.0),
+                        margin: UiRect::horizontal(Val::Px(5.0)),
+                        ..default()
+                    },
+                    ..default()
+                })
+                .insert(actions.2);
+        });
 }
 
 pub fn predicted_selection(
@@ -229,3 +229,4 @@ pub fn predicted_selection(
             });
         });
 }
+

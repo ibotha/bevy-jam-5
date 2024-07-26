@@ -1,4 +1,7 @@
-use crate::game::spawn::journey::{Journey, Ship};
+use crate::game::spawn::{
+    journey::{Journey, Ship},
+    weather::DayWeather,
+};
 
 use super::{
     dialogue::{Dialogue, DialogueQueue},
@@ -81,12 +84,21 @@ impl<'a> StoryActions<'a> {
         self.journey.events.push(event);
     }
 
-    pub fn has_item(&self, item: Item) {
-        todo!()
+    pub fn get_item(&self, item: Item) -> i32 {
+        *self.journey.inventory.get(&item).unwrap_or(&0)
     }
 
-    pub fn add_item(&mut self, item: Item) {
-        todo!()
+    pub fn delta_items(&mut self, item: Item, delta: i32) {
+        match self.journey.inventory.get_mut(&item) {
+            Some(count) => {
+                *count = (*count + delta).max(0);
+                self.updates
+                    .push(diff_readout(delta, format!("{item}").as_str(), true));
+            }
+            None => {
+                self.journey.inventory.insert(item, delta.max(0));
+            }
+        }
     }
 
     pub fn add_dialogue(&mut self, dialogue: Dialogue) {
@@ -109,5 +121,9 @@ impl<'a> StoryActions<'a> {
         for event in &mut self.journey.events {
             event.distance -= distance;
         }
+    }
+
+    pub(crate) fn weather(&self) -> DayWeather {
+        self.journey.weather.clone()
     }
 }

@@ -14,16 +14,22 @@ pub struct Dialogue {
 }
 
 impl Dialogue {
-    pub fn new(speaker: &str, paragraphs: &[&str]) -> Self {
+    pub fn new(speaker: &str) -> Self {
         Self {
             speaker: speaker.to_owned(),
-            paragraphs: paragraphs.iter().map(|p| p.to_string()).collect(),
+            paragraphs: vec![],
         }
     }
-    pub fn new_from_strings<T: IntoIterator<Item = String>>(speaker: &str, paragraphs: T) -> Self {
-        Self {
-            speaker: speaker.to_owned(),
-            paragraphs: paragraphs.into_iter().collect(),
+
+    pub fn para<T: ToString>(mut self, str: T) -> Self {
+        self.paragraphs.push(str.to_string());
+        self
+    }
+
+    pub(crate) fn paras(mut self, strings: &[String]) -> Self {
+        for s in strings.iter() {
+            self.paragraphs.push(s.clone());
         }
+        self
     }
 }
