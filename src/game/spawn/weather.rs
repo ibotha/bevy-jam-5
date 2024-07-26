@@ -1,4 +1,5 @@
-use std::f32::consts::PI;
+use core::fmt;
+use std::{f32::consts::PI, fmt::Formatter};
 
 use bevy::prelude::*;
 use rand::{rngs::StdRng, Rng};
@@ -178,6 +179,24 @@ pub enum AnyWeather {
     Heat(Heat),
     Moisture(Moisture),
     Wind(Wind),
+}
+
+impl fmt::Display for Heat {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+impl fmt::Display for Moisture {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+impl fmt::Display for Wind {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
 }
 
 #[derive(Default, Debug, PartialEq)]

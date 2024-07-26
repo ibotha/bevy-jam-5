@@ -4,8 +4,10 @@ use ui_palette::{HEADER_TEXT, LABEL_TEXT};
 use crate::screen::{weather_maniac::ToggleWeatherGridEvent, Screen};
 use crate::ui::prelude::*;
 
-use super::spawn::journey::{Continue, Ship};
+use super::spawn::journey::{Continue, Journey, Ship};
+use super::spawn::predicitons::{Predictions, UpdateDarkMagicUi, UpdateParrotUi, UpdateSpyGlassUi};
 use super::spawn::quests::dialogue::Dialogue;
+use super::spawn::weather::AnyWeather;
 use super::{
     assets::{FontKey, HandleMap, ImageKey},
     spawn::journey::ChooseTask,
@@ -43,9 +45,23 @@ pub fn plugin(app: &mut App) {
         .observe(update_dialogue);
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Reflect)]
+pub enum PredictionAction {
+    Heat,
+    Moisture,
+    Wind,
+}
+
 #[derive(Component, Debug, Clone, PartialEq, Eq, Reflect)]
+#[reflect(Component)]
 pub enum GameAction {
     Bones,
+    Parrot,
+    SpyGlass,
+    DarkMagic,
+    SpyGlassPredictionAction(PredictionAction),
+    ParrotPredictionAction(PredictionAction),
+    DarkMagicPredictionAction(PredictionAction),
     Continue,
     Choose(String),
     Menu,
@@ -155,10 +171,22 @@ struct DialogueContents;
 #[derive(Component)]
 struct DialogueSpeaker;
 
+#[derive(Component)]
+pub struct DarkMagicBox;
+
+#[derive(Component)]
+pub struct SpyGlassBox;
+
+#[derive(Component)]
+pub struct ParrotBox;
+
 #[derive(Component, Resource, Debug, PartialEq, Eq, Clone, Copy)]
 pub enum FocusedDisplay {
     Dialogue,
     Bones,
+    Parrot,
+    SpyGlass,
+    DarkMagic,
 }
 
 #[derive(Event, Debug)]
@@ -173,10 +201,28 @@ fn focus_display(
     let focus = trigger.event().0;
 
     *focused = focus;
+
+    // Set everything to false, then just enable what we want
+    commands.trigger(ToggleWeatherGridEvent(false));
+
     if focus == FocusedDisplay::Bones {
+        // Handle trigger logic for bones screen here!
         commands.trigger(ToggleWeatherGridEvent(true));
-    } else {
-        commands.trigger(ToggleWeatherGridEvent(false));
+    }
+
+    if focus == FocusedDisplay::Parrot {
+        // Handle trigger logic for parrot screen here!
+        info!("Parrot Screen");
+    }
+
+    if focus == FocusedDisplay::SpyGlass {
+        // Handle trigger logic for spy glass screen here!
+        info!("Spy Glass Screen");
+    }
+
+    if focus == FocusedDisplay::DarkMagic {
+        // Handle trigger logic for dark magic screen here!
+        info!("Dark Magic Screen");
     }
 
     for (mut vis, display) in &mut query {
@@ -280,7 +326,7 @@ fn spawn_game_ui(
                     ..default()
                 })
                 .with_children(|commands| {
-                    //Left pannel
+                    // ================= Left Panel ==============
                     commands
                         .spawn(NodeBundle {
                             style: Style {
@@ -336,12 +382,20 @@ fn spawn_game_ui(
                                         .with_children(|commands| {
                                             // Add 4 buttons
                                             for i in 0..4 {
-                                                let image_key: ImageKey = match i {
-                                                    0 => ImageKey::BoneButton,
-                                                    1 => ImageKey::MissingImage,
-                                                    2 => ImageKey::MissingImage,
-                                                    3 => ImageKey::MissingImage,
-                                                    _ => ImageKey::MissingImage,
+                                                let (image_key, game_action) = match i {
+                                                    0 => (ImageKey::BoneButton, GameAction::Bones),
+                                                    1 => {
+                                                        (ImageKey::ParrotButton, GameAction::Parrot)
+                                                    }
+                                                    2 => (
+                                                        ImageKey::DarkmagicButton,
+                                                        GameAction::DarkMagic,
+                                                    ),
+                                                    3 => (
+                                                        ImageKey::SpyglassButton,
+                                                        GameAction::SpyGlass,
+                                                    ),
+                                                    _ => (ImageKey::MissingImage, GameAction::Menu), // Default case, though it shouldn't occur
                                                 };
 
                                                 commands
@@ -357,11 +411,144 @@ fn spawn_game_ui(
                                                         },
                                                         ..default()
                                                     })
-                                                    .insert(GameAction::Bones);
+                                                    .insert(game_action);
                                             }
                                         });
                                 });
                         });
+
+                    // ================= Bones ==============
+                    // NOTICE!!!!
+                    // Bones are handled externally, no need to handle it here
+                    // commands
+                    //     .spawn((
+                    //         NodeBundle {
+                    //             style: Style {
+                    //                 grid_row: GridPlacement::start_span(1, 1),
+                    //                 grid_column: GridPlacement::start_span(2, 1),
+                    //                 ..default()
+                    //             },
+                    //             ..default()
+                    //         },
+                    //         FocusedDisplay::Bones,
+                    //     ))
+                    //     .with_children(|commands| {
+                    //         commands
+                    //             .spawn(ImageBundle {
+                    //                 image: UiImage::new(
+                    //                     image_handles[&ImageKey::DialogueBox].clone_weak(),
+                    //                 ),
+                    //                 style: Style {
+                    //                     width: Val::Px(204.0),
+                    //                     height: Val::Px(150.0),
+                    //                     display: Display::Flex,
+                    //                     flex_direction: FlexDirection::Column,
+                    //                     margin: UiRect::all(Val::Auto).with_top(Val::Px(10.0)),
+                    //                     ..default()
+                    //                 },
+                    //                 ..default()
+                    //             });
+                    //     });
+
+                    // ================= Parrot ==============
+                    commands
+                        .spawn((
+                            NodeBundle {
+                                style: Style {
+                                    grid_row: GridPlacement::start_span(1, 1),
+                                    grid_column: GridPlacement::start_span(2, 1),
+                                    ..default()
+                                },
+                                ..default()
+                            },
+                            FocusedDisplay::Parrot,
+                        ))
+                        .with_children(|commands| {
+                            commands.spawn((
+                                ImageBundle {
+                                    image: UiImage::new(
+                                        image_handles[&ImageKey::DialogueBox].clone_weak(),
+                                    ),
+                                    style: Style {
+                                        width: Val::Px(204.0),
+                                        height: Val::Px(150.0),
+                                        display: Display::Flex,
+                                        flex_direction: FlexDirection::Column,
+                                        margin: UiRect::all(Val::Auto).with_top(Val::Px(10.0)),
+                                        ..default()
+                                    },
+                                    ..default()
+                                },
+                                ParrotBox,
+                            ));
+                        });
+
+                    // ================= Spy Glass ==============
+                    commands
+                        .spawn((
+                            NodeBundle {
+                                style: Style {
+                                    grid_row: GridPlacement::start_span(1, 1),
+                                    grid_column: GridPlacement::start_span(2, 1),
+                                    ..default()
+                                },
+                                ..default()
+                            },
+                            FocusedDisplay::SpyGlass,
+                        ))
+                        .with_children(|commands| {
+                            commands.spawn((
+                                ImageBundle {
+                                    image: UiImage::new(
+                                        image_handles[&ImageKey::DialogueBox].clone_weak(),
+                                    ),
+                                    style: Style {
+                                        width: Val::Px(204.0),
+                                        height: Val::Px(150.0),
+                                        display: Display::Flex,
+                                        flex_direction: FlexDirection::Column,
+                                        margin: UiRect::all(Val::Auto).with_top(Val::Px(10.0)),
+                                        ..default()
+                                    },
+                                    ..default()
+                                },
+                                SpyGlassBox,
+                            ));
+                        });
+
+                    // ================= Dark Magic ==============
+                    commands
+                        .spawn((
+                            NodeBundle {
+                                style: Style {
+                                    grid_row: GridPlacement::start_span(1, 1),
+                                    grid_column: GridPlacement::start_span(2, 1),
+                                    ..default()
+                                },
+                                ..default()
+                            },
+                            FocusedDisplay::DarkMagic,
+                        ))
+                        .with_children(|commands| {
+                            commands.spawn((
+                                ImageBundle {
+                                    image: UiImage::new(
+                                        image_handles[&ImageKey::DialogueBox].clone_weak(),
+                                    ),
+                                    style: Style {
+                                        width: Val::Px(204.0),
+                                        height: Val::Px(150.0),
+                                        display: Display::Flex,
+                                        flex_direction: FlexDirection::Column,
+                                        margin: UiRect::all(Val::Auto).with_top(Val::Px(10.0)),
+                                        ..default()
+                                    },
+                                    ..default()
+                                },
+                                DarkMagicBox,
+                            ));
+                        });
+
                     // ================= Dialogue Box ==============
                     commands
                         .spawn((
@@ -435,6 +622,7 @@ fn spawn_game_ui(
                                                 ..default()
                                             },
                                             ContinueButton,
+                                            FocusedDisplay::Dialogue,
                                         ))
                                         .with_children(|commands| {
                                             commands.spawn(TextBundle::from_section(
@@ -449,7 +637,8 @@ fn spawn_game_ui(
                                         .insert(GameAction::Continue);
                                 });
                         });
-                    //Bottom panel
+
+                    // ================= Bottom Panel ==============
                     commands
                         .spawn(NodeBundle {
                             style: Style {
@@ -606,6 +795,8 @@ fn handle_game_action(
     mut button_query: InteractionQuery<&GameAction>,
     mut commands: Commands,
     display: Res<FocusedDisplay>,
+    mut predictions: ResMut<Predictions>,
+    journey: Res<Journey>,
 ) {
     for (interaction, action) in &mut button_query {
         if matches!(interaction, Interaction::Pressed) {
@@ -620,7 +811,68 @@ fn handle_game_action(
                     }));
                 }
                 GameAction::Choose(task) => commands.trigger(ChooseTask(task.to_owned())),
+
+                GameAction::Parrot => {
+                    info!("Parrot!!!");
+                    commands.trigger(Focus(if *display == FocusedDisplay::Parrot {
+                        FocusedDisplay::Dialogue
+                    } else {
+                        FocusedDisplay::Parrot
+                    }));
+                }
+
+                GameAction::SpyGlass => {
+                    info!("Spy Glass!!!");
+                    commands.trigger(Focus(if *display == FocusedDisplay::SpyGlass {
+                        FocusedDisplay::Dialogue
+                    } else {
+                        FocusedDisplay::SpyGlass
+                    }));
+                }
+
+                GameAction::DarkMagic => {
+                    info!("Dark Magic!!!");
+                    commands.trigger(Focus(if *display == FocusedDisplay::DarkMagic {
+                        FocusedDisplay::Dialogue
+                    } else {
+                        FocusedDisplay::DarkMagic
+                    }));
+                }
                 GameAction::Continue => commands.trigger(Continue),
+
+                GameAction::SpyGlassPredictionAction(action) => {
+                    let result = match action {
+                        PredictionAction::Heat => AnyWeather::Heat(journey.weather.heat),
+                        PredictionAction::Moisture => {
+                            AnyWeather::Moisture(journey.weather.moisture)
+                        }
+                        PredictionAction::Wind => AnyWeather::Wind(journey.weather.wind),
+                    };
+                    predictions.spy_glass = Some(result);
+                    commands.trigger(UpdateSpyGlassUi)
+                }
+                GameAction::ParrotPredictionAction(action) => {
+                    let result = match action {
+                        PredictionAction::Heat => AnyWeather::Heat(journey.weather.heat),
+                        PredictionAction::Moisture => {
+                            AnyWeather::Moisture(journey.weather.moisture)
+                        }
+                        PredictionAction::Wind => AnyWeather::Wind(journey.weather.wind),
+                    };
+                    predictions.parrot = Some(result);
+                    commands.trigger(UpdateParrotUi)
+                }
+                GameAction::DarkMagicPredictionAction(action) => {
+                    let result = match action {
+                        PredictionAction::Heat => AnyWeather::Heat(journey.weather.heat),
+                        PredictionAction::Moisture => {
+                            AnyWeather::Moisture(journey.weather.moisture)
+                        }
+                        PredictionAction::Wind => AnyWeather::Wind(journey.weather.wind),
+                    };
+                    predictions.dark_magic = Some(result);
+                    commands.trigger(UpdateDarkMagicUi)
+                }
             }
         }
     }

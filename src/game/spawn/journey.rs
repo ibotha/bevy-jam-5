@@ -43,10 +43,10 @@ pub struct CreateJourney;
 #[derive(Resource, Debug)]
 pub struct Journey {
     game_over: bool,
-    weather: DayWeather,
     event: Option<DayEvent>,
     events: Vec<FollowingEvent>,
     distance: i32,
+    pub weather: DayWeather, // Can use this variable to grab the predicted weather for the coming day
     current_day: u32,
     moisture_cycle_length: u32,
     heat_cycle_length: u32,
