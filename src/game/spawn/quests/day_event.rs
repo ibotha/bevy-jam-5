@@ -12,6 +12,7 @@ pub struct DayEvent {
     id: usize,
     pub dialog: Vec<Dialogue>,
     pub choices: HashMap<String, ChoiceFunction>,
+    pub hint: Option<String>,
 }
 
 impl PartialEq for DayEvent {
@@ -59,6 +60,12 @@ impl DayEvent {
                     .map(|(label, method)| (label.to_string(), *method)),
             ),
             id: get_id(),
+            hint: None,
         }
+    }
+
+    pub fn add_hints<T: ToString>(mut self, hint: T) -> Self {
+        self.hint = Some(hint.to_string());
+        return self;
     }
 }

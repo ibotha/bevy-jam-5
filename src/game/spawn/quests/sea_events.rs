@@ -28,7 +28,7 @@ fn plain_sailing() -> DayEvent {
             &["Nothing on the horizon, should be a good day of smooth sailing."],
         )],
         &[("Sail", sail), ("Rest", rest), ("Woah", woah)],
-    )
+    ).add_hints("Sleep now, cause you are tired!")
 }
 
 pub(super) fn select_random_sea_event(rng: &mut impl RngCore) -> DayEvent {
