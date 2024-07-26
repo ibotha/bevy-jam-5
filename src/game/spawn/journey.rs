@@ -22,6 +22,7 @@ use crate::{
     screen::weather_maniac::UpdateBoneGrid,
 };
 
+use super::predicitons::UpdateParrotUi;
 use super::quests::FollowingEvent;
 use super::{
     quests::{day_event::DayEvent, dialogue::DialogueQueue, select_random_event, Environment},
@@ -43,7 +44,7 @@ pub struct CreateJourney;
 #[derive(Resource, Debug)]
 pub struct Journey {
     game_over: bool,
-    event: Option<DayEvent>,
+    pub event: Option<DayEvent>,
     events: Vec<FollowingEvent>,
     distance: i32,
     pub weather: DayWeather, // Can use this variable to grab the predicted weather for the coming day
@@ -144,6 +145,7 @@ struct SetJouneyEvent(DayEvent);
 
 fn set_journey_event(
     trigger: Trigger<SetJouneyEvent>,
+    mut commands: Commands,
     mut dialog_queue: ResMut<DialogueQueue>,
     mut journey: ResMut<Journey>,
 ) {
@@ -151,6 +153,7 @@ fn set_journey_event(
     for d in &trigger.event().0.dialog {
         dialog_queue.queue.push_back(d.clone());
     }
+    commands.trigger(UpdateParrotUi);
 }
 
 fn choose_task(

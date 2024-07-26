@@ -6,6 +6,7 @@ use super::{dialogue::Dialogue, ChoiceFunction};
 pub struct DayEvent {
     pub dialog: Vec<Dialogue>,
     pub choices: HashMap<String, ChoiceFunction>,
+    pub hint: Option<String>,
 }
 
 impl DayEvent {
@@ -46,6 +47,12 @@ impl DayEvent {
                     .iter()
                     .map(|(label, method)| (label.to_string(), *method)),
             ),
+            hint: None,
         }
+    }
+
+    pub fn add_hints<T:ToString>(mut self, hint: T) -> Self {
+        self.hint = Some(hint.to_string());
+        return self;
     }
 }
