@@ -5,8 +5,10 @@
 use bevy::prelude::*;
 
 pub mod journey;
+pub mod journey_constants;
 pub mod level;
 pub mod player;
+pub mod quests;
 pub mod weather;
 
 pub(super) fn plugin(app: &mut App) {

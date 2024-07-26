@@ -10,9 +10,10 @@ mod movement;
 pub mod spawn;
 mod ui;
 
-pub fn weighted_random<T, R>(rng: Option<&mut R>, iter: Vec<(T, u32)>) -> T
+pub fn weighted_random<T, R>(rng: Option<&mut R>, iter: &[(T, u32)]) -> T
 where
     R: Rng,
+    T: Clone,
 {
     let total: u32 = iter.iter().map(|(_, b)| b).sum();
     let mut gen = match rng {
@@ -20,8 +21,8 @@ where
         None => rand::thread_rng().gen_range(0..total),
     };
     for (item, ballots) in iter {
-        if gen < ballots {
-            return item;
+        if gen < *ballots {
+            return item.clone();
         }
         gen -= ballots;
     }

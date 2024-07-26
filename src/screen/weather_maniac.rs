@@ -160,7 +160,6 @@ fn handle_toggle_weather_grid(
     trigger: Trigger<ToggleWeatherGridEvent>,
     mut query: Query<&mut Visibility, With<ToggleWithBones>>,
 ) {
-    info!("Toggling the bones!");
     for mut visibility in &mut query {
         *visibility = if trigger.event().0 {
             Visibility::Visible

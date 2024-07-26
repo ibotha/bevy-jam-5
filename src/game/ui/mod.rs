@@ -5,9 +5,10 @@ use crate::screen::{weather_maniac::ToggleWeatherGridEvent, Screen};
 use crate::ui::prelude::*;
 
 use super::spawn::journey::{Continue, Ship};
+use super::spawn::quests::dialogue::Dialogue;
 use super::{
     assets::{FontKey, HandleMap, ImageKey},
-    spawn::journey::{ChooseTask, DayTask},
+    spawn::journey::ChooseTask,
 };
 
 #[derive(Event, Debug)]
@@ -42,12 +43,11 @@ pub fn plugin(app: &mut App) {
         .observe(update_dialogue);
 }
 
-#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Reflect)]
-#[reflect(Component)]
+#[derive(Component, Debug, Clone, PartialEq, Eq, Reflect)]
 pub enum GameAction {
     Bones,
     Continue,
-    Choose(DayTask),
+    Choose(String),
     Menu,
 }
 
@@ -78,21 +78,9 @@ fn update_choices(
                         },
                         ..default()
                     })
-                    .insert(GameAction::Choose(*choice))
+                    .insert(GameAction::Choose(choice.to_owned()))
                     .with_children(|parent| {
-                        parent.label(
-                            match choice {
-                                DayTask::Sail => "Sail",
-                                DayTask::Fight => "Fight",
-                                DayTask::Explore => "Explore",
-                                DayTask::Rest => "Rest",
-                                DayTask::HunkerDown => "Brace",
-                                DayTask::CleanDaDeck => "Clean",
-                                DayTask::CookDaFood => "Cook",
-                                DayTask::Gamble => "Gamble",
-                            },
-                            fonts[&FontKey::LunchDS].clone_weak(),
-                        );
+                        parent.label(choice, fonts[&FontKey::LunchDS].clone_weak());
                     });
             }
         });
@@ -156,13 +144,7 @@ fn update_ship_stats(
     );
 }
 #[derive(Event, Debug)]
-pub struct UpdateChoices(pub Vec<DayTask>);
-
-#[derive(Debug, Reflect)]
-pub struct Dialogue {
-    pub speaker: String,
-    pub paragraphs: Vec<String>,
-}
+pub struct UpdateChoices(pub Vec<String>);
 
 #[derive(Component)]
 struct ContinueButton;
@@ -637,7 +619,7 @@ fn handle_game_action(
                         FocusedDisplay::Bones
                     }));
                 }
-                GameAction::Choose(task) => commands.trigger(ChooseTask(*task)),
+                GameAction::Choose(task) => commands.trigger(ChooseTask(task.to_owned())),
                 GameAction::Continue => commands.trigger(Continue),
             }
         }
