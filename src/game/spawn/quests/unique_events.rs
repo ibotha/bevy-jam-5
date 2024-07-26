@@ -1,24 +1,18 @@
-use std::collections::VecDeque;
-
-use crate::game::spawn::{journey::Ship, weather::DayWeather};
-
 use super::{
     constants::{CAPTAIN, CREW_MEMBER},
     dialogue::Dialogue,
-    Certainty, ChoiceResult, DayEvent, Environment, FollowingEvent,
+    Certainty, DayEvent, Environment, FollowingEvent, StoryActions,
 };
 
-fn embark(ship: Ship, weather: &DayWeather) -> ChoiceResult {
-    ChoiceResult {
-        ship,
-        following_events: vec![FollowingEvent {
-            event: visit_shady_cove(),
-            certainty: Certainty::Certain,
-            distance: 20,
-            environment: Environment::Sea,
-        }],
-        dialogues: VecDeque::from_iter([Dialogue::new(CAPTAIN, &["And so we go to shady cove!"])]),
-    }
+fn embark(actions: &mut StoryActions) {
+    actions.add_event(FollowingEvent {
+        event: visit_shady_cove(),
+        certainty: Certainty::Certain,
+        distance: 20,
+        environment: Environment::Sea,
+    });
+    actions.add_dialogue(Dialogue::new(CAPTAIN, &["And so we go to shady cove!"]));
+    actions.change_environment(Environment::Sea);
 }
 
 pub fn embark_event() -> DayEvent {
@@ -32,9 +26,45 @@ pub fn embark_event() -> DayEvent {
     )
 }
 
+fn explore_shady_cove(actions: &mut StoryActions) {
+    actions.add_event(FollowingEvent {
+        event: shady_cove_treasure(),
+        certainty: Certainty::Certain,
+        distance: 10,
+        environment: Environment::Island,
+    });
+    actions.add_dialogue(Dialogue::new(CAPTAIN, &["Adventure awaits!"]));
+    actions.change_environment(Environment::Island);
+}
+
 pub fn visit_shady_cove() -> DayEvent {
     DayEvent::new(
         &[Dialogue::new(CAPTAIN, &["Oh my, is that shady cove?"])],
-        &[("Embark!", embark)],
+        &[("Explore", explore_shady_cove)],
+    )
+}
+
+fn take_shady_cove_treasure(journey: &mut StoryActions) {
+    journey.delta_crew(-3);
+    journey.delta_max_crew(-3);
+    journey.delta_health(-3);
+    journey.delta_max_health(-3);
+    journey.add_event(FollowingEvent {
+        event: shady_cove_treasure(),
+        certainty: Certainty::Certain,
+        distance: 10,
+        environment: Environment::Island,
+    });
+    journey.add_dialogue(Dialogue::new(CAPTAIN, &["Adventure awaits!"]));
+    journey.change_environment(Environment::Island);
+}
+
+pub fn shady_cove_treasure() -> DayEvent {
+    DayEvent::new(
+        &[Dialogue::new(
+            CAPTAIN,
+            &["Arghh! Thats the treasure of shady cove!"],
+        )],
+        &[("Take", take_shady_cove_treasure)],
     )
 }

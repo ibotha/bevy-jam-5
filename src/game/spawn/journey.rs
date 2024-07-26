@@ -2,13 +2,15 @@ use std::collections::VecDeque;
 
 use bevy::math;
 use bevy::prelude::*;
+use log::info;
 use rand::rngs::StdRng;
 use rand::thread_rng;
 use rand::Rng;
 use rand::RngCore;
 use rand::SeedableRng;
 
-use crate::game::spawn::quests::ChoiceResult;
+use crate::game::weighted_random;
+use crate::screen::Screen;
 use crate::{
     game::{
         spawn::{
@@ -22,7 +24,9 @@ use crate::{
     screen::weather_maniac::UpdateBoneGrid,
 };
 
+use super::quests::Certainty;
 use super::quests::FollowingEvent;
+use super::quests::StoryActions;
 use super::{
     quests::{day_event::DayEvent, dialogue::DialogueQueue, select_random_event, Environment},
     weather::{DayWeather, Heat, Moisture, Wind},
@@ -44,8 +48,8 @@ pub struct CreateJourney;
 pub struct Journey {
     game_over: bool,
     event: Option<DayEvent>,
-    events: Vec<FollowingEvent>,
-    distance: i32,
+    pub events: Vec<FollowingEvent>,
+    pub distance: i32,
     pub weather: DayWeather, // Can use this variable to grab the predicted weather for the coming day
     current_day: u32,
     moisture_cycle_length: u32,
@@ -54,7 +58,7 @@ pub struct Journey {
     rng: StdRng,
     difficulty: f32,
     journey_length: u32, // How many days until max difficulty
-    environment: Environment,
+    pub environment: Environment,
 }
 
 impl Journey {
@@ -166,91 +170,28 @@ fn choose_task(
         return;
     }
 
-    let ChoiceResult {
-        ship: mut updated_ship,
-        mut following_events,
-        mut dialogues,
-    } = journey.event.as_ref().expect("choice is valid").choices[&trigger.event().0](
-        ship.clone(),
-        &journey.weather,
+    let mut updates: Vec<String> = vec![];
+    journey.event.as_ref().expect("choice is valid").choices[&trigger.event().0](
+        &mut StoryActions::new(&mut ship, &mut journey, &mut dialog_queue, &mut updates),
     );
     journey.event = None;
 
-    journey.events.append(&mut following_events);
-
-    updated_ship.crew = updated_ship.crew.min(updated_ship.max_crew);
-    updated_ship.food = updated_ship.food.min(updated_ship.max_food);
-    updated_ship.health = updated_ship.health.min(updated_ship.max_health);
-
-    updated_ship.food -= updated_ship.crew;
-    if updated_ship.food < 0 {
-        updated_ship.crew += updated_ship.food;
-        updated_ship.food = 0;
-    }
-
-    dialog_queue.queue.append(&mut dialogues);
-
-    let mut updates: Vec<String> = vec![];
-
-    if updated_ship.crew != ship.crew {
-        updates.push(diff_readout(
-            ship.crew,
-            updated_ship.crew,
-            "crew member",
-            true,
-        ));
-    }
-    if updated_ship.max_crew != ship.max_crew {
-        updates.push(diff_readout(
-            ship.max_crew,
-            updated_ship.max_crew,
-            "crew member capacity",
-            false,
-        ));
-    }
-    if updated_ship.health != ship.health {
-        updates.push(damage_diff_readout(ship.health, updated_ship.health));
-    }
-    if updated_ship.max_health != ship.max_health {
-        updates.push(diff_readout(
-            ship.max_health,
-            updated_ship.max_health,
-            "max ship health",
-            false,
-        ));
-    }
-    if updated_ship.distance_travelled != 0 {
+    ship.food -= ship.crew;
+    if ship.food < 0 {
         updates.push(format!(
-            "You covered {leagues} leagues.",
-            leagues = updated_ship.distance_travelled
+            "You lost {crew} crew to hunger!",
+            crew = -ship.food
         ));
-    }
-    if updated_ship.food != ship.food {
-        updates.push(diff_readout(ship.food, updated_ship.food, "food", false));
-    }
-    if updated_ship.max_food != ship.max_food {
-        updates.push(diff_readout(
-            ship.max_food,
-            updated_ship.max_food,
-            "food capacity",
-            false,
-        ));
+        ship.crew += ship.food;
+        ship.food = 0;
     }
 
-    for strings in updates.as_slice().chunks(5) {
+    for strings in updates.as_slice().chunks(4) {
         dialog_queue.queue.push_back(Dialogue::new_from_strings(
             "Updates",
             strings.iter().map(|s| s.to_owned()),
         ));
     }
-
-    for event in &mut journey.events {
-        event.distance -= updated_ship.distance_travelled;
-    }
-
-    journey.distance += updated_ship.distance_travelled;
-    updated_ship.distance_travelled = 0;
-    *ship = updated_ship;
 
     if ship.crew <= 0 {
         info!("GAME OVER!");
@@ -279,41 +220,26 @@ fn choose_task(
     commands.trigger(Continue);
 }
 
-fn diff_readout(before: i32, after: i32, unit: &str, pluralize: bool) -> String {
-    base_diff_readout(before, after, ("gained", "lossed"), unit, pluralize)
-}
-
-fn damage_diff_readout(before: i32, after: i32) -> String {
-    base_diff_readout(before, after, ("restored", "took"), "damage", false)
-}
-
-fn base_diff_readout(
-    before: i32,
-    after: i32,
-    verbs: (&str, &str),
-    unit: &str,
-    pluralize: bool,
-) -> String {
-    let diff = (before - after).abs();
-    format!(
-        "You {verb} {diff} {unit}{pluralize}",
-        verb = if before < after { verbs.0 } else { verbs.1 },
-        pluralize = if pluralize && (diff != 1) { "s" } else { "" }
-    )
-}
-
 fn continue_journey(
     _trigger: Trigger<Continue>,
     mut commands: Commands,
     mut dialoges: ResMut<DialogueQueue>,
+    mut next_screen: ResMut<NextState<Screen>>,
     journey: Res<Journey>,
 ) {
-    info!("Continuing: {dialoges:?}");
     match dialoges.queue.pop_front() {
         Some(dialogue) => {
             commands.trigger(UpdateDialogBox(dialogue));
         }
-        None => {}
+        None => {
+            if journey.game_over {
+                next_screen.set(Screen::Credits)
+            }
+        }
+    }
+
+    if journey.game_over {
+        return;
     }
 
     if dialoges.queue.len() == 0 {
@@ -343,7 +269,47 @@ fn next_day(_trigger: Trigger<NextDay>, mut commands: Commands, mut journey: Res
     commands.trigger(UpdateShipStatsUI);
 
     let env = journey.environment;
-    commands.trigger(SetJouneyEvent(select_random_event(&mut journey.rng, env)));
+
+    let certain_events: Vec<DayEvent> = journey
+        .events
+        .iter()
+        .filter(|e| e.environment == env && e.distance < 0 && e.certainty == Certainty::Certain)
+        .map(|e| e.event.clone())
+        .collect();
+
+    let event = if certain_events.len() != 0 {
+        let event = certain_events[journey.rng.gen_range(0..certain_events.len())].clone();
+        let index = journey
+            .events
+            .iter()
+            .position(|e| e.event == event)
+            .expect("Event is present");
+        journey.events.remove(index);
+        info!("{events:?}", events = journey.events);
+        event
+    } else {
+        let mut potential_events: Vec<(DayEvent, u32)> = journey
+            .events
+            .iter()
+            .filter(|e| e.environment == env && e.distance < 0)
+            .map(|e| {
+                (
+                    e.event.clone(),
+                    match e.certainty {
+                        Certainty::Possible(p) => p,
+                        _ => 10,
+                    },
+                )
+            })
+            .collect();
+
+        let mut rng = &mut journey.rng;
+        potential_events.push((select_random_event(&mut rng, env), 10));
+
+        weighted_random(Some(&mut rng), &potential_events).clone()
+    };
+
+    commands.trigger(SetJouneyEvent(event));
 }
 
 pub fn plugin(app: &mut App) {

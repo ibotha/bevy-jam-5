@@ -1,7 +1,7 @@
 //! Game mechanics and content.
 
 use bevy::prelude::*;
-use rand::Rng;
+use rand::{Rng, RngCore};
 
 mod animation;
 pub mod assets;
@@ -10,19 +10,15 @@ mod movement;
 pub mod spawn;
 mod ui;
 
-pub fn weighted_random<T, R>(rng: Option<&mut R>, iter: &[(T, u32)]) -> T
-where
-    R: Rng,
-    T: Clone,
-{
+pub fn weighted_random<'a, T, R: RngCore>(rng: Option<&mut R>, iter: &'a [(T, u32)]) -> &'a T {
     let total: u32 = iter.iter().map(|(_, b)| b).sum();
     let mut gen = match rng {
         Some(rng) => rng.gen_range(0..total),
         None => rand::thread_rng().gen_range(0..total),
     };
-    for (item, ballots) in iter {
+    for (item, ballots) in iter.iter() {
         if gen < *ballots {
-            return item.clone();
+            return item;
         }
         gen -= ballots;
     }
