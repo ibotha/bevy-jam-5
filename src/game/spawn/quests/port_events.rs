@@ -3,6 +3,7 @@ use rand::RngCore;
 use super::{
     prelude::*,
     sea_events::{bounty_hunters, sail},
+    port_stories::*
 };
 
 fn embark(actions: &mut StoryActions) {
@@ -101,7 +102,12 @@ fn a_carnival_in_the_city() -> DayEvent {
 pub(super) fn select_random_port_event(rng: &mut impl RngCore) -> DayEvent {
     weighted_random(
         Some(rng),
-        &[(a_carnival_in_the_city(), 1), (a_day_at_port(), 14)],
+        &[
+            (a_carnival_in_the_city(), 1),
+            (a_day_at_port(), 14),
+            (the_mysterious_merchant_event(), 2),
+            (the_dockside_tavern_brawl_event(), 3),
+        ],
     )
     .clone()
 }

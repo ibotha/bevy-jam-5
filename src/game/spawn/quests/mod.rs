@@ -6,7 +6,8 @@ use sea_events::select_random_sea_event;
 
 pub mod actions;
 pub mod battle;
-mod constants;
+#[macro_use]
+pub mod constants;
 pub mod day_event;
 pub mod dialogue;
 mod island_events;
@@ -17,6 +18,9 @@ pub mod treasure;
 pub mod unique_events;
 
 pub use actions::StoryActions;
+
+// Import all port_events
+pub mod port_stories;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Environment {
