@@ -316,7 +316,6 @@ impl FromWorld for HandleMap<ImageKey> {
 
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Reflect)]
 pub enum SfxKey {
-    ButtonHover,
     ButtonPress,
     Step1,
     Step2,
@@ -332,10 +331,6 @@ impl FromWorld for HandleMap<SfxKey> {
     fn from_world(world: &mut World) -> Self {
         let asset_server = world.resource::<AssetServer>();
         [
-            (
-                SfxKey::ButtonHover,
-                asset_server.load("audio/sfx/button_hover.ogg"),
-            ),
             (
                 SfxKey::ButtonPress,
                 asset_server.load("audio/sfx/button_press.ogg"),
