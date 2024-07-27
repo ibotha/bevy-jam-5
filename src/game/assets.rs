@@ -65,6 +65,12 @@ pub enum ImageKey {
     FoodImage,
     ShipStatsImage,
     DialogueBox,
+    Cannon,
+    Gold,
+    NorthernSeaMap,
+    SirensScale,
+    SirensCoveMap,
+    MonkeyPaw,
 }
 
 impl AssetKey for ImageKey {
@@ -79,6 +85,60 @@ impl FromWorld for HandleMap<ImageKey> {
                 ImageKey::Ship,
                 asset_server.load_with_settings(
                     "images/Ship.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::NorthernSeaMap,
+                asset_server.load_with_settings(
+                    "images/NorthernSeaMap.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::SirensScale,
+                asset_server.load_with_settings(
+                    "images/SirensScale.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::SirensCoveMap,
+                asset_server.load_with_settings(
+                    "images/SirensCoveMap.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::MonkeyPaw,
+                asset_server.load_with_settings(
+                    "images/MonkeyPaw.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::Cannon,
+                asset_server.load_with_settings(
+                    "images/Cannon.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::Gold,
+                asset_server.load_with_settings(
+                    "images/Gold.png",
                     |settings: &mut ImageLoaderSettings| {
                         settings.sampler = ImageSampler::nearest();
                     },

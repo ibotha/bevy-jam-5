@@ -267,11 +267,16 @@ fn update_inventory(
                     commands,
                     images.as_ref(),
                     match key {
-                        super::spawn::quests::treasure::Item::MonkeyPaw => {
-                            ImageKey::DarkmagicButton
+                        super::spawn::quests::treasure::Item::MonkeyPaw => ImageKey::MonkeyPaw,
+                        super::spawn::quests::treasure::Item::Cannon => ImageKey::Cannon,
+                        super::spawn::quests::treasure::Item::Gold => ImageKey::Gold,
+                        super::spawn::quests::treasure::Item::SirensCoveMap => {
+                            ImageKey::SirensCoveMap
                         }
-                        super::spawn::quests::treasure::Item::Cannon => ImageKey::Ship,
-                        super::spawn::quests::treasure::Item::Gold => ImageKey::Bone4,
+                        super::spawn::quests::treasure::Item::SirensScale => ImageKey::SirensScale,
+                        super::spawn::quests::treasure::Item::NorthernSeaMap => {
+                            ImageKey::NorthernSeaMap
+                        }
                     },
                     &fonts[&FontKey::LunchDS],
                     *amount,
@@ -466,6 +471,8 @@ fn spawn_game_ui(
                                         .spawn(NodeBundle {
                                             style: Style {
                                                 width: Val::Px(43.0),
+                                                margin: UiRect::horizontal(Val::Auto)
+                                                    .with_top(Val::Px(15.0)),
                                                 display: Display::Grid,
                                                 grid_template_columns: vec![
                                                     GridTrack::fr(1.0),

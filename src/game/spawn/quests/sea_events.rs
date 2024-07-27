@@ -4,49 +4,14 @@ pub fn set_next_port(actions: &mut StoryActions, distance: u32) {
     actions.add_event(FollowingEvent {
         event: port_spotted,
         certainty: Certainty::Possible(10),
-        distance: distance as i32,
-        environment: Environment::Sea,
+        delay: Delay::Distance(distance as i32),
+        environment: Environment::Sea(actions.get_current_sea()),
     });
 }
 
 pub(super) fn sail(actions: &mut StoryActions) {
-    let (potential_speed, danger) = evaluate_sea_weather(actions);
-    actions.travel(potential_speed.min(actions.get_crew()));
-    actions.delta_crew(-danger / 3);
-}
-
-pub fn evaluate_sea_weather(actions: &mut StoryActions) -> (i32, i32) {
-    let DW {
-        heat,
-        moisture,
-        wind,
-    } = actions.weather();
-
-    let potential_speed = match wind {
-        W::None => 0,
-        W::Low => 2,
-        W::Medium => 4,
-        W::High => 8,
-        W::GaleForce => 12,
-    };
-    let danger = potential_speed.min(match (heat, moisture) {
-        (H::Blistering, M::Dry) => 8,
-        (H::Blistering, M::Comfortable) => 6,
-        (H::Blistering, M::Humid) => 10,
-        (H::Warm, M::Dry) => 5,
-        (H::Warm, M::Comfortable) => 4,
-        (H::Warm, M::Humid) => 6,
-        (H::Comfortable, M::Dry) => 2,
-        (H::Comfortable, M::Comfortable) => 0,
-        (H::Comfortable, M::Humid) => 3,
-        (H::Chilly, M::Dry) => 5,
-        (H::Chilly, M::Comfortable) => 4,
-        (H::Chilly, M::Humid) => 6,
-        (H::Freezing, M::Dry) => 7,
-        (H::Freezing, M::Comfortable) => 6,
-        (H::Freezing, M::Humid) => 10,
-    });
-    (potential_speed, danger)
+    actions.travel(actions.possible_distance().min(actions.get_crew()));
+    actions.delta_crew(-actions.danger() / 3);
 }
 
 fn rest(actions: &mut StoryActions) {
@@ -67,7 +32,7 @@ fn plain_sailing(_actions: &mut StoryActions) -> DayEvent {
 }
 
 fn dock(actions: &mut StoryActions) {
-    actions.change_environment(super::Environment::Port);
+    actions.change_environment(super::Environment::Port(Port::Random));
 }
 
 fn sail_on(actions: &mut StoryActions) {
@@ -83,7 +48,7 @@ pub fn port_spotted(_actions: &mut StoryActions) -> DayEvent {
 }
 
 fn explore_island(actions: &mut StoryActions) {
-    actions.change_environment(super::Environment::Island);
+    actions.change_environment(super::Environment::Island(Island::Random));
 }
 
 fn island_spotted(_actions: &mut StoryActions) -> DayEvent {
@@ -93,7 +58,7 @@ fn island_spotted(_actions: &mut StoryActions) -> DayEvent {
         .choice("Explore", explore_island)
 }
 
-pub(super) fn select_random_sea_event(actions: &mut StoryActions) -> EventBuilder {
+pub(super) fn select_random_sea_event(actions: &mut StoryActions, sea: Sea) -> EventBuilder {
     let choices = [(island_spotted as EventBuilder, 1), (plain_sailing, 14)];
     weighted_random(Some(actions.get_journey_rng()), &choices).clone()
 }

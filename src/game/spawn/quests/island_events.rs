@@ -9,7 +9,7 @@ fn rest(actions: &mut StoryActions) {
 }
 
 fn leave(actions: &mut StoryActions) {
-    actions.change_environment(Environment::Sea);
+    actions.change_environment(Environment::Sea(actions.get_current_sea()));
 }
 
 fn just_walking(_actions: &mut StoryActions) -> DayEvent {
@@ -20,7 +20,10 @@ fn just_walking(_actions: &mut StoryActions) -> DayEvent {
         .choice("Leave", leave)
 }
 
-pub(super) fn select_random_island_event(actions: &mut StoryActions) -> EventBuilder {
+pub(super) fn select_random_island_event(
+    actions: &mut StoryActions,
+    island: Island,
+) -> EventBuilder {
     let choices = [(just_walking, 14)];
     weighted_random(Some(actions.get_journey_rng()), &choices).clone()
 }

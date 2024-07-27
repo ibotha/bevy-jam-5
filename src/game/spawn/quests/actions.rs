@@ -5,11 +5,7 @@ use crate::game::spawn::{
     weather::DayWeather,
 };
 
-use super::{
-    dialogue::{Dialogue, DialogueQueue},
-    treasure::Item,
-    Environment, FollowingEvent,
-};
+use super::{dialogue::DialogueQueue, prelude::*};
 
 pub struct StoryActions<'a> {
     ship: &'a mut Ship,
@@ -19,7 +15,7 @@ pub struct StoryActions<'a> {
 }
 
 fn diff_readout(diff: i32, unit: &str, pluralize: bool) -> String {
-    base_diff_readout(diff, ("gained", "lossed"), unit, pluralize)
+    base_diff_readout(diff, ("gained", "lost"), unit, pluralize)
 }
 
 fn damage_diff_readout(diff: i32) -> String {
@@ -152,9 +148,9 @@ impl<'a> StoryActions<'a> {
         }
         self.journey.environment = env;
         self.updates.push(match env {
-            Environment::Port => "You arrive at port".to_string(),
-            Environment::Island => "You set foot on the island".to_string(),
-            Environment::Sea => "You cast off into the sea".to_string(),
+            Environment::Port(_) => "You arrive at port".to_string(),
+            Environment::Island(_) => "You set foot on the island".to_string(),
+            Environment::Sea(_) => "You cast off into the sea".to_string(),
         });
     }
 
@@ -164,12 +160,99 @@ impl<'a> StoryActions<'a> {
         self.journey.distance += distance;
         for event in &mut self.journey.events {
             if event.environment == self.journey.environment {
-                event.distance -= distance;
+                if let Delay::Distance(d) = &mut event.delay {
+                    *d -= distance;
+                }
             }
         }
     }
 
     pub(crate) fn weather(&self) -> DayWeather {
         self.journey.weather.clone()
+    }
+
+    pub(crate) fn get_current_sea(&self) -> Sea {
+        self.journey.sea
+    }
+
+    pub(crate) fn get_clarity(&self) -> i32 {
+        let DW {
+            heat,
+            moisture,
+            wind,
+        } = self.weather();
+
+        let wind_factor = match wind {
+            W::None => 0,
+            W::Low => 0,
+            W::Medium => 1,
+            W::High => 2,
+            W::GaleForce => 3,
+        };
+        match (heat, moisture) {
+            (H::Blistering, M::Dry) => 10,
+            (H::Blistering, M::Comfortable) => 8,
+            (H::Blistering, M::Humid) => 7 - wind_factor,
+            (H::Warm, M::Dry) => 10,
+            (H::Warm, M::Comfortable) => 8,
+            (H::Warm, M::Humid) => 6 - wind_factor,
+            (H::Comfortable, M::Dry) => 10,
+            (H::Comfortable, M::Comfortable) => 8,
+            (H::Comfortable, M::Humid) => 5 - wind_factor,
+            (H::Chilly, M::Dry) => 7,
+            (H::Chilly, M::Comfortable) => 4,
+            (H::Chilly, M::Humid) => 3 - wind_factor,
+            (H::Freezing, M::Dry) => 6,
+            (H::Freezing, M::Comfortable) => 4,
+            (H::Freezing, M::Humid) => 1 - wind_factor,
+        }
+    }
+
+    pub(crate) fn possible_distance(&self) -> i32 {
+        let DW {
+            heat,
+            moisture,
+            wind,
+        } = self.weather();
+        match self.get_environment() {
+            Environment::Port(_) => todo!(),
+            Environment::Island(_) => todo!(),
+            Environment::Sea(_) => match wind {
+                W::None => 0,
+                W::Low => 2,
+                W::Medium => 4,
+                W::High => 8,
+                W::GaleForce => 12,
+            },
+        }
+    }
+
+    pub(crate) fn danger(&self) -> i32 {
+        let DW {
+            heat,
+            moisture,
+            wind,
+        } = self.weather();
+        match self.get_environment() {
+            Environment::Port(_) => todo!(),
+            Environment::Island(_) => todo!(),
+            Environment::Sea(_) => self.possible_distance().min(match (heat, moisture) {
+                (H::Blistering, M::Dry) => 8,
+                (H::Blistering, M::Comfortable) => 6,
+                (H::Blistering, M::Humid) => 10,
+                (H::Warm, M::Dry) => 5,
+                (H::Warm, M::Comfortable) => 4,
+                (H::Warm, M::Humid) => 6,
+                (H::Comfortable, M::Dry) => 2,
+                (H::Comfortable, M::Comfortable) => 0,
+                (H::Comfortable, M::Humid) => 3,
+                (H::Chilly, M::Dry) => 5,
+                (H::Chilly, M::Comfortable) => 4,
+                (H::Chilly, M::Humid) => 6,
+                (H::Freezing, M::Dry) => 7,
+                (H::Freezing, M::Comfortable) => 6,
+                (H::Freezing, M::Humid) => 10,
+            }),
+        }
     }
 }

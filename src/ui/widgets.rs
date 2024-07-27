@@ -144,7 +144,7 @@ impl<T: Spawn> Widgets for T {
                 TextBundle::from_section(
                     text,
                     TextStyle {
-                        font_size: 10.0,
+                        font_size: 6.0,
                         color: LABEL_TEXT,
                         font,
                     },

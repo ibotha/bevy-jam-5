@@ -31,6 +31,7 @@ use super::predicitons::UpdateParrotUi;
 use super::quests::treasure::Item;
 use super::quests::Certainty;
 use super::quests::FollowingEvent;
+use super::quests::Sea;
 use super::quests::StoryActions;
 use super::{
     quests::{day_event::DayEvent, dialogue::DialogueQueue, select_random_event, Environment},
@@ -65,6 +66,7 @@ pub struct Journey {
     journey_length: u32, // How many days until max difficulty
     pub inventory: HashMap<Item, i32>,
     pub environment: Environment,
+    pub sea: Sea,
 }
 
 impl Journey {
@@ -86,7 +88,8 @@ impl Journey {
             events: vec![],
             journey_length: (distance * ((difficulty - 10.0) * -0.1 + 1.0) / AVERAGE_DAILY_DISTANCE)
                 as u32,
-            environment: Environment::Sea,
+            environment: Environment::Sea(Sea::Intro),
+            sea: Sea::Intro,
             inventory: Default::default(),
         }
     }
@@ -182,7 +185,10 @@ fn choose_task(
     let mut updates: Vec<String> = vec![];
     updates.push(format!("Weather for day: {day}", day = journey.current_day));
     updates.push(format!("Heat: {heat}", heat = journey.weather.heat));
-    updates.push(format!("Moisture: {moisture}", moisture = journey.weather.moisture));
+    updates.push(format!(
+        "Moisture: {moisture}",
+        moisture = journey.weather.moisture
+    ));
     updates.push(format!("Wind: {wind}", wind = journey.weather.wind));
 
     journey.event.as_ref().expect("choice is valid").choices[&trigger.event().0](
@@ -299,7 +305,9 @@ fn next_day(
     let certain_events: Vec<super::quests::EventBuilder> = journey
         .events
         .iter()
-        .filter(|e| e.environment == env && e.distance <= 0 && e.certainty == Certainty::Certain)
+        .filter(|e| {
+            e.environment.compare(&env) && e.delay.is_over() && e.certainty == Certainty::Certain
+        })
         .map(|e| e.event.clone())
         .collect();
 
@@ -317,7 +325,7 @@ fn next_day(
         let mut potential_events: Vec<(super::quests::EventBuilder, u32)> = journey
             .events
             .iter()
-            .filter(|e| e.environment == env && e.distance < 0)
+            .filter(|e| e.environment.compare(&env) && e.delay.is_over())
             .map(|e| {
                 (
                     e.event.clone(),

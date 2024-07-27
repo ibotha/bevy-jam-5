@@ -1,46 +1,9 @@
-use super::{
-    port_stories::*,
-    prelude::*,
-    sea_events::{bounty_hunters, sail, set_next_port},
-};
+use super::{port_stories::*, prelude::*};
 
-fn embark(actions: &mut StoryActions) {
-    actions.change_environment(Environment::Sea);
-    sail(actions);
-    set_next_port(actions, 20);
-}
-
-fn recruit(actions: &mut StoryActions) {
-    actions.delta_items(Item::Gold, -100);
-    actions.delta_crew(1);
-}
-
-fn resupply(actions: &mut StoryActions) {
-    actions.delta_items(Item::Gold, -20);
-    actions.delta_food(50);
-}
-
-fn repair(actions: &mut StoryActions) {
-    actions.delta_items(Item::Gold, -100);
-    actions.delta_health(10);
-}
-
-fn wait(_actions: &mut StoryActions) {}
-
-fn a_day_at_port(actions: &mut StoryActions) -> DayEvent {
-    DayEvent::new()
-        .line(captain!(
-            "We are still at the blasted port!",
-            "Is the weather right for us to embark?"
-        ))
-        .choice("Embark", embark)
-        .choice("Wait", wait)
-        .conditional_choice("Recruit", recruit, actions.get_item(Item::Gold) > 100)
-        .conditional_choice("Resupply", resupply, actions.get_item(Item::Gold) > 20)
-        .conditional_choice("Repair", repair, actions.get_item(Item::Gold) > 100)
-}
-
-pub(super) fn select_random_port_event(actions: &mut StoryActions) -> super::EventBuilder {
+pub(super) fn select_random_port_event(
+    actions: &mut StoryActions,
+    port: Port,
+) -> super::EventBuilder {
     let choices = [
         (the_day_at_port_event as EventBuilder, 14), // Higher number has  a higher chance of being selected
         // Common events

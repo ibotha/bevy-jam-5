@@ -6,8 +6,8 @@ pub use super::battle;
 pub use super::constants::*;
 pub(super) use super::dialogue::Dialogue;
 pub(super) use super::{
-    day_event::DayEvent, treasure::Item, Certainty, Environment, EventBuilder, FollowingEvent,
-    StoryActions,
+    day_event::DayEvent, treasure::Item, Certainty, Delay, Environment, EventBuilder,
+    FollowingEvent, Island, Port, Sea, StoryActions,
 };
 
 pub use crate::{

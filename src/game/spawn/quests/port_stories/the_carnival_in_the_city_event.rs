@@ -1,6 +1,6 @@
 use super::port_stories_base;
 use crate::game::spawn::quests::prelude::*;
-use crate::game::spawn::quests::sea_events::bounty_hunters;
+use crate::game::spawn::quests::sea_events::{bounty_hunters, set_next_port};
 
 fn go_to_the_carnival(actions: &mut StoryActions) {
     let DW {
@@ -35,13 +35,17 @@ fn steal_from_the_armory(actions: &mut StoryActions) {
         M::Dry => {
             actions.delta_crew(-1);
             actions.add_event(FollowingEvent {
-                environment: Environment::Sea,
-                distance: 18,
+                environment: Environment::Sea(actions.get_current_sea()),
+                delay: Delay::Distance(18),
                 event: bounty_hunters,
                 certainty: Certainty::Possible(2),
             });
             actions.delta_items(Item::Cannon, 1);
             actions.add_dialogue(crew1!("We lost one captain."));
+            actions.add_dialogue(captain!(
+                "Something tells me we aren't welcome here anymore."
+            ));
+            set_next_port(actions, 20);
         }
         M::Comfortable => {
             actions.delta_food(20);
@@ -51,10 +55,20 @@ fn steal_from_the_armory(actions: &mut StoryActions) {
         M::Humid => {
             actions.delta_crew(-2);
             actions.delta_items(Item::Gold, -100);
+            actions.add_event(FollowingEvent {
+                environment: Environment::Sea(actions.get_current_sea()),
+                delay: Delay::Distance(18),
+                event: bounty_hunters,
+                certainty: Certainty::Possible(2),
+            });
+            set_next_port(actions, 20);
             actions.add_dialogue(captain!(
                 "All the guards were at  there post!",
                 "We aren't getting those men or supplies back..."
-            ))
+            ));
+            actions.add_dialogue(captain!(
+                "Something tells me we aren't welcome here anymore."
+            ));
         }
     }
 }

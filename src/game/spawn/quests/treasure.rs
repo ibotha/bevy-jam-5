@@ -5,6 +5,9 @@ pub enum Item {
     MonkeyPaw,
     Cannon,
     Gold,
+    SirensCoveMap,
+    SirensScale,
+    NorthernSeaMap,
 }
 
 impl Display for Item {
@@ -13,6 +16,9 @@ impl Display for Item {
             Item::MonkeyPaw => "Monkey's Paw",
             Item::Cannon => "Cannon",
             Item::Gold => "Gold Coin",
+            Item::SirensCoveMap => "Siren Cove Map",
+            Item::NorthernSeaMap => "Northern Sea Map",
+            Item::SirensScale => "Siren Scale",
         })
     }
 }
