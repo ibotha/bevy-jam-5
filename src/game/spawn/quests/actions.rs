@@ -67,6 +67,10 @@ impl<'a> StoryActions<'a> {
         self.ship.max_crew += arg;
     }
 
+    pub fn get_crew(&self) -> i32 {
+        self.ship.crew
+    }
+
     pub fn delta_food(&mut self, arg: i32) {
         let arg = arg.min(self.ship.max_food - self.ship.food);
         if arg == 0 {

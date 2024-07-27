@@ -5,6 +5,7 @@ use rand::RngCore;
 use sea_events::select_random_sea_event;
 
 pub mod actions;
+pub mod battle;
 mod constants;
 pub mod day_event;
 pub mod dialogue;

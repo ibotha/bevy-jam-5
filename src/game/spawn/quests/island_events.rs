@@ -16,7 +16,7 @@ fn leave(actions: &mut StoryActions) {
 
 fn just_walking() -> DayEvent {
     DayEvent::new()
-        .line(Dialogue::new(CAPTAIN).para("Just more and more jungle."))
+        .line(captain!("Just more and more jungle."))
         .choice("Walk", walk)
         .choice("Rest", rest)
         .choice("Leave", leave)

@@ -23,11 +23,10 @@ fn repair(actions: &mut StoryActions) {
 
 fn a_day_at_port() -> DayEvent {
     DayEvent::new()
-        .line(
-            Dialogue::new(CAPTAIN)
-                .para("We are still at the blasted port!")
-                .para("Is the weather right for us to embark?"),
-        )
+        .line(captain!(
+            "We are still at the blasted port!",
+            "Is the weather right for us to embark?"
+        ))
         .choice("Embark", embark)
         .choice("Recruit", recruit)
         .choice("Resupply", resupply)
@@ -72,20 +71,28 @@ fn steal_from_the_armory(actions: &mut StoryActions) {
                 event: bounty_hunters(),
                 certainty: super::Certainty::Possible(2),
             });
+            actions.delta_items(Item::Cannon, 1);
+            actions.add_dialogue(crew1!("We lost one captain."));
         }
         M::Comfortable => {
-            actions.delta_crew(2);
             actions.delta_food(20);
+            actions.delta_items(Item::Gold, 50);
+            actions.delta_items(Item::Cannon, 2)
         }
         M::Humid => {
-            actions.delta_crew(-1);
+            actions.delta_crew(-2);
+            actions.delta_items(Item::Gold, -100);
+            actions.add_dialogue(captain!(
+                "All the guards were at  there post!",
+                "We aren't getting those men or supplies back..."
+            ))
         }
     }
 }
 
 fn a_carnival_in_the_city() -> DayEvent {
     DayEvent::new()
-        .line(Dialogue::new(CREW1).para("Captian! Looks like there is a party in the city."))
+        .line(crew1!("Captian! Looks like there is a party in the city."))
         .choice("Party!", go_to_the_carnival)
         .choice("Steal", steal_from_the_armory)
         .hint("Squawk! RaIny FESTivals are NO FUN!")

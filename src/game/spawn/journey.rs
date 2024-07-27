@@ -185,7 +185,12 @@ fn choose_task(
     );
     journey.event = None;
 
-    ship.food -= ship.crew;
+    let food_consumption = ship.crew / 2 + 1;
+    updates.push(format!(
+        "Your crew ate {count} food.",
+        count = ship.food.min(food_consumption)
+    ));
+    ship.food -= food_consumption;
     if ship.food < 0 {
         updates.push(format!(
             "You lost {crew} crew to hunger!",
