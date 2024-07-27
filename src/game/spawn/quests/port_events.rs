@@ -1,113 +1,44 @@
-use rand::RngCore;
+use super::{prelude::*, port_stories::*};
 
-use super::{
-    prelude::*,
-    sea_events::{bounty_hunters, sail},
-    port_stories::*
-};
+pub(super) fn select_random_port_event(actions: &mut StoryActions) -> DayEvent {
+    let choices = [
+        (the_day_at_port_event(actions), 14), // Higher number has  a higher chance of being selected
 
-fn embark(actions: &mut StoryActions) {
-    actions.change_environment(Environment::Sea);
-    sail(actions);
-}
+        // Common events
+        (the_dockside_market_event(actions), 8),
+        (the_harbor_gossip_event(actions), 8),
+        (the_local_tavern_visit_event(actions), 8),
+        (the_harbor_maintenance_day_event(actions), 8),
 
-fn recruit(actions: &mut StoryActions) {
-    actions.delta_crew(1);
-}
+        // Uncommon events
+        (the_dockworkers_dispute_event(actions), 6),
+        (the_foreign_diplomats_request_event(actions), 6),
+        (the_carnival_in_the_city_event(actions), 6),
+        (the_merchants_dilemma_event(actions), 6),
 
-fn resupply(actions: &mut StoryActions) {
-    actions.delta_food(10);
-}
-fn repair(actions: &mut StoryActions) {
-    actions.delta_health(10);
-}
+        // Rare events
+        (the_mysterious_cartographer_event(actions), 4),
+        (the_smugglers_offer_event(actions), 4),
+        (the_harbormasters_dilemma_event(actions), 4),
+        (the_rival_captains_challenge_event(actions), 4),
+        (the_smugglers_auction_event(actions), 4),
+        (the_dockside_heist_event(actions), 4),
+        (the_ports_grand_regatta_event(actions), 4),
 
-fn a_day_at_port() -> DayEvent {
-    DayEvent::new()
-        .line(captain!(
-            "We are still at the blasted port!",
-            "Is the weather right for us to embark?"
-        ))
-        .choice("Embark", embark)
-        .choice("Recruit", recruit)
-        .choice("Resupply", resupply)
-        .choice("Repair", repair)
-}
+        // Very rare events
+        (the_mysterious_shipwreck_event(actions), 3),
+        (the_cursed_cargo_event(actions), 3),
+        (the_sirens_song_festival_event(actions), 3),
+        (the_cursed_lighthouse_event(actions), 3),
+        (the_haunted_shipwreck_event(actions), 3),
 
-fn go_to_the_carnival(actions: &mut StoryActions) {
-    let DW {
-        heat: _,
-        wind: _,
-        moisture,
-    } = actions.weather();
+        // Special events
+        (the_ancient_pirate_kings_challenge_event(actions), 2),
+        (the_lost_city_of_atlantis_resurfaces_event(actions), 2),
+        
+        // legendary events
+        (the_legendary_sea_monster_sighting_event(actions), 1),
+    ];
 
-    match moisture {
-        M::Dry => {
-            actions.delta_crew(1);
-            actions.delta_food(5);
-        }
-        M::Comfortable => {
-            actions.delta_crew(2);
-            actions.delta_food(20);
-        }
-        M::Humid => {
-            actions.delta_crew(-1);
-        }
-    }
-}
-
-fn steal_from_the_armory(actions: &mut StoryActions) {
-    let DW {
-        heat: _,
-        wind: _,
-        moisture,
-    } = actions.weather();
-
-    match moisture {
-        M::Dry => {
-            actions.delta_crew(-1);
-            actions.add_event(FollowingEvent {
-                environment: super::Environment::Sea,
-                distance: 18,
-                event: bounty_hunters(),
-                certainty: super::Certainty::Possible(2),
-            });
-            actions.delta_items(Item::Cannon, 1);
-            actions.add_dialogue(crew1!("We lost one captain."));
-        }
-        M::Comfortable => {
-            actions.delta_food(20);
-            actions.delta_items(Item::Gold, 50);
-            actions.delta_items(Item::Cannon, 2)
-        }
-        M::Humid => {
-            actions.delta_crew(-2);
-            actions.delta_items(Item::Gold, -100);
-            actions.add_dialogue(captain!(
-                "All the guards were at  there post!",
-                "We aren't getting those men or supplies back..."
-            ))
-        }
-    }
-}
-
-fn a_carnival_in_the_city() -> DayEvent {
-    DayEvent::new()
-        .line(crew1!("Captian! Looks like there is a party in the city."))
-        .choice("Party!", go_to_the_carnival)
-        .choice("Steal", steal_from_the_armory)
-        .hint("Squawk! RaIny FESTivals are NO FUN!")
-}
-
-pub(super) fn select_random_port_event(rng: &mut impl RngCore) -> DayEvent {
-    weighted_random(
-        Some(rng),
-        &[
-            (a_carnival_in_the_city(), 1),
-            (a_day_at_port(), 14),
-            (the_mysterious_merchant_event(), 2),
-            (the_dockside_tavern_brawl_event(), 3),
-        ],
-    )
-    .clone()
+    weighted_random(Some(actions.get_journey_rng()), &choices).clone()
 }

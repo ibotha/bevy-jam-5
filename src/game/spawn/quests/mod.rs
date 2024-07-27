@@ -1,7 +1,6 @@
 use day_event::DayEvent;
 use island_events::select_random_island_event;
 use port_events::select_random_port_event;
-use rand::RngCore;
 use sea_events::select_random_sea_event;
 
 pub mod actions;
@@ -49,10 +48,10 @@ pub struct FollowingEvent {
 
 pub type ChoiceFunction = fn(&mut StoryActions) -> ();
 
-pub fn select_random_event(rng: &mut impl RngCore, t: Environment) -> DayEvent {
-    match t {
-        Environment::Port => select_random_port_event(rng),
-        Environment::Island => select_random_island_event(rng),
-        Environment::Sea => select_random_sea_event(rng),
+pub fn select_random_event(actions: &mut StoryActions) -> DayEvent {
+    match actions.get_environment() {
+        Environment::Port => select_random_port_event(actions),
+        Environment::Island => select_random_island_event(actions),
+        Environment::Sea => select_random_sea_event(actions),
     }
 }

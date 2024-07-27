@@ -41,6 +41,18 @@ impl DayEvent {
         self
     }
 
+    pub fn conditional_choice<T: ToString>(
+        mut self,
+        name: T,
+        action: ChoiceFunction,
+        condition: bool,
+    ) -> Self {
+        if condition {
+            self.choices.insert(name.to_string(), action);
+        }
+        self
+    }
+
     pub fn hint<T: ToString>(mut self, hint: T) -> Self {
         self.hint_string = Some(hint.to_string());
         self

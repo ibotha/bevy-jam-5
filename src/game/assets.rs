@@ -41,6 +41,7 @@ impl FromWorld for HandleMap<FontKey> {
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Reflect)]
 pub enum ImageKey {
     Ship,
+    InventoryTag,
     Button,
     BoneButton,
     SpyglassButton,
@@ -78,6 +79,15 @@ impl FromWorld for HandleMap<ImageKey> {
                 ImageKey::Ship,
                 asset_server.load_with_settings(
                     "images/Ship.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::InventoryTag,
+                asset_server.load_with_settings(
+                    "images/InventoryTag.png",
                     |settings: &mut ImageLoaderSettings| {
                         settings.sampler = ImageSampler::nearest();
                     },

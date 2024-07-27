@@ -1,5 +1,3 @@
-use rand::RngCore;
-
 use super::prelude::*;
 
 fn walk(actions: &mut StoryActions) {
@@ -14,7 +12,7 @@ fn leave(actions: &mut StoryActions) {
     actions.change_environment(Environment::Sea);
 }
 
-fn just_walking() -> DayEvent {
+fn just_walking(_actions: &StoryActions) -> DayEvent {
     DayEvent::new()
         .line(captain!("Just more and more jungle."))
         .choice("Walk", walk)
@@ -22,6 +20,7 @@ fn just_walking() -> DayEvent {
         .choice("Leave", leave)
 }
 
-pub(super) fn select_random_island_event(rng: &mut impl RngCore) -> DayEvent {
-    weighted_random(Some(rng), &[(just_walking(), 14)]).clone()
+pub(super) fn select_random_island_event(actions: &mut StoryActions) -> DayEvent {
+    let choices = [(just_walking(actions), 14)];
+    weighted_random(Some(actions.get_journey_rng()), &choices).clone()
 }

@@ -1,5 +1,3 @@
-use rand::RngCore;
-
 use super::prelude::*;
 
 pub(super) fn sail(actions: &mut StoryActions) {
@@ -27,7 +25,7 @@ fn woah(actions: &mut StoryActions) {
     actions.delta_max_food(10);
 }
 
-fn plain_sailing() -> DayEvent {
+fn plain_sailing(_actions: &StoryActions) -> DayEvent {
     DayEvent::new()
         .line(captain!(
             "Nothing on the horizon,",
@@ -38,30 +36,27 @@ fn plain_sailing() -> DayEvent {
         .choice("Woah", woah)
 }
 
-fn port_spotted() -> DayEvent {
+fn port_spotted(_actions: &StoryActions) -> DayEvent {
     DayEvent::new()
         .line(crew1!("Land HO! There is a port on the horizon."))
         .choice("Sail", sail)
         .choice("Dock", dock)
 }
 
-fn island_spotted() -> DayEvent {
+fn island_spotted(_actions: &StoryActions) -> DayEvent {
     DayEvent::new()
         .line(crew1!("I see an island captain."))
         .choice("Sail", sail)
         .choice("Explore", explore_island)
 }
 
-pub(super) fn select_random_sea_event(rng: &mut impl RngCore) -> DayEvent {
-    weighted_random(
-        Some(rng),
-        &[
-            (island_spotted(), 1),
-            (port_spotted(), 1),
-            (plain_sailing(), 14),
-        ],
-    )
-    .clone()
+pub(super) fn select_random_sea_event(actions: &mut StoryActions) -> DayEvent {
+    let choices = [
+        (island_spotted(actions), 1),
+        (port_spotted(actions), 1),
+        (plain_sailing(actions), 14),
+    ];
+    weighted_random(Some(actions.get_journey_rng()), &choices).clone()
 }
 
 // ============= Special Events ==============
@@ -99,18 +94,17 @@ fn fight(actions: &mut StoryActions) {
         (H::Blistering | H::Warm, M::Humid, W::High | W::GaleForce) => {
             actions.add_dialogue(crew2!("I can't see where they are!"));
             actions.add_dialogue(captain!("Everyone get down!"));
-            actions.delta_health(-10);
-            actions.delta_crew(-1);
-            actions.delta_items(Item::Cannon, -2);
-            actions.delta_items(Item::Gold, -200);
+            let favour = actions.battle(5, -1, "the bounty hunters");
+            actions.delta_items(Item::Cannon, favour / 3);
+            actions.delta_items(Item::Gold, favour * 10);
         }
         _ => {
             actions.add_dialogue(crew3!("Clear skies, fire away!"));
             actions.add_dialogue(captain!("Nice shot, they are going down!"));
             actions.delta_health((-3 + actions.get_item(Item::Cannon)).min(-1));
-            actions.delta_crew(1);
-            actions.delta_items(Item::Cannon, 1);
-            actions.delta_items(Item::Gold, 200);
+            let favour = actions.battle(5, 1, "the bounty hunters");
+            actions.delta_items(Item::Cannon, favour / 3);
+            actions.delta_items(Item::Gold, favour * 10);
         }
     }
 }
