@@ -8,7 +8,7 @@ pub mod assets;
 pub mod audio;
 mod movement;
 pub mod spawn;
-mod ui;
+pub mod ui;
 
 pub fn weighted_random<'a, T, R: RngCore>(rng: Option<&mut R>, iter: &'a [(T, u32)]) -> &'a T {
     let total: u32 = iter.iter().map(|(_, b)| b).sum();

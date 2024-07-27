@@ -290,10 +290,11 @@ fn next_day(
 
     let env = journey.environment;
 
-    let certain_events: Vec<DayEvent> = journey
+    let mut updates: Vec<String> = vec![];
+    let certain_events: Vec<super::quests::EventBuilder> = journey
         .events
         .iter()
-        .filter(|e| e.environment == env && e.distance < 0 && e.certainty == Certainty::Certain)
+        .filter(|e| e.environment == env && e.distance <= 0 && e.certainty == Certainty::Certain)
         .map(|e| e.event.clone())
         .collect();
 
@@ -308,7 +309,7 @@ fn next_day(
         info!("{events:?}", events = journey.events);
         event
     } else {
-        let mut potential_events: Vec<(DayEvent, u32)> = journey
+        let mut potential_events: Vec<(super::quests::EventBuilder, u32)> = journey
             .events
             .iter()
             .filter(|e| e.environment == env && e.distance < 0)
@@ -337,7 +338,12 @@ fn next_day(
         weighted_random(Some(&mut journey.rng), &potential_events).clone()
     };
 
-    commands.trigger(SetJouneyEvent(event));
+    commands.trigger(SetJouneyEvent(event(&mut StoryActions::new(
+        ship.as_mut(),
+        journey.as_mut(),
+        dialoges.as_mut(),
+        &mut updates,
+    ))));
 }
 
 pub fn plugin(app: &mut App) {

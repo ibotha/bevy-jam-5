@@ -227,7 +227,7 @@ pub struct UpdateChoices(pub Vec<String>);
 pub struct UpdateInventoryList;
 
 #[derive(Component)]
-struct ContinueButton;
+pub struct ContinueButton;
 
 #[derive(Component)]
 struct DialogueContents;

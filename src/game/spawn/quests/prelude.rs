@@ -6,7 +6,10 @@ pub use super::battle;
 pub use super::constants::*;
 pub(super) use super::dialogue::Dialogue;
 pub(super) use super::{
-    day_event::DayEvent, treasure::Item, Certainty, Environment, FollowingEvent, StoryActions,
+    day_event::DayEvent, treasure::Item, Certainty, Environment, EventBuilder, FollowingEvent,
+    StoryActions,
 };
 
-pub use crate::{captain, crew1, crew2, crew3, dialogue};
+pub use crate::{
+    captain, crew, crew1, crew2, crew3, dialogue, dock_worker, map_merchant, narrator,
+};

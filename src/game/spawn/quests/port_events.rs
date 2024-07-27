@@ -1,11 +1,13 @@
 use super::{
     prelude::*,
-    sea_events::{bounty_hunters, sail},
+    sea_events::{bounty_hunters, sail, set_next_port},
+    EventBuilder,
 };
 
 fn embark(actions: &mut StoryActions) {
     actions.change_environment(Environment::Sea);
     sail(actions);
+    set_next_port(actions, 20);
 }
 
 fn recruit(actions: &mut StoryActions) {
@@ -15,20 +17,24 @@ fn recruit(actions: &mut StoryActions) {
 
 fn resupply(actions: &mut StoryActions) {
     actions.delta_items(Item::Gold, -20);
-    actions.delta_food(10);
+    actions.delta_food(50);
 }
+
 fn repair(actions: &mut StoryActions) {
     actions.delta_items(Item::Gold, -100);
     actions.delta_health(10);
 }
 
-fn a_day_at_port(actions: &StoryActions) -> DayEvent {
+fn wait(_actions: &mut StoryActions) {}
+
+fn a_day_at_port(actions: &mut StoryActions) -> DayEvent {
     DayEvent::new()
         .line(captain!(
             "We are still at the blasted port!",
             "Is the weather right for us to embark?"
         ))
         .choice("Embark", embark)
+        .choice("Wait", wait)
         .conditional_choice("Recruit", recruit, actions.get_item(Item::Gold) > 100)
         .conditional_choice("Resupply", resupply, actions.get_item(Item::Gold) > 20)
         .conditional_choice("Repair", repair, actions.get_item(Item::Gold) > 100)
@@ -69,7 +75,7 @@ fn steal_from_the_armory(actions: &mut StoryActions) {
             actions.add_event(FollowingEvent {
                 environment: super::Environment::Sea,
                 distance: 18,
-                event: bounty_hunters(),
+                event: bounty_hunters,
                 certainty: super::Certainty::Possible(2),
             });
             actions.delta_items(Item::Cannon, 1);
@@ -91,7 +97,7 @@ fn steal_from_the_armory(actions: &mut StoryActions) {
     }
 }
 
-fn a_carnival_in_the_city(_actions: &StoryActions) -> DayEvent {
+fn a_carnival_in_the_city(_actions: &mut StoryActions) -> DayEvent {
     DayEvent::new()
         .line(crew1!("Captian! Looks like there is a party in the city."))
         .choice("Party!", go_to_the_carnival)
@@ -99,10 +105,10 @@ fn a_carnival_in_the_city(_actions: &StoryActions) -> DayEvent {
         .hint("Squawk! RaIny FESTivals are NO FUN!")
 }
 
-pub(super) fn select_random_port_event(actions: &mut StoryActions) -> DayEvent {
+pub(super) fn select_random_port_event(actions: &mut StoryActions) -> super::EventBuilder {
     let choices = [
-        (a_carnival_in_the_city(actions), 1),
-        (a_day_at_port(actions), 14),
+        (a_carnival_in_the_city as EventBuilder, 1),
+        (a_day_at_port, 14),
     ];
 
     weighted_random(Some(actions.get_rng()), &choices).clone()

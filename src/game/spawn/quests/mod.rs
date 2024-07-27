@@ -36,15 +36,16 @@ pub enum Certainty {
 
 #[derive(Debug)]
 pub struct FollowingEvent {
-    pub event: DayEvent,
+    pub event: EventBuilder,
     pub distance: i32,
     pub certainty: Certainty,
     pub environment: Environment,
 }
 
 pub type ChoiceFunction = fn(&mut StoryActions) -> ();
+pub type EventBuilder = fn(&mut StoryActions) -> DayEvent;
 
-pub fn select_random_event(actions: &mut StoryActions) -> DayEvent {
+pub fn select_random_event(actions: &mut StoryActions) -> EventBuilder {
     match actions.get_environment() {
         Environment::Port => select_random_port_event(actions),
         Environment::Island => select_random_island_event(actions),

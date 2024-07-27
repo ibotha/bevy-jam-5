@@ -39,7 +39,38 @@ macro_rules! crew3 {
     };
 }
 
+#[macro_export]
+macro_rules! crew {
+    ($($x:expr),*) => {
+        dialogue!(CREW; $($x),*)
+    };
+}
+
+#[macro_export]
+macro_rules! dock_worker {
+    ($($x:expr),*) => {
+        dialogue!(CREW; $($x),*)
+    };
+}
+
+#[macro_export]
+macro_rules! map_merchant {
+    ($($x:expr),*) => {
+        dialogue!(MAP_MERCHANT; $($x),*)
+    };
+}
+
+#[macro_export]
+macro_rules! narrator {
+    ($($x:expr),*) => {
+        dialogue!("Narrator"; $($x),*)
+    };
+}
+
 pub const CAPTAIN: &str = "Cap'n";
+pub const CREW: &str = "Crew";
 pub const CREW1: &str = "Patchy";
-pub const CREW2: &str = "Long beard";
-pub const CREW3: &str = "Short beard";
+pub const CREW2: &str = "Long Beard";
+pub const CREW3: &str = "Short Beard";
+pub const DOCK_WORKER: &str = "Dock Worker";
+pub const MAP_MERCHANT: &str = "Mapper Goodwyn";
