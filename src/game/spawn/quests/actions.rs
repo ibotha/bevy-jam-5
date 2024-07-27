@@ -1,3 +1,5 @@
+use rand::rngs::StdRng;
+
 use crate::game::spawn::{
     journey::{Journey, Ship},
     weather::DayWeather,
@@ -130,6 +132,14 @@ impl<'a> StoryActions<'a> {
 
     pub fn add_dialogue(&mut self, dialogue: Dialogue) {
         self.dialogue.queue.push_back(dialogue);
+    }
+
+    pub fn get_environment(&self) -> Environment {
+        self.journey.environment
+    }
+
+    pub fn get_rng(&mut self) -> &mut StdRng {
+        &mut self.journey.rng
     }
 
     pub fn change_environment(&mut self, env: Environment) {

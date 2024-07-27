@@ -1,5 +1,3 @@
-use rand::RngCore;
-
 use super::{
     prelude::*,
     sea_events::{bounty_hunters, sail},
@@ -11,26 +9,29 @@ fn embark(actions: &mut StoryActions) {
 }
 
 fn recruit(actions: &mut StoryActions) {
+    actions.delta_items(Item::Gold, -100);
     actions.delta_crew(1);
 }
 
 fn resupply(actions: &mut StoryActions) {
+    actions.delta_items(Item::Gold, -20);
     actions.delta_food(10);
 }
 fn repair(actions: &mut StoryActions) {
+    actions.delta_items(Item::Gold, -100);
     actions.delta_health(10);
 }
 
-fn a_day_at_port() -> DayEvent {
+fn a_day_at_port(actions: &StoryActions) -> DayEvent {
     DayEvent::new()
         .line(captain!(
             "We are still at the blasted port!",
             "Is the weather right for us to embark?"
         ))
         .choice("Embark", embark)
-        .choice("Recruit", recruit)
-        .choice("Resupply", resupply)
-        .choice("Repair", repair)
+        .conditional_choice("Recruit", recruit, actions.get_item(Item::Gold) > 100)
+        .conditional_choice("Resupply", resupply, actions.get_item(Item::Gold) > 20)
+        .conditional_choice("Repair", repair, actions.get_item(Item::Gold) > 100)
 }
 
 fn go_to_the_carnival(actions: &mut StoryActions) {
@@ -90,7 +91,7 @@ fn steal_from_the_armory(actions: &mut StoryActions) {
     }
 }
 
-fn a_carnival_in_the_city() -> DayEvent {
+fn a_carnival_in_the_city(_actions: &StoryActions) -> DayEvent {
     DayEvent::new()
         .line(crew1!("Captian! Looks like there is a party in the city."))
         .choice("Party!", go_to_the_carnival)
@@ -98,10 +99,11 @@ fn a_carnival_in_the_city() -> DayEvent {
         .hint("Squawk! RaIny FESTivals are NO FUN!")
 }
 
-pub(super) fn select_random_port_event(rng: &mut impl RngCore) -> DayEvent {
-    weighted_random(
-        Some(rng),
-        &[(a_carnival_in_the_city(), 1), (a_day_at_port(), 14)],
-    )
-    .clone()
+pub(super) fn select_random_port_event(actions: &mut StoryActions) -> DayEvent {
+    let choices = [
+        (a_carnival_in_the_city(actions), 1),
+        (a_day_at_port(actions), 14),
+    ];
+
+    weighted_random(Some(actions.get_rng()), &choices).clone()
 }

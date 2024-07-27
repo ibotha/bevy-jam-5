@@ -81,11 +81,11 @@ pub fn inventory_item(
     commands
         .spawn(ImageBundle {
             image: UiImage {
-                texture: images[&ImageKey::DialogueBox].clone_weak(),
+                texture: images[&ImageKey::InventoryTag].clone_weak(),
                 ..default()
             },
             style: Style {
-                width: Val::Px(60.0),
+                width: Val::Px(54.0),
                 height: Val::Px(10.0),
                 display: Display::Grid,
                 grid_template_columns: vec![GridTrack::percent(30.0), GridTrack::auto()],
@@ -453,7 +453,7 @@ fn spawn_game_ui(
                                         width: Val::Percent(100.0),
                                         height: Val::Percent(100.0),
                                         display: Display::Flex,
-                                        flex_direction: FlexDirection::ColumnReverse,
+                                        flex_direction: FlexDirection::Column,
                                         justify_items: JustifyItems::Center,
                                         justify_content: JustifyContent::SpaceBetween,
                                         ..default()
@@ -465,9 +465,7 @@ fn spawn_game_ui(
                                     commands
                                         .spawn(NodeBundle {
                                             style: Style {
-                                                position_type: PositionType::Absolute,
-                                                top: Val::Percent(5.0),
-                                                left: Val::Percent(10.0),
+                                                width: Val::Px(43.0),
                                                 display: Display::Grid,
                                                 grid_template_columns: vec![
                                                     GridTrack::fr(1.0),
@@ -477,8 +475,8 @@ fn spawn_game_ui(
                                                     GridTrack::fr(1.0),
                                                     GridTrack::fr(1.0),
                                                 ],
-                                                column_gap: Val::Percent(2.0),
-                                                row_gap: Val::Percent(2.0),
+                                                column_gap: Val::Px(3.0),
+                                                row_gap: Val::Px(3.0),
                                                 ..default()
                                             },
                                             ..default()
@@ -508,8 +506,8 @@ fn spawn_game_ui(
                                                             image_handles[&image_key].clone_weak(),
                                                         ),
                                                         style: Style {
-                                                            width: Val::Px(8.0),
-                                                            height: Val::Px(8.0),
+                                                            width: Val::Px(20.0),
+                                                            height: Val::Px(20.0),
                                                             margin: UiRect::all(Val::Auto),
                                                             ..default()
                                                         },

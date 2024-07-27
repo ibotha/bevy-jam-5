@@ -1,5 +1,3 @@
-use rand::RngCore;
-
 use super::prelude::*;
 
 pub(super) fn sail(actions: &mut StoryActions) {
@@ -27,7 +25,7 @@ fn woah(actions: &mut StoryActions) {
     actions.delta_max_food(10);
 }
 
-fn plain_sailing() -> DayEvent {
+fn plain_sailing(_actions: &StoryActions) -> DayEvent {
     DayEvent::new()
         .line(captain!(
             "Nothing on the horizon,",
@@ -38,30 +36,27 @@ fn plain_sailing() -> DayEvent {
         .choice("Woah", woah)
 }
 
-fn port_spotted() -> DayEvent {
+fn port_spotted(_actions: &StoryActions) -> DayEvent {
     DayEvent::new()
         .line(crew1!("Land HO! There is a port on the horizon."))
         .choice("Sail", sail)
         .choice("Dock", dock)
 }
 
-fn island_spotted() -> DayEvent {
+fn island_spotted(_actions: &StoryActions) -> DayEvent {
     DayEvent::new()
         .line(crew1!("I see an island captain."))
         .choice("Sail", sail)
         .choice("Explore", explore_island)
 }
 
-pub(super) fn select_random_sea_event(rng: &mut impl RngCore) -> DayEvent {
-    weighted_random(
-        Some(rng),
-        &[
-            (island_spotted(), 1),
-            (port_spotted(), 1),
-            (plain_sailing(), 14),
-        ],
-    )
-    .clone()
+pub(super) fn select_random_sea_event(actions: &mut StoryActions) -> DayEvent {
+    let choices = [
+        (island_spotted(actions), 1),
+        (port_spotted(actions), 1),
+        (plain_sailing(actions), 14),
+    ];
+    weighted_random(Some(actions.get_rng()), &choices).clone()
 }
 
 // ============= Special Events ==============

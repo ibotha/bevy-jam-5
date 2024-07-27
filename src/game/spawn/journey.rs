@@ -60,7 +60,7 @@ pub struct Journey {
     moisture_cycle_length: u32,
     heat_cycle_length: u32,
     wind_cycle_length: u32,
-    rng: StdRng,
+    pub rng: StdRng,
     difficulty: f32,
     journey_length: u32, // How many days until max difficulty
     pub inventory: HashMap<Item, i32>,
@@ -272,6 +272,8 @@ fn next_day(
     _trigger: Trigger<NextDay>,
     mut commands: Commands,
     mut journey: ResMut<Journey>,
+    mut ship: ResMut<Ship>,
+    mut dialoges: ResMut<DialogueQueue>,
     mut predictions: ResMut<Predictions>,
 ) {
     *predictions = Predictions {
@@ -321,10 +323,18 @@ fn next_day(
             })
             .collect();
 
-        let mut rng = &mut journey.rng;
-        potential_events.push((select_random_event(&mut rng, env), 10));
+        let mut updates: Vec<String> = vec![];
+        potential_events.push((
+            select_random_event(&mut StoryActions::new(
+                ship.as_mut(),
+                journey.as_mut(),
+                dialoges.as_mut(),
+                &mut updates,
+            )),
+            10,
+        ));
         info!("selecting from random events! {potential_events:?}");
-        weighted_random(Some(&mut rng), &potential_events).clone()
+        weighted_random(Some(&mut journey.rng), &potential_events).clone()
     };
 
     commands.trigger(SetJouneyEvent(event));
