@@ -81,6 +81,19 @@ macro_rules! narrator {
     };
 }
 
+#[macro_export]
+macro_rules! widow {
+    ($($x:expr),*) => {
+        dialogue!(WIDOW; $($x),*)
+    };
+}
+#[macro_export]
+macro_rules! prisoner {
+    ($($x:expr),*) => {
+        dialogue!(PRISONER; $($x),*)
+    };
+}
+
 pub const CAPTAIN: &str = "Cap'n";
 pub const CREW: &str = "Crew";
 pub const CREW1: &str = "Patchy";
@@ -90,3 +103,5 @@ pub const DOCK_WORKER: &str = "Dock Worker";
 pub const MAP_MERCHANT: &str = "Mapper Goodwyn";
 pub const MONSTER_HUNTER: &str = "Hunter Fluffikins III";
 pub const TRINKET_SELLER: &str = "Trinketier Keyir";
+pub const WIDOW: &str = "Old Woman";
+pub const PRISONER: &str = "Prisoner";

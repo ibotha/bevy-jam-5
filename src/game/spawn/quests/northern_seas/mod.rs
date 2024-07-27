@@ -52,20 +52,27 @@ pub fn set_course_northern_sea(actions: &mut StoryActions) -> DayEvent {
         .line(captain!(
             "The world is our oyster, we can go anywhere in the northern sea."
         ))
-        .choice("Trinket", trinket_seller)
+        .conditional_choice(
+            "Trinket",
+            trinket_seller,
+            actions.get_environment() != Environment::Island(Island::TrinketSeller),
+        )
         .conditional_choice(
             "Navy",
             navy_base,
-            actions.get_item(Item::SirensCoveMap) == 0,
+            actions.get_item(Item::SirensCoveMap) == 0
+                && actions.get_environment() != Environment::Port(Port::RoyalNavyBase),
         )
         .conditional_choice(
             "Sirens",
             to_sirens_cove,
-            actions.get_item(Item::SirensCoveMap) > 0,
+            actions.get_item(Item::SirensCoveMap) > 0
+                && actions.get_environment() != Environment::Port(Port::EdgeOfTheWorld),
         )
         .conditional_choice(
             "Island",
             mysterious_island,
-            actions.get_item(Item::SirensScale) == 0,
+            actions.get_item(Item::SirensScale) == 0
+                && actions.get_environment() != Environment::Island(Island::MysteriousIsland),
         )
 }

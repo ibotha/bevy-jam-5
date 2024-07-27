@@ -151,6 +151,12 @@ impl<'a> StoryActions<'a> {
         if self.journey.environment == env {
             return;
         }
+
+        if let Environment::Sea(_) = env {
+            self.delta_crew(self.ship.left_behind);
+            self.ship.left_behind = 0;
+        }
+
         self.journey.environment = env;
         self.updates.push(match env {
             Environment::Port(p) => format!(
@@ -312,5 +318,10 @@ impl<'a> StoryActions<'a> {
                 (H::Freezing, M::Humid) => 10,
             }),
         }
+    }
+
+    pub(crate) fn island_crew(&mut self, size: i32) {
+        self.ship.left_behind = (self.ship.crew - size).max(0);
+        self.delta_crew(-self.ship.left_behind);
     }
 }

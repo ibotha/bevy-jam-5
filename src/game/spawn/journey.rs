@@ -133,6 +133,7 @@ impl Journey {
 #[derive(Resource, Clone, Copy, PartialEq, Eq, Debug)]
 pub struct Ship {
     pub crew: i32,
+    pub left_behind: i32,
     pub max_crew: i32,
     pub food: i32,
     pub max_food: i32,
@@ -147,6 +148,7 @@ fn create_journey(_trigger: Trigger<CreateJourney>, mut commands: Commands) {
     commands.insert_resource(journey);
     commands.insert_resource(Ship {
         crew: 5,
+        left_behind: 0,
         max_crew: 5,
         food: 100,
         max_food: 100,
@@ -308,6 +310,13 @@ fn next_day(
 
     let env = journey.environment;
 
+    for event in &mut journey.events {
+        match &mut event.delay {
+            super::quests::Delay::Days(d) => *d -= 1,
+            _ => {}
+        }
+    }
+
     let mut updates: Vec<String> = vec![];
     let certain_events: Vec<super::quests::EventBuilder> = journey
         .events
@@ -355,7 +364,16 @@ fn next_day(
             10,
         ));
         info!("selecting from random events! {potential_events:?}");
-        weighted_random(Some(&mut journey.rng), &potential_events).clone()
+
+        let event = weighted_random(Some(&mut journey.rng), &potential_events);
+        let index = journey
+            .events
+            .iter()
+            .position(|e| e.event == *event)
+            .expect("Event is present");
+        journey.events.remove(index);
+        info!("{events:?}", events = journey.events);
+        *event
     };
 
     commands.trigger(SetJouneyEvent(event(&mut StoryActions::new(
