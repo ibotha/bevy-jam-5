@@ -95,7 +95,7 @@ fn island_spotted(_actions: &mut StoryActions) -> DayEvent {
 
 pub(super) fn select_random_sea_event(actions: &mut StoryActions) -> EventBuilder {
     let choices = [(island_spotted as EventBuilder, 1), (plain_sailing, 14)];
-    weighted_random(Some(actions.get_rng()), &choices).clone()
+    weighted_random(Some(actions.get_journey_rng()), &choices).clone()
 }
 
 // ============= Special Events ==============

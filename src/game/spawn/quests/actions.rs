@@ -1,4 +1,4 @@
-use rand::rngs::StdRng;
+use rand::rngs::{StdRng, ThreadRng};
 
 use crate::game::spawn::{
     journey::{Journey, Ship},
@@ -138,8 +138,12 @@ impl<'a> StoryActions<'a> {
         self.journey.environment
     }
 
-    pub fn get_rng(&mut self) -> &mut StdRng {
+    pub fn get_journey_rng(&mut self) -> &mut StdRng {
         &mut self.journey.rng
+    }
+
+    pub fn get_rng(&mut self) -> ThreadRng {
+        rand::thread_rng()
     }
 
     pub fn change_environment(&mut self, env: Environment) {

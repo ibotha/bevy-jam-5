@@ -22,5 +22,5 @@ fn just_walking(_actions: &mut StoryActions) -> DayEvent {
 
 pub(super) fn select_random_island_event(actions: &mut StoryActions) -> EventBuilder {
     let choices = [(just_walking, 14)];
-    weighted_random(Some(actions.get_rng()), &choices).clone()
+    weighted_random(Some(actions.get_journey_rng()), &choices).clone()
 }
