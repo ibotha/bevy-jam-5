@@ -1,5 +1,5 @@
 use crate::game::spawn::quests::prelude::*;
-use crate::game::spawn::quests::sea_events::sail;
+use crate::game::spawn::quests::sea_stories::sail;
 
 fn embark(actions: &mut StoryActions) {
     actions.change_environment(Environment::Sea(actions.get_current_sea()));

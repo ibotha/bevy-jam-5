@@ -1,6 +1,7 @@
 use super::port_stories_base;
 use crate::game::spawn::quests::prelude::*;
-use crate::game::spawn::quests::sea_events::{bounty_hunters, set_next_port};
+use crate::game::spawn::quests::sea_events::set_next_port;
+use crate::game::spawn::quests::sea_stories::the_bounty_hunters_event;
 
 fn go_to_the_carnival(actions: &mut StoryActions) {
     let DW {
@@ -37,7 +38,7 @@ fn steal_from_the_armory(actions: &mut StoryActions) {
             actions.add_event(FollowingEvent {
                 environment: Environment::Sea(actions.get_current_sea()),
                 delay: Delay::Distance(18),
-                event: bounty_hunters,
+                event: the_bounty_hunters_event,
                 certainty: Certainty::Possible(2),
             });
             actions.delta_items(Item::Cannon, 1);
@@ -58,7 +59,7 @@ fn steal_from_the_armory(actions: &mut StoryActions) {
             actions.add_event(FollowingEvent {
                 environment: Environment::Sea(actions.get_current_sea()),
                 delay: Delay::Distance(18),
-                event: bounty_hunters,
+                event: the_bounty_hunters_event,
                 certainty: Certainty::Possible(2),
             });
             set_next_port(actions, 20);

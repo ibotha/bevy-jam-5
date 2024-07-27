@@ -1,7 +1,8 @@
 use super::{
     northern_seas::set_course_northern_sea,
     prelude::*,
-    sea_events::{bounty_hunters, set_next_port},
+    sea_events::set_next_port,
+    sea_stories::the_bounty_hunters_event,
 };
 
 fn embark(actions: &mut StoryActions) {
@@ -190,7 +191,7 @@ fn steal_the_map(actions: &mut StoryActions) {
         actions.add_event(FollowingEvent {
             environment: Environment::Sea(Sea::Northern),
             delay: Delay::Distance(18),
-            event: bounty_hunters,
+            event: the_bounty_hunters_event,
             certainty: Certainty::Possible(2),
         });
         actions.add_dialogue(map_merchant!("Hey! What do you think you are doing?"));
