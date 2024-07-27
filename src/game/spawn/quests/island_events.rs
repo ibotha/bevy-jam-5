@@ -1,8 +1,6 @@
 use rand::RngCore;
 
-use crate::game::weighted_random;
-
-use super::{constants::CAPTAIN, day_event::DayEvent, dialogue::Dialogue, StoryActions};
+use super::prelude::*;
 
 fn walk(actions: &mut StoryActions) {
     actions.travel(10);
@@ -12,13 +10,8 @@ fn rest(actions: &mut StoryActions) {
     actions.delta_crew(10);
 }
 
-fn woah(actions: &mut StoryActions) {
-    actions.delta_crew(10);
-    actions.delta_max_crew(10);
-    actions.delta_health(10);
-    actions.delta_max_health(10);
-    actions.delta_food(10);
-    actions.delta_max_food(10);
+fn leave(actions: &mut StoryActions) {
+    actions.change_environment(Environment::Sea);
 }
 
 fn just_walking() -> DayEvent {
@@ -26,7 +19,7 @@ fn just_walking() -> DayEvent {
         .line(Dialogue::new(CAPTAIN).para("Just more and more jungle."))
         .choice("Walk", walk)
         .choice("Rest", rest)
-        .choice("Woah", woah)
+        .choice("Leave", leave)
 }
 
 pub(super) fn select_random_island_event(rng: &mut impl RngCore) -> DayEvent {

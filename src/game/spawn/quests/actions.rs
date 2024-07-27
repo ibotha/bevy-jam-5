@@ -48,36 +48,60 @@ impl<'a> StoryActions<'a> {
         }
     }
     pub fn delta_crew(&mut self, arg: i32) {
+        let arg = arg.min(self.ship.max_crew - self.ship.crew);
+        if arg == 0 {
+            return;
+        }
         self.updates.push(diff_readout(arg, "crew member", true));
 
-        self.ship.crew = (self.ship.crew + arg).min(self.ship.max_crew);
+        self.ship.crew += arg;
     }
 
     pub fn delta_max_crew(&mut self, arg: i32) {
+        let arg = arg.max(-self.ship.max_crew);
+        if arg == 0 {
+            return;
+        }
         self.updates
             .push(diff_readout(arg, "crew member capacity", false));
-        self.ship.max_crew = (self.ship.max_crew + arg).max(0);
+        self.ship.max_crew += arg;
     }
 
     pub fn delta_food(&mut self, arg: i32) {
+        let arg = arg.min(self.ship.max_food - self.ship.food);
+        if arg == 0 {
+            return;
+        }
         self.updates.push(diff_readout(arg, "food", false));
-        self.ship.food = (self.ship.food + arg).min(self.ship.max_food);
+        self.ship.food += arg;
     }
 
     pub fn delta_max_food(&mut self, arg: i32) {
+        let arg = arg.max(-self.ship.max_food);
+        if arg == 0 {
+            return;
+        }
         self.updates.push(diff_readout(arg, "food capacity", false));
-        self.ship.max_food = (self.ship.max_food + arg).max(0);
+        self.ship.max_food += arg;
     }
 
     pub fn delta_health(&mut self, arg: i32) {
+        let arg = arg.min(self.ship.max_health - self.ship.health);
+        if arg == 0 {
+            return;
+        }
         self.updates.push(damage_diff_readout(arg));
-        self.ship.health = (self.ship.health + arg).min(self.ship.max_health);
+        self.ship.health += arg;
     }
 
     pub fn delta_max_health(&mut self, arg: i32) {
+        let arg = arg.max(-self.ship.max_health);
+        if arg == 0 {
+            return;
+        }
         self.updates
             .push(diff_readout(arg, "max ship health", false));
-        self.ship.max_health = (self.ship.max_health + arg).max(0);
+        self.ship.max_health += arg;
     }
 
     pub fn add_event(&mut self, event: FollowingEvent) {
@@ -89,16 +113,15 @@ impl<'a> StoryActions<'a> {
     }
 
     pub fn delta_items(&mut self, item: Item, delta: i32) {
-        match self.journey.inventory.get_mut(&item) {
-            Some(count) => {
-                *count = (*count + delta).max(0);
-                self.updates
-                    .push(diff_readout(delta, format!("{item}").as_str(), true));
-            }
-            None => {
-                self.journey.inventory.insert(item, delta.max(0));
-            }
+        let current = self.get_item(item);
+
+        let delta = delta.max(-current);
+        if delta == 0 {
+            return;
         }
+        self.updates
+            .push(diff_readout(delta, format!("{item}").as_str(), true));
+        self.journey.inventory.insert(item, current + delta);
     }
 
     pub fn add_dialogue(&mut self, dialogue: Dialogue) {
@@ -106,6 +129,9 @@ impl<'a> StoryActions<'a> {
     }
 
     pub fn change_environment(&mut self, env: Environment) {
+        if self.journey.environment == env {
+            return;
+        }
         self.journey.environment = env;
         self.updates.push(match env {
             Environment::Port => "You arrive at port".to_string(),

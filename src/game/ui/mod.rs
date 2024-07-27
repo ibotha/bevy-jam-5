@@ -34,6 +34,7 @@ fn show_continue(
 pub fn plugin(app: &mut App) {
     app.observe(spawn_game_ui)
         .observe(update_choices)
+        .observe(update_inventory)
         .observe(update_ship_stats)
         .observe(focus_display)
         .observe(show_continue)
@@ -69,6 +70,66 @@ pub enum GameAction {
 
 #[derive(Component)]
 struct ChoicePanel;
+
+pub fn inventory_item(
+    commands: &mut ChildBuilder,
+    images: &HandleMap<ImageKey>,
+    image: ImageKey,
+    font: &Handle<Font>,
+    count: i32,
+) {
+    commands
+        .spawn(ImageBundle {
+            image: UiImage {
+                texture: images[&ImageKey::DialogueBox].clone_weak(),
+                ..default()
+            },
+            style: Style {
+                width: Val::Px(60.0),
+                height: Val::Px(10.0),
+                display: Display::Grid,
+                grid_template_columns: vec![GridTrack::percent(30.0), GridTrack::auto()],
+                ..default()
+            },
+            ..default()
+        })
+        .with_children(|commands| {
+            commands.spawn(ImageBundle {
+                image: UiImage {
+                    texture: images[&image].clone_weak(),
+                    ..default()
+                },
+                style: Style {
+                    margin: UiRect::all(Val::Auto),
+                    width: Val::Px(8.0),
+                    height: Val::Px(8.0),
+                    ..default()
+                },
+                ..default()
+            });
+            commands
+                .spawn(NodeBundle {
+                    style: Style { ..default() },
+                    ..default()
+                })
+                .with_children(|commands| {
+                    commands.spawn(
+                        TextBundle::from_section(
+                            format!("{count}"),
+                            TextStyle {
+                                font_size: 8.0,
+                                font: font.clone_weak(),
+                                color: LABEL_TEXT,
+                            },
+                        )
+                        .with_style(Style {
+                            margin: UiRect::default().with_top(Val::Px(2.0)),
+                            ..default()
+                        }),
+                    );
+                });
+        });
+}
 
 fn update_choices(
     trigger: Trigger<UpdateChoices>,
@@ -162,6 +223,9 @@ fn update_ship_stats(
 #[derive(Event, Debug)]
 pub struct UpdateChoices(pub Vec<String>);
 
+#[derive(Event, Debug)]
+pub struct UpdateInventoryList;
+
 #[derive(Component)]
 struct ContinueButton;
 
@@ -179,6 +243,42 @@ pub struct SpyGlassBox;
 
 #[derive(Component)]
 pub struct ParrotBox;
+
+#[derive(Component)]
+pub struct InventoryList;
+
+fn update_inventory(
+    _trigger: Trigger<UpdateInventoryList>,
+    ilist: Query<Entity, With<InventoryList>>,
+    fonts: Res<HandleMap<FontKey>>,
+    images: Res<HandleMap<ImageKey>>,
+    journey: Res<Journey>,
+    mut commands: Commands,
+) {
+    commands
+        .entity(ilist.single())
+        .despawn_descendants()
+        .with_children(|commands| {
+            for (key, amount) in &journey.inventory {
+                if *amount <= 0 {
+                    continue;
+                }
+                inventory_item(
+                    commands,
+                    images.as_ref(),
+                    match key {
+                        super::spawn::quests::treasure::Item::MonkeyPaw => {
+                            ImageKey::DarkmagicButton
+                        }
+                        super::spawn::quests::treasure::Item::Cannon => ImageKey::Ship,
+                        super::spawn::quests::treasure::Item::Gold => ImageKey::Bone4,
+                    },
+                    &fonts[&FontKey::LunchDS],
+                    *amount,
+                );
+            }
+        });
+}
 
 #[derive(Component, Resource, Debug, PartialEq, Eq, Clone, Copy)]
 pub enum FocusedDisplay {
@@ -332,6 +432,7 @@ fn spawn_game_ui(
                             style: Style {
                                 grid_row: GridPlacement::start_span(1, 2),
                                 grid_column: GridPlacement::start_span(1, 1),
+
                                 margin: UiRect::new(
                                     Val::Px(0.0),
                                     Val::Px(0.0),
@@ -350,6 +451,11 @@ fn spawn_game_ui(
                                     ),
                                     style: Style {
                                         width: Val::Percent(100.0),
+                                        height: Val::Percent(100.0),
+                                        display: Display::Flex,
+                                        flex_direction: FlexDirection::ColumnReverse,
+                                        justify_items: JustifyItems::Center,
+                                        justify_content: JustifyContent::SpaceBetween,
                                         ..default()
                                     },
                                     ..default()
@@ -359,8 +465,6 @@ fn spawn_game_ui(
                                     commands
                                         .spawn(NodeBundle {
                                             style: Style {
-                                                width: Val::Percent(50.0),
-                                                aspect_ratio: Some(1.0),
                                                 position_type: PositionType::Absolute,
                                                 top: Val::Percent(5.0),
                                                 left: Val::Percent(10.0),
@@ -404,8 +508,8 @@ fn spawn_game_ui(
                                                             image_handles[&image_key].clone_weak(),
                                                         ),
                                                         style: Style {
-                                                            width: Val::Percent(80.0),
-                                                            height: Val::Percent(80.0),
+                                                            width: Val::Px(8.0),
+                                                            height: Val::Px(8.0),
                                                             margin: UiRect::all(Val::Auto),
                                                             ..default()
                                                         },
@@ -414,6 +518,21 @@ fn spawn_game_ui(
                                                     .insert(game_action);
                                             }
                                         });
+
+                                    commands
+                                        .spawn(NodeBundle {
+                                            style: Style {
+                                                display: Display::Flex,
+                                                flex_direction: FlexDirection::Column,
+                                                justify_items: JustifyItems::Center,
+                                                justify_content: JustifyContent::SpaceBetween,
+                                                margin: UiRect::all(Val::Px(7.0)),
+                                                row_gap: Val::Px(2.0),
+                                                ..default()
+                                            },
+                                            ..default()
+                                        })
+                                        .insert(InventoryList);
                                 });
                         });
 

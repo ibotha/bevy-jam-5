@@ -10,6 +10,8 @@ fn embark(actions: &mut StoryActions) {
         distance: 20,
         environment: Environment::Sea,
     });
+    actions.delta_items(Item::Gold, 200);
+    actions.delta_items(Item::Cannon, 3);
     actions.add_dialogue(
         Dialogue::new(CAPTAIN)
             .para("And so we go to shady cove!")

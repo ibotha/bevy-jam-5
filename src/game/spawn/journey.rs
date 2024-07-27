@@ -10,6 +10,7 @@ use rand::Rng;
 use rand::RngCore;
 use rand::SeedableRng;
 
+use crate::game::ui::UpdateInventoryList;
 use crate::game::weighted_random;
 use crate::screen::Screen;
 use crate::{
@@ -25,6 +26,7 @@ use crate::{
     screen::weather_maniac::UpdateBoneGrid,
 };
 
+use super::predicitons::Predictions;
 use super::predicitons::UpdateParrotUi;
 use super::quests::treasure::Item;
 use super::quests::Certainty;
@@ -219,6 +221,7 @@ fn choose_task(
     }
 
     commands.trigger(UpdateShipStatsUI);
+    commands.trigger(UpdateInventoryList);
     commands.trigger(Continue);
 }
 
@@ -260,7 +263,15 @@ fn continue_journey(
     }
 }
 
-fn next_day(_trigger: Trigger<NextDay>, mut commands: Commands, mut journey: ResMut<Journey>) {
+fn next_day(
+    _trigger: Trigger<NextDay>,
+    mut commands: Commands,
+    mut journey: ResMut<Journey>,
+    mut predictions: ResMut<Predictions>,
+) {
+    *predictions = Predictions {
+        ..Default::default()
+    };
     journey.generate_new_weather();
 
     commands.trigger(UpdateBoneGrid(match journey.rng.gen_range(0..3) {
@@ -307,7 +318,7 @@ fn next_day(_trigger: Trigger<NextDay>, mut commands: Commands, mut journey: Res
 
         let mut rng = &mut journey.rng;
         potential_events.push((select_random_event(&mut rng, env), 10));
-
+        info!("selecting from random events! {potential_events:?}");
         weighted_random(Some(&mut rng), &potential_events).clone()
     };
 

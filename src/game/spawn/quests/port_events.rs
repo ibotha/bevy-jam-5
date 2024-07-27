@@ -6,8 +6,8 @@ use super::{
 };
 
 fn embark(actions: &mut StoryActions) {
-    sail(actions);
     actions.change_environment(Environment::Sea);
+    sail(actions);
 }
 
 fn recruit(actions: &mut StoryActions) {
