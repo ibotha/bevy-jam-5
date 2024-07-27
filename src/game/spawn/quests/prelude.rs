@@ -11,5 +11,6 @@ pub(super) use super::{
 };
 
 pub use crate::{
-    captain, crew, crew1, crew2, crew3, dialogue, dock_worker, map_merchant, narrator,
+    captain, crew, crew1, crew2, crew3, dialogue, dock_worker, map_merchant, monster_hunter,
+    narrator, trinket_seller,
 };
