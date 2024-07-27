@@ -99,18 +99,17 @@ fn fight(actions: &mut StoryActions) {
         (H::Blistering | H::Warm, M::Humid, W::High | W::GaleForce) => {
             actions.add_dialogue(crew2!("I can't see where they are!"));
             actions.add_dialogue(captain!("Everyone get down!"));
-            actions.delta_health(-10);
-            actions.delta_crew(-1);
-            actions.delta_items(Item::Cannon, -2);
-            actions.delta_items(Item::Gold, -200);
+            let favour = actions.battle(5, -1, "the bounty hunters");
+            actions.delta_items(Item::Cannon, favour / 3);
+            actions.delta_items(Item::Gold, favour * 10);
         }
         _ => {
             actions.add_dialogue(crew3!("Clear skies, fire away!"));
             actions.add_dialogue(captain!("Nice shot, they are going down!"));
             actions.delta_health((-3 + actions.get_item(Item::Cannon)).min(-1));
-            actions.delta_crew(1);
-            actions.delta_items(Item::Cannon, 1);
-            actions.delta_items(Item::Gold, 200);
+            let favour = actions.battle(5, 1, "the bounty hunters");
+            actions.delta_items(Item::Cannon, favour / 3);
+            actions.delta_items(Item::Gold, favour * 10);
         }
     }
 }
