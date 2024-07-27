@@ -5,7 +5,8 @@ use bevy::{input::common_conditions::input_just_pressed, prelude::*};
 use super::{title::MenuFloating, Screen};
 use crate::game::{
     assets::{HandleMap, ImageKey},
-    spawn::level::SpawnLevel,
+    spawn::{journey::Continue, level::SpawnLevel},
+    ui::ContinueButton,
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -14,8 +15,13 @@ pub(super) fn plugin(app: &mut App) {
 
     app.add_systems(
         Update,
-        return_to_title_screen
-            .run_if(in_state(Screen::Playing).and_then(input_just_pressed(KeyCode::Escape))),
+        (
+            return_to_title_screen
+                .run_if(in_state(Screen::Playing).and_then(input_just_pressed(KeyCode::Escape))),
+            carry_on.run_if(in_state(Screen::Playing).and_then(
+                input_just_pressed(KeyCode::Space).or_else(input_just_pressed(KeyCode::Enter)),
+            )),
+        ),
     );
 }
 
@@ -53,4 +59,10 @@ fn exit_playing(_commands: Commands) {
 
 fn return_to_title_screen(mut next_screen: ResMut<NextState<Screen>>) {
     next_screen.set(Screen::Title);
+}
+
+fn carry_on(query: Query<&Visibility, With<ContinueButton>>, mut commands: Commands) {
+    if query.single() == Visibility::Visible {
+        commands.trigger(Continue);
+    }
 }

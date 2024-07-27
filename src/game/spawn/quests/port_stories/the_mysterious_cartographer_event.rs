@@ -30,7 +30,7 @@ fn hire_cartographer(actions: &mut StoryActions) {
     }
 }
 
-pub fn the_mysterious_cartographer_event(actions: &StoryActions) -> DayEvent {
+pub fn the_mysterious_cartographer_event(actions: &mut StoryActions) -> DayEvent {
     port_stories_base(actions)
         .line(crew1!("Cap'n! There's an odd fellow at the docks, claiming to be a master cartographer."))
         .line(captain!("A cartographer, you say? What makes this one so special?"))

@@ -1,5 +1,5 @@
-use crate::game::spawn::quests::prelude::*;
 use super::port_stories_base;
+use crate::game::spawn::quests::prelude::*;
 
 fn join_heist(actions: &mut StoryActions) {
     let DW {
@@ -27,7 +27,9 @@ fn join_heist(actions: &mut StoryActions) {
         _ => {
             actions.delta_items(Item::Gold, 50);
             actions.delta_health(-5);
-            actions.add_dialogue(captain!("We got away with some gold, but the ship took damage during our hasty departure."));
+            actions.add_dialogue(captain!(
+                "We got away with some gold, but the ship took damage during our hasty departure."
+            ));
         }
     }
 }
@@ -49,15 +51,26 @@ fn alert_authorities(actions: &mut StoryActions) {
     }
 }
 
-pub fn the_dockside_heist_event(actions: &StoryActions) -> DayEvent {
+pub fn the_dockside_heist_event(actions: &mut StoryActions) -> DayEvent {
     port_stories_base(actions)
-        .line(crew1!("Cap'n! I've overheard a group planning a heist on a wealthy merchant's ship tonight."))
-        .line(captain!("A heist, you say? That's some valuable information. What else do you know?"))
-        .line(crew2!("They're saying the ship's loaded with gold and exotic goods, Cap'n. It's tempting..."))
-        .line(crew3!("But it's risky business. We could warn the merchant or alert the authorities instead."))
-        .line(captain!("Indeed, we have a decision to make. What are our options?"))
+        .line(crew1!(
+            "Cap'n! I've overheard a group planning a heist on a wealthy merchant's ship tonight."
+        ))
+        .line(captain!(
+            "A heist, you say? That's some valuable information. What else do you know?"
+        ))
+        .line(crew2!(
+            "They're saying the ship's loaded with gold and exotic goods, Cap'n. It's tempting..."
+        ))
+        .line(crew3!(
+            "But it's risky business. We could warn the merchant or alert the authorities instead."
+        ))
+        .line(captain!(
+            "Indeed, we have a decision to make. What are our options?"
+        ))
         .choice("Join", join_heist)
         .choice("Warn", warn_merchant)
         .conditional_choice("Alert", alert_authorities, actions.get_crew() > 5)
         .hint("Squawk! Sometimes the greatest treasures are found in a clear conscience!")
 }
+

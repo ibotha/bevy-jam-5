@@ -1,5 +1,5 @@
-use crate::game::spawn::quests::prelude::*;
 use super::port_stories_base;
+use crate::game::spawn::quests::prelude::*;
 
 fn escort_merchant(actions: &mut StoryActions) {
     let DW {
@@ -51,7 +51,7 @@ fn decline_assistance(actions: &mut StoryActions) {
     actions.add_dialogue(captain!("We avoided the risk, but one of our crew left, disappointed by our lack of adventure. At least we made some money from other jobs at the port."));
 }
 
-pub fn the_merchants_dilemma_event(actions: &StoryActions) -> DayEvent {
+pub fn the_merchants_dilemma_event(actions: &mut StoryActions) -> DayEvent {
     port_stories_base(actions)
         .line(crew1!("Cap'n! There's a merchant in a right state at the docks. Says he's in desperate need of help."))
         .line(captain!("A merchant, you say? What seems to be the trouble?"))
@@ -63,3 +63,4 @@ pub fn the_merchants_dilemma_event(actions: &StoryActions) -> DayEvent {
         .choice("Decline", decline_assistance)
         .hint("Squawk! A merchant's problem can be a pirate's opportunity!")
 }
+

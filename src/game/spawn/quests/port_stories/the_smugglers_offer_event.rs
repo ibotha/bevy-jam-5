@@ -1,5 +1,5 @@
-use crate::game::spawn::quests::prelude::*;
 use super::port_stories_base;
+use crate::game::spawn::quests::prelude::*;
 
 fn accept_smuggling_job(actions: &mut StoryActions) {
     let DW {
@@ -11,18 +11,24 @@ fn accept_smuggling_job(actions: &mut StoryActions) {
     match wind {
         W::None | W::Low => {
             actions.delta_items(Item::Gold, 200);
-            actions.add_dialogue(captain!("Smooth sailing! We've made a tidy profit from this venture."));
+            actions.add_dialogue(captain!(
+                "Smooth sailing! We've made a tidy profit from this venture."
+            ));
         }
         W::Medium => {
             actions.delta_items(Item::Gold, 100);
             actions.delta_health(-5);
-            actions.add_dialogue(captain!("We completed the job, but the choppy waters caused some minor damage."));
+            actions.add_dialogue(captain!(
+                "We completed the job, but the choppy waters caused some minor damage."
+            ));
         }
         W::High | W::GaleForce => {
             actions.delta_items(Item::Gold, -50);
             actions.delta_health(-15);
             actions.delta_crew(-1);
-            actions.add_dialogue(captain!("Blasted storm! We lost the cargo and barely made it back alive."));
+            actions.add_dialogue(captain!(
+                "Blasted storm! We lost the cargo and barely made it back alive."
+            ));
         }
     }
 
@@ -37,20 +43,24 @@ fn accept_smuggling_job(actions: &mut StoryActions) {
 fn reject_smuggling_job(actions: &mut StoryActions) {
     actions.delta_crew(1);
     actions.delta_items(Item::Gold, -20);
-    actions.add_dialogue(captain!("We may have lost some coin, but we gained a new crew member who respects our integrity."));
+    actions.add_dialogue(captain!(
+        "We may have lost some coin, but we gained a new crew member who respects our integrity."
+    ));
 }
 
 fn bribe_smuggler(actions: &mut StoryActions) {
     if actions.get_item(Item::Gold) >= 50 {
         actions.delta_items(Item::Gold, -50);
-        actions.add_dialogue(captain!("A necessary expense to keep our reputation clean."));
+        actions.add_dialogue(captain!(
+            "A necessary expense to keep our reputation clean."
+        ));
     } else {
         actions.delta_crew(-1);
         actions.add_dialogue(captain!("We couldn't pay, so they took one of our crew as collateral. We'll get them back... someday."));
     }
 }
 
-pub fn the_smugglers_offer_event(actions: &StoryActions) -> DayEvent {
+pub fn the_smugglers_offer_event(actions: &mut StoryActions) -> DayEvent {
     port_stories_base(actions)
         .line(crew1!("Cap'n, a shady character approached me at the docks with an... interesting proposition."))
         .line(captain!("Out with it, Patchy. What's this proposition?"))
@@ -63,3 +73,4 @@ pub fn the_smugglers_offer_event(actions: &StoryActions) -> DayEvent {
         .conditional_choice("Bribe", bribe_smuggler, actions.get_item(Item::Gold) >= 50)
         .hint("Squawk! Honest sails sleep better at night!")
 }
+

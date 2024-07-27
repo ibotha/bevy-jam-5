@@ -60,7 +60,7 @@ fn decline_challenge(actions: &mut StoryActions) {
     actions.add_dialogue(captain!("We avoided the risk, but lost face. One crew member left, ashamed, but another captain paid us to carry some cargo as a consolation."));
 }
 
-pub fn the_rival_captains_challenge_event(actions: &StoryActions) -> DayEvent {
+pub fn the_rival_captains_challenge_event(actions: &mut StoryActions) -> DayEvent {
     port_stories_base(actions)
         .line(crew1!("Cap'n! There's another captain at the tavern, boasting about being the best on the seas."))
         .line(captain!("Oh? And what does this braggart propose?"))

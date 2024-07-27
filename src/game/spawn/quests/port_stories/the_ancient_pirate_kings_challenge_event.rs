@@ -1,5 +1,5 @@
-use crate::game::spawn::quests::prelude::*;
 use super::port_stories_base;
+use crate::game::spawn::quests::prelude::*;
 
 fn accept_challenge(actions: &mut StoryActions) {
     if actions.get_item(Item::Gold) >= 300 && actions.get_crew() >= 7 {
@@ -32,7 +32,7 @@ fn sell_information(actions: &mut StoryActions) {
     actions.add_dialogue(captain!("We sold the information to a consortium of wealthy merchants. The payment was substantial, but one of our crew left, disgusted by our 'betrayal' of pirate honor."));
 }
 
-pub fn the_ancient_pirate_kings_challenge_event(actions: &StoryActions) -> DayEvent {
+pub fn the_ancient_pirate_kings_challenge_event(actions: &mut StoryActions) -> DayEvent {
     port_stories_base(actions)
         .line(crew1!("Cap'n! You'll never believe what's just been announced in the port!"))
         .line(captain!("Calm down and speak plainly. What's got you so excited?"))
@@ -44,3 +44,4 @@ pub fn the_ancient_pirate_kings_challenge_event(actions: &StoryActions) -> DayEv
         .choice("Sell", sell_information)
         .hint("Squawk! Only the bravest or the foolhardiest dare to challenge the legends of old!")
 }
+

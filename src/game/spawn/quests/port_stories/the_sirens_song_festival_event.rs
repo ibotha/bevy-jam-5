@@ -1,5 +1,5 @@
-use crate::game::spawn::quests::prelude::*;
 use super::port_stories_base;
+use crate::game::spawn::quests::prelude::*;
 
 fn participate_in_festival(actions: &mut StoryActions) {
     let DW {
@@ -49,7 +49,7 @@ fn avoid_festival(actions: &mut StoryActions) {
     actions.add_dialogue(captain!("We stayed away from the mysterious festival. It saved us some trouble, but one crew member left, drawn by the siren's song. At least we made some money from other cautious traders."));
 }
 
-pub fn the_sirens_song_festival_event(actions: &StoryActions) -> DayEvent {
+pub fn the_sirens_song_festival_event(actions: &mut StoryActions) -> DayEvent {
     port_stories_base(actions)
         .line(crew1!("Cap'n! The village is all abuzz about some festival tonight. They call it the Siren's Song Festival."))
         .line(captain!("A Siren's Song Festival? Sounds dangerous..."))
@@ -61,3 +61,4 @@ pub fn the_sirens_song_festival_event(actions: &StoryActions) -> DayEvent {
         .choice("Avoid festival", avoid_festival)
         .hint("Squawk! Sometimes the sweetest songs hide the sharpest teeth!")
 }
+

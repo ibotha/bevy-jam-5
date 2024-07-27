@@ -50,7 +50,7 @@ fn bet_on_races(actions: &mut StoryActions) {
     let bet_amount = 100;
     if actions.get_item(Item::Gold) >= bet_amount {
         actions.delta_items(Item::Gold, -bet_amount);
-        
+
         if actions.get_rng().gen_bool(0.6) { // 60% chance to win
             actions.delta_items(Item::Gold, bet_amount * 2);
             actions.add_dialogue(captain!("Our bet paid off! We doubled our money without risking the ship."));
@@ -63,7 +63,7 @@ fn bet_on_races(actions: &mut StoryActions) {
     }
 }
 
-pub fn the_ports_grand_regatta_event(actions: &StoryActions) -> DayEvent {
+pub fn the_ports_grand_regatta_event(actions: &mut StoryActions) -> DayEvent {
     port_stories_base(actions)
         .line(crew1!("Cap'n! The port is hosting its annual Grand Regatta today. Ships from all over are competing!"))
         .line(captain!("The Grand Regatta, eh? That could be interesting. What are the details?"))

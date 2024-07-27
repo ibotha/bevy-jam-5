@@ -1,15 +1,21 @@
-use rand::Rng;
-use crate::game::spawn::quests::prelude::*;
 use super::port_stories_base;
+use crate::game::spawn::quests::prelude::*;
+use rand::Rng;
 
 fn join_card_game(actions: &mut StoryActions) {
     let luck = actions.get_rng().gen_range(-50..=100);
     if luck > 0 {
         actions.delta_items(Item::Gold, luck);
-        actions.add_dialogue(captain!(format!("Lady Luck smiled on us tonight! We won {} gold in the card game.", luck)));
+        actions.add_dialogue(captain!(format!(
+            "Lady Luck smiled on us tonight! We won {} gold in the card game.",
+            luck
+        )));
     } else {
         actions.delta_items(Item::Gold, luck);
-        actions.add_dialogue(captain!(format!("The cards weren't in our favor. We lost {} gold, but at least the crew had some fun.", -luck)));
+        actions.add_dialogue(captain!(format!(
+            "The cards weren't in our favor. We lost {} gold, but at least the crew had some fun.",
+            -luck
+        )));
     }
 }
 
@@ -32,7 +38,7 @@ fn listen_to_local_music(actions: &mut StoryActions) {
     actions.add_dialogue(captain!("We enjoyed the local tunes and relaxed. It was a peaceful evening that did wonders for the crew's morale."));
 }
 
-pub fn the_local_tavern_visit_event(actions: &StoryActions) -> DayEvent {
+pub fn the_local_tavern_visit_event(actions: &mut StoryActions) -> DayEvent {
     port_stories_base(actions)
         .line(crew1!("Cap'n, the crew's eager for some shore leave. The local tavern's quite popular among sailors."))
         .line(captain!("Ah, a bit of relaxation might do us all some good. What's on offer at this establishment?"))
@@ -44,3 +50,4 @@ pub fn the_local_tavern_visit_event(actions: &StoryActions) -> DayEvent {
         .choice("Enjoy time", listen_to_local_music)
         .hint("Squawk! A merry crew makes for a swift journey, but a light purse makes for a heavy heart!")
 }
+

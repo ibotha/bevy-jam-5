@@ -6,7 +6,7 @@ fn embark(actions: &mut StoryActions) {
     sail(actions);
 }
 
-pub fn port_stories_base(actions: &StoryActions) -> DayEvent {
-    DayEvent::new()
-        .choice("Embark", embark)
+pub fn port_stories_base(actions: &mut StoryActions) -> DayEvent {
+    DayEvent::new().choice("Embark", embark)
 }
+

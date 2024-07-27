@@ -33,7 +33,7 @@ fn wait_out_dispute(actions: &mut StoryActions) {
     actions.add_dialogue(captain!("We decided to wait it out. Lost some time and had to use some of our provisions, but we saved on docking fees and sold some goods to other waiting ships."));
 }
 
-pub fn the_dockworkers_dispute_event(actions: &StoryActions) -> DayEvent {
+pub fn the_dockworkers_dispute_event(actions: &mut StoryActions) -> DayEvent {
     port_stories_base(actions)
         .line(crew1!("Cap'n, there's a bit of a situation on the docks. The workers are in a dispute with the harbor master."))
         .line(captain!("A dispute, you say? What's the nature of it?"))

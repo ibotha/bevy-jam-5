@@ -45,7 +45,7 @@ fn decline_involvement(actions: &mut StoryActions) {
     actions.add_dialogue(captain!("One of our crew was disappointed by our lack of community spirit and left to help the harbormaster."));
 }
 
-pub fn the_harbormasters_dilemma_event(actions: &StoryActions) -> DayEvent {
+pub fn the_harbormasters_dilemma_event(actions: &mut StoryActions) -> DayEvent {
     port_stories_base(actions)
         .line(crew1!("Cap'n, the harbormaster's in a right state! Says there's a problem with the lighthouse."))
         .line(captain!("What sort of problem, Patchy?"))

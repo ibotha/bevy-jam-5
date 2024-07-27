@@ -29,7 +29,7 @@ fn spread_the_tale(actions: &mut StoryActions) {
     actions.add_dialogue(captain!("Our tale of the sea monster spread through the port like wildfire. We've earned a reputation as brave explorers, gained some coin from buying rounds, and even attracted new crew members seeking adventure!"));
 }
 
-pub fn the_legendary_sea_monster_sighting_event(actions: &StoryActions) -> DayEvent {
+pub fn the_legendary_sea_monster_sighting_event(actions: &mut StoryActions) -> DayEvent {
     port_stories_base(actions)
         .line(crew1!("Cap'n! You won't believe what's got the whole port in an uproar!"))
         .line(captain!("Out with it, then. What's all the commotion about?"))

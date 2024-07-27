@@ -1,5 +1,5 @@
-use crate::game::spawn::quests::prelude::*;
 use super::port_stories_base;
+use crate::game::spawn::quests::prelude::*;
 
 fn explore_shipwreck(actions: &mut StoryActions) {
     let DW {
@@ -52,7 +52,7 @@ fn report_to_authorities(actions: &mut StoryActions) {
     actions.add_dialogue(captain!("The port authorities thanked us for the information. They rewarded us with gold and supplies for steering clear of danger."));
 }
 
-pub fn the_haunted_shipwreck_event(actions: &StoryActions) -> DayEvent {
+pub fn the_haunted_shipwreck_event(actions: &mut StoryActions) -> DayEvent {
     port_stories_base(actions)
         .line(crew1!("Cap'n! There's talk of a ghostly shipwreck just off the coast. Fishermen report strange lights and eerie sounds!"))
         .line(captain!("A haunted shipwreck, you say? That's not something you hear every day. What else do we know?"))
@@ -64,3 +64,4 @@ pub fn the_haunted_shipwreck_event(actions: &StoryActions) -> DayEvent {
         .choice("Report", report_to_authorities)
         .hint("Squawk! Not all treasure glitters, and not all that glitters is treasure!")
 }
+

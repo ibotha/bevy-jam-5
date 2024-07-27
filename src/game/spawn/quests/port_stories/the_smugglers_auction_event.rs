@@ -43,7 +43,7 @@ fn ignore_auction(actions: &mut StoryActions) {
     actions.add_dialogue(captain!("We steered clear of the shady business. A fellow who respects our integrity decided to join our crew."));
 }
 
-pub fn the_smugglers_auction_event(actions: &StoryActions) -> DayEvent {
+pub fn the_smugglers_auction_event(actions: &mut StoryActions) -> DayEvent {
     port_stories_base(actions)
         .line(crew1!("Cap'n, I've caught wind of a secret auction happening in the port tonight."))
         .line(captain!("An auction? What's so secret about it?"))

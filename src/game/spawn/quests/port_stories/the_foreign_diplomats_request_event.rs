@@ -1,5 +1,5 @@
-use crate::game::spawn::quests::prelude::*;
 use super::port_stories_base;
+use crate::game::spawn::quests::prelude::*;
 
 fn accept_diplomatic_mission(actions: &mut StoryActions) {
     actions.delta_items(Item::Gold, 150);
@@ -25,7 +25,7 @@ fn offer_information(actions: &mut StoryActions) {
     }
 }
 
-pub fn the_foreign_diplomats_request_event(actions: &StoryActions) -> DayEvent {
+pub fn the_foreign_diplomats_request_event(actions: &mut StoryActions) -> DayEvent {
     port_stories_base(actions)
         .line(crew1!("Cap'n! There's a foreign diplomat at the docks asking for you specifically."))
         .line(captain!("A diplomat? What could they want with us?"))
@@ -37,3 +37,4 @@ pub fn the_foreign_diplomats_request_event(actions: &StoryActions) -> DayEvent {
         .conditional_choice("Offer info", offer_information, actions.get_crew() > 3)
         .hint("Squawk! Politics and piracy make strange bedfellows, but gold spends the same!")
 }
+

@@ -1,6 +1,6 @@
+use super::port_stories_base;
 use crate::game::spawn::quests::prelude::*;
 use crate::game::spawn::quests::sea_events::bounty_hunters;
-use super::port_stories_base;
 
 fn go_to_the_carnival(actions: &mut StoryActions) {
     let DW {
@@ -37,7 +37,7 @@ fn steal_from_the_armory(actions: &mut StoryActions) {
             actions.add_event(FollowingEvent {
                 environment: Environment::Sea,
                 distance: 18,
-                event: bounty_hunters(),
+                event: bounty_hunters,
                 certainty: Certainty::Possible(2),
             });
             actions.delta_items(Item::Cannon, 1);
@@ -59,10 +59,11 @@ fn steal_from_the_armory(actions: &mut StoryActions) {
     }
 }
 
-pub fn the_carnival_in_the_city_event(actions: &StoryActions) -> DayEvent {
+pub fn the_carnival_in_the_city_event(actions: &mut StoryActions) -> DayEvent {
     port_stories_base(actions)
         .line(crew1!("Captian! Looks like there is a party in the city."))
         .choice("Party!", go_to_the_carnival)
         .choice("Steal", steal_from_the_armory)
         .hint("Squawk! RaIny FESTivals are NO FUN!")
 }
+

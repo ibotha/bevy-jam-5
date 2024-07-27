@@ -40,7 +40,7 @@ fn avoid_gossip(actions: &mut StoryActions) {
     actions.add_dialogue(captain!("We kept to ourselves and focused on ship maintenance. It's not exciting, but it keeps us out of trouble."));
 }
 
-pub fn the_harbor_gossip_event(actions: &StoryActions) -> DayEvent {
+pub fn the_harbor_gossip_event(actions: &mut StoryActions) -> DayEvent {
     port_stories_base(actions)
         .line(crew1!("Cap'n, the harbor's abuzz with chatter today. Lots of interesting tidbits floating around."))
         .line(captain!("Is that so? And what sort of gossip has caught your ear?"))

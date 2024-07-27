@@ -32,7 +32,7 @@ fn warn_authorities(actions: &mut StoryActions) {
     actions.add_dialogue(captain!("We alerted the authorities about the potential dangers of Atlantis. They rewarded us for our caution and civic duty. Our reputation for wisdom has attracted new crew members seeking to learn from us."));
 }
 
-pub fn the_lost_city_of_atlantis_resurfaces_event(actions: &StoryActions) -> DayEvent {
+pub fn the_lost_city_of_atlantis_resurfaces_event(actions: &mut StoryActions) -> DayEvent {
     port_stories_base(actions)
         .line(crew1!("Cap'n! You're not going to believe this, but Atlantis has resurfaced off the coast!"))
         .line(captain!("Atlantis? The mythical sunken city? Are you sure your eyes aren't playing tricks on you?"))

@@ -1,5 +1,5 @@
-use crate::game::spawn::quests::prelude::*;
 use super::port_stories_base;
+use crate::game::spawn::quests::prelude::*;
 
 fn recruit(actions: &mut StoryActions) {
     actions.delta_items(Item::Gold, -100);
@@ -15,7 +15,7 @@ fn repair(actions: &mut StoryActions) {
     actions.delta_health(10);
 }
 
-pub fn the_day_at_port_event(actions: &StoryActions) -> DayEvent {
+pub fn the_day_at_port_event(actions: &mut StoryActions) -> DayEvent {
     port_stories_base(actions)
         .line(captain!(
             "We are still at the blasted port!",
@@ -25,3 +25,4 @@ pub fn the_day_at_port_event(actions: &StoryActions) -> DayEvent {
         .conditional_choice("Resupply", resupply, actions.get_item(Item::Gold) > 20)
         .conditional_choice("Repair", repair, actions.get_item(Item::Gold) > 100)
 }
+

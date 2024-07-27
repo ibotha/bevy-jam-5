@@ -163,7 +163,9 @@ impl<'a> StoryActions<'a> {
             .push(format!("You covered {distance} leagues.",));
         self.journey.distance += distance;
         for event in &mut self.journey.events {
-            event.distance -= distance;
+            if event.environment == self.journey.environment {
+                event.distance -= distance;
+            }
         }
     }
 

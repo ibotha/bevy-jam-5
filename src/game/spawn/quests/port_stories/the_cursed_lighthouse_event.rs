@@ -1,5 +1,5 @@
-use crate::game::spawn::quests::prelude::*;
 use super::port_stories_base;
+use crate::game::spawn::quests::prelude::*;
 
 fn investigate_lighthouse(actions: &mut StoryActions) {
     let DW {
@@ -51,7 +51,7 @@ fn ignore_lighthouse(actions: &mut StoryActions) {
     actions.add_dialogue(captain!("We avoided the cursed lighthouse, but navigation became trickier. We lost some time and gold, but the locals appreciated our caution and gave us some supplies."));
 }
 
-pub fn the_cursed_lighthouse_event(actions: &StoryActions) -> DayEvent {
+pub fn the_cursed_lighthouse_event(actions: &mut StoryActions) -> DayEvent {
     port_stories_base(actions)
         .line(crew1!("Cap'n! The port's lighthouse has gone dark, and there are whispers of a curse!"))
         .line(captain!("A cursed lighthouse? That's a new one. What are people saying?"))
@@ -63,3 +63,4 @@ pub fn the_cursed_lighthouse_event(actions: &StoryActions) -> DayEvent {
         .choice("Ignore", ignore_lighthouse)
         .hint("Squawk! Even the darkest curses can lead to bright opportunities!")
 }
+

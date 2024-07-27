@@ -1,5 +1,5 @@
-use crate::game::spawn::quests::prelude::*;
 use super::port_stories_base;
+use crate::game::spawn::quests::prelude::*;
 
 fn inspect_cargo(actions: &mut StoryActions) {
     let DW {
@@ -44,7 +44,7 @@ fn refuse_cargo(actions: &mut StoryActions) {
     actions.add_dialogue(captain!("We refused to deal with the suspicious cargo. The port authorities rewarded us for our caution."));
 }
 
-pub fn the_cursed_cargo_event(actions: &StoryActions) -> DayEvent {
+pub fn the_cursed_cargo_event(actions: &mut StoryActions) -> DayEvent {
     port_stories_base(actions)
         .line(crew1!("Cap'n! There's a strange cargo just arrived at the port. The dockhands are afraid to touch it."))
         .line(captain!("What's so strange about it, Patchy?"))
@@ -56,3 +56,4 @@ pub fn the_cursed_cargo_event(actions: &StoryActions) -> DayEvent {
         .choice("Refuse", refuse_cargo)
         .hint("Squawk! Curiosity killed the cat, but satisfaction brought it back!")
 }
+
