@@ -45,6 +45,11 @@ impl<'a> StoryActions<'a> {
             updates,
         }
     }
+
+    pub fn once_off(&mut self, name: &'static str) -> bool {
+        return self.journey.once_offs.insert(name);
+    }
+
     pub fn delta_crew(&mut self, arg: i32) {
         let arg = arg.min(self.ship.max_crew - self.ship.crew);
         if arg == 0 {
@@ -148,9 +153,36 @@ impl<'a> StoryActions<'a> {
         }
         self.journey.environment = env;
         self.updates.push(match env {
-            Environment::Port(_) => "You arrive at port".to_string(),
-            Environment::Island(_) => "You set foot on the island".to_string(),
-            Environment::Sea(_) => "You cast off into the sea".to_string(),
+            Environment::Port(p) => format!(
+                "You arrive at {port}",
+                port = match p {
+                    Port::Random => "port",
+                    Port::Any => "",
+                    Port::Tortuga => "Tortuga",
+                    Port::ShadyCove => "Shady Cove",
+                    Port::EdgeOfTheWorld => "The Edge of The World",
+                    Port::RoyalNavyBase => "The Royal Navy Base",
+                }
+            ),
+            Environment::Island(i) => format!(
+                "You set foot on {island}",
+                island = match i {
+                    Island::Random => "the island",
+                    Island::Any => "",
+                    Island::MysteriousIsland => "the mysterious island",
+                    Island::SirensCove => "sirens cove",
+                    Island::TrinketSeller => "goldfang island",
+                }
+            ),
+            Environment::Sea(s) => format!(
+                "You cast off into {sea}",
+                sea = match s {
+                    Sea::Intro => "sea",
+                    Sea::Any => todo!(),
+                    Sea::Northern => "northern sea",
+                    Sea::SirensCove => "singing seas",
+                }
+            ),
         });
     }
 
@@ -215,8 +247,21 @@ impl<'a> StoryActions<'a> {
             wind,
         } = self.weather();
         match self.get_environment() {
-            Environment::Port(_) => todo!(),
-            Environment::Island(_) => todo!(),
+            Environment::Port(_) => 0,
+            Environment::Island(_) => {
+                6 - match wind {
+                    W::None | W::Low | W::Medium => 0,
+                    W::High => 1,
+                    W::GaleForce => 2,
+                } - match moisture {
+                    M::Dry | M::Humid => 1,
+                    _ => 0,
+                } - match heat {
+                    H::Blistering | H::Freezing => 2,
+                    H::Warm | H::Chilly => 1,
+                    _ => 0,
+                }
+            }
             Environment::Sea(_) => match wind {
                 W::None => 0,
                 W::Low => 2,
@@ -234,8 +279,21 @@ impl<'a> StoryActions<'a> {
             wind,
         } = self.weather();
         match self.get_environment() {
-            Environment::Port(_) => todo!(),
-            Environment::Island(_) => todo!(),
+            Environment::Port(_) => 0,
+            Environment::Island(_) => {
+                0 + match wind {
+                    W::None | W::Low | W::Medium => 0,
+                    W::High => 1,
+                    W::GaleForce => 2,
+                } + match moisture {
+                    M::Dry | M::Humid => 1,
+                    _ => 0,
+                } + match heat {
+                    H::Blistering | H::Freezing => 3,
+                    H::Warm | H::Chilly => 1,
+                    _ => 0,
+                }
+            }
             Environment::Sea(_) => self.possible_distance().min(match (heat, moisture) {
                 (H::Blistering, M::Dry) => 8,
                 (H::Blistering, M::Comfortable) => 6,

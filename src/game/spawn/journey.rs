@@ -3,6 +3,7 @@ use std::collections::VecDeque;
 use bevy::math;
 use bevy::prelude::*;
 use bevy::utils::hashbrown::HashMap;
+use bevy::utils::hashbrown::HashSet;
 use log::info;
 use rand::rngs::StdRng;
 use rand::thread_rng;
@@ -27,7 +28,9 @@ use crate::{
 };
 
 use super::predicitons::Predictions;
+use super::predicitons::UpdateDarkMagicUi;
 use super::predicitons::UpdateParrotUi;
+use super::predicitons::UpdateSpyGlassUi;
 use super::quests::treasure::Item;
 use super::quests::Certainty;
 use super::quests::FollowingEvent;
@@ -57,6 +60,7 @@ pub struct Journey {
     pub distance: i32,
     pub event: Option<DayEvent>,
     pub weather: DayWeather, // Can use this variable to grab the predicted weather for the coming day
+    pub once_offs: HashSet<&'static str>,
     current_day: u32,
     moisture_cycle_length: u32,
     heat_cycle_length: u32,
@@ -80,6 +84,7 @@ impl Journey {
             event: None,
             distance: 0,
             current_day: 0,
+            once_offs: HashSet::new(),
             moisture_cycle_length: rng.gen_range(30..50),
             heat_cycle_length: rng.gen_range(60..120),
             wind_cycle_length: rng.gen_range(15..25),
@@ -290,6 +295,8 @@ fn next_day(
     *predictions = Predictions {
         ..Default::default()
     };
+    commands.trigger(UpdateSpyGlassUi);
+    commands.trigger(UpdateDarkMagicUi);
     journey.generate_new_weather();
 
     commands.trigger(UpdateBoneGrid(match journey.rng.gen_range(0..3) {

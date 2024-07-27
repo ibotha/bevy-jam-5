@@ -268,6 +268,8 @@ fn update_inventory(
                     images.as_ref(),
                     match key {
                         super::spawn::quests::treasure::Item::MonkeyPaw => ImageKey::MonkeyPaw,
+                        super::spawn::quests::treasure::Item::SirenKiller => ImageKey::SirenKiller,
+                        super::spawn::quests::treasure::Item::Journal => ImageKey::Journal,
                         super::spawn::quests::treasure::Item::Cannon => ImageKey::Cannon,
                         super::spawn::quests::treasure::Item::Gold => ImageKey::Gold,
                         super::spawn::quests::treasure::Item::SirensCoveMap => {

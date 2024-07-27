@@ -8,6 +8,8 @@ pub enum Item {
     SirensCoveMap,
     SirensScale,
     NorthernSeaMap,
+    SirenKiller,
+    Journal,
 }
 
 impl Display for Item {
@@ -19,6 +21,8 @@ impl Display for Item {
             Item::SirensCoveMap => "Siren Cove Map",
             Item::NorthernSeaMap => "Northern Sea Map",
             Item::SirensScale => "Siren Scale",
+            Item::SirenKiller => "Siren Killer",
+            Item::Journal => "Siren Killer's Journal",
         })
     }
 }

@@ -16,10 +16,6 @@ fn embark(actions: &mut StoryActions) {
 
     actions.delta_items(Item::Gold, 200);
     actions.delta_items(Item::Cannon, 3);
-    actions.delta_items(Item::MonkeyPaw, 3);
-    actions.delta_items(Item::SirensCoveMap, 3);
-    actions.delta_items(Item::SirensScale, 3);
-    actions.delta_items(Item::NorthernSeaMap, 3);
     actions.add_dialogue(captain!("And so we go to shady cove!"));
     actions.change_environment(Environment::Sea(Sea::Intro));
 }
@@ -54,7 +50,7 @@ fn rush_to_dock(actions: &mut StoryActions) {
         "Beg your pardon for rushing in like that.",
         "Had to escape the turn in the weather."
     ));
-    if actions.danger() > 3 {
+    if actions.danger() >= 3 {
         actions.add_dialogue(dock_worker!(
             "No worries sir. Its a terrible squall for sure."
         ));
@@ -132,6 +128,24 @@ pub fn shady_cove_base(_journey: &mut StoryActions) -> DayEvent {
     DayEvent::new().choice("Wait", wait)
 }
 
+fn explain_map(actions: &mut StoryActions) {
+    actions.add_dialogue(captain!(
+        "Har har, a map of the north sea. Now the adventure really begins."
+    ));
+    actions.add_dialogue(captain!(
+        "I see a mark here for the royal navy stronghold in the north.",
+        "If Siren's cove has a map then its in there."
+    ));
+    actions.add_dialogue(captain!(
+        "This mark means there is a trinket dealer on this island.",
+        "They may have something to help us fight the sirens."
+    ));
+    actions.add_dialogue(captain!(
+        "Lastly there is a curious skull drawn above this island.",
+        "I wonder what could be there.."
+    ));
+}
+
 fn buy_map(actions: &mut StoryActions) {
     actions.delta_items(Item::NorthernSeaMap, 1);
     actions.delta_items(Item::Gold, -100);
@@ -142,6 +156,7 @@ fn buy_map(actions: &mut StoryActions) {
         certainty: Certainty::Certain,
         event: set_course_northern_sea,
     });
+    explain_map(actions);
 }
 
 fn buy_map_cheap(actions: &mut StoryActions) {
@@ -153,11 +168,11 @@ fn buy_map_cheap(actions: &mut StoryActions) {
         certainty: Certainty::Certain,
         event: set_course_northern_sea,
     });
-    actions.add_dialogue(map_merchant!("Much obliged."))
+    actions.add_dialogue(map_merchant!("Much obliged."));
+    explain_map(actions);
 }
 
 fn steal_the_map(actions: &mut StoryActions) {
-    actions.delta_items(Item::NorthernSeaMap, 1);
     actions.add_event(FollowingEvent {
         delay: Delay::None,
         environment: Environment::Port(Port::ShadyCove),
@@ -193,6 +208,7 @@ fn steal_the_map(actions: &mut StoryActions) {
         actions.add_dialogue(captain!(format!("*whispering* Good job there {CREW1}")))
     }
     actions.delta_items(Item::NorthernSeaMap, 1);
+    explain_map(actions);
 }
 
 pub fn shady_cove(journey: &mut StoryActions) -> DayEvent {

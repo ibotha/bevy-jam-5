@@ -49,7 +49,7 @@ macro_rules! crew {
 #[macro_export]
 macro_rules! dock_worker {
     ($($x:expr),*) => {
-        dialogue!(CREW; $($x),*)
+        dialogue!(DOCK_WORKER; $($x),*)
     };
 }
 

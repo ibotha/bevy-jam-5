@@ -71,6 +71,8 @@ pub enum ImageKey {
     SirensScale,
     SirensCoveMap,
     MonkeyPaw,
+    Journal,
+    SirenKiller,
 }
 
 impl AssetKey for ImageKey {
@@ -121,6 +123,24 @@ impl FromWorld for HandleMap<ImageKey> {
                 ImageKey::MonkeyPaw,
                 asset_server.load_with_settings(
                     "images/MonkeyPaw.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::Journal,
+                asset_server.load_with_settings(
+                    "images/Journal.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
+            (
+                ImageKey::SirenKiller,
+                asset_server.load_with_settings(
+                    "images/SirenKiller.png",
                     |settings: &mut ImageLoaderSettings| {
                         settings.sampler = ImageSampler::nearest();
                     },
