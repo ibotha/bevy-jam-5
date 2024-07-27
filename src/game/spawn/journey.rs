@@ -180,6 +180,11 @@ fn choose_task(
     }
 
     let mut updates: Vec<String> = vec![];
+    updates.push(format!("Weather for day: {day}", day = journey.current_day));
+    updates.push(format!("Heat: {heat}", heat = journey.weather.heat));
+    updates.push(format!("Moisture: {moisture}", moisture = journey.weather.moisture));
+    updates.push(format!("Wind: {wind}", wind = journey.weather.wind));
+
     journey.event.as_ref().expect("choice is valid").choices[&trigger.event().0](
         &mut StoryActions::new(&mut ship, &mut journey, &mut dialog_queue, &mut updates),
     );
