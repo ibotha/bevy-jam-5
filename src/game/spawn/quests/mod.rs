@@ -19,8 +19,10 @@ pub mod unique_events;
 
 pub use actions::StoryActions;
 
-// Import all port_events
+// Import all port_events, island_stories
 pub mod port_stories;
+pub mod island_stories;
+pub mod sea_stories;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Port {

@@ -1,4 +1,4 @@
-use crate::game::spawn::quests::sea_events::sail;
+use crate::game::spawn::quests::sea_stories::sail;
 
 use super::super::prelude::*;
 
