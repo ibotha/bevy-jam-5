@@ -46,7 +46,7 @@ fn steal_from_the_armory(actions: &mut StoryActions) {
             actions.add_dialogue(captain!(
                 "Something tells me we aren't welcome here anymore."
             ));
-            set_next_port(actions, 20);
+            set_next_port(actions, 20, None);
         }
         M::Comfortable => {
             actions.delta_food(20);
@@ -62,7 +62,7 @@ fn steal_from_the_armory(actions: &mut StoryActions) {
                 event: the_bounty_hunters_event,
                 certainty: Certainty::Possible(2),
             });
-            set_next_port(actions, 20);
+            set_next_port(actions, 20, None);
             actions.add_dialogue(captain!(
                 "All the guards were at  there post!",
                 "We aren't getting those men or supplies back..."
@@ -81,4 +81,3 @@ pub fn the_carnival_in_the_city_event(actions: &mut StoryActions) -> DayEvent {
         .choice("Steal", steal_from_the_armory)
         .hint("Squawk! RaIny FESTivals are NO FUN!")
 }
-

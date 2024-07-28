@@ -2760,7 +2760,7 @@ dependencies = [
 
 [[package]]
 name = "nucos_j_bevy_5"
-version = "0.8.0"
+version = "0.9.0"
 dependencies = [
  "bevy",
  "env_logger",

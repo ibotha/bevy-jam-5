@@ -46,7 +46,6 @@ impl<T: Spawn> Widgets for T {
                 style: Style {
                     width: Px(120.0),
                     height: Px(20.0),
-                    padding: UiRect::new(Px(8.0), Px(20.0), Px(8.0), Px(0.0)),
                     justify_content: JustifyContent::Center,
                     ..default()
                 },

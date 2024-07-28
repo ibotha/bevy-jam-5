@@ -1,11 +1,15 @@
-use super::{sea_stories::*, prelude::*};
+use super::{prelude::*, sea_stories::*};
 
-pub fn set_next_port(actions: &mut StoryActions, distance: u32) {
+pub fn set_next_port(actions: &mut StoryActions, distance: u32, sea: Option<Sea>) {
+    let mut new_sea = actions.get_current_sea();
+    if let Some(s) = sea {
+        new_sea = s;
+    }
     actions.add_event(FollowingEvent {
         event: port_spotted,
         certainty: Certainty::Possible(10),
         delay: Delay::Distance(distance as i32),
-        environment: Environment::Sea(actions.get_current_sea()),
+        environment: Environment::Sea(new_sea),
     });
 }
 
@@ -15,7 +19,7 @@ fn dock(actions: &mut StoryActions) {
 
 fn sail_on(actions: &mut StoryActions) {
     sail(actions);
-    set_next_port(actions, 20);
+    set_next_port(actions, 20, None);
 }
 
 pub fn port_spotted(_actions: &mut StoryActions) -> DayEvent {
@@ -29,10 +33,9 @@ fn explore_island(actions: &mut StoryActions) {
     actions.change_environment(super::Environment::Island(Island::Random));
 }
 
-fn island_spotted(_actions: &mut StoryActions) -> DayEvent {
-    DayEvent::new()
+fn island_spotted(actions: &mut StoryActions) -> DayEvent {
+    sea_stories_base(actions)
         .line(crew1!("I see an island captain."))
-        .choice("Sail", sail)
         .choice("Explore", explore_island)
 }
 
@@ -43,3 +46,4 @@ pub(super) fn select_random_sea_event(actions: &mut StoryActions, sea: Sea) -> E
     ];
     weighted_random(Some(actions.get_journey_rng()), &choices).clone()
 }
+

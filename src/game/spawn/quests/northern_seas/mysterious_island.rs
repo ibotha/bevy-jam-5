@@ -39,11 +39,15 @@ fn risk_the_shallows(actions: &mut StoryActions) {
 }
 
 pub fn sighted_mysterious_island(actions: &mut StoryActions) -> DayEvent {
-    set_course_northern_sea(actions)
+    let env = actions.get_environment();
+    actions.change_environment(Environment::Island(Island::MysteriousIsland));
+    let e = set_course_northern_sea(actions)
         .line(crew3!("There it is captain!", "The mysterious island."))
         .line(captain!("What do you think sage?", "Do we take another heading, send a small party, or risk the ship navigating the shallows?"))
         .choice("Weigh Anchor", weigh_anchor)
-        .choice("Shallows", risk_the_shallows)
+        .choice("Shallows", risk_the_shallows);
+    actions.change_environment(env);
+    e
 }
 
 fn accept_gift(actions: &mut StoryActions) {
@@ -70,7 +74,7 @@ pub fn mysterious_encounter(_actions: &mut StoryActions) -> DayEvent {
         .line(captain!("Did you loose something."))
         .line(widow!("A long time ago. To creatures that you probably don't even believe in. But I have proof."))
         .line(narrator!("She idly runs her fingers over her necklace."))
-        .line(widow!("You know, I can harldy remember the last time someone showed me kindniss."))
+        .line(widow!("You know, I can harldy remember the last time someone showed me kindness."))
         .line(widow!("Take this, it only serves as a reminder of dark times these days."))
         .choice("Accept", accept_gift)
         .choice("Reject", reject_gift)

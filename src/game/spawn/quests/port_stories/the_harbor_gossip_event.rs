@@ -1,6 +1,6 @@
-use rand::Rng;
-use crate::game::spawn::quests::prelude::*;
 use super::port_stories_base;
+use crate::game::spawn::quests::prelude::*;
+use rand::Rng;
 
 fn listen_to_rumors(actions: &mut StoryActions) {
     let rumor_type = actions.get_rng().gen_range(0..=3);
@@ -50,5 +50,5 @@ pub fn the_harbor_gossip_event(actions: &mut StoryActions) -> DayEvent {
         .choice("Listen", listen_to_rumors)
         .conditional_choice("Share tales", share_tales, actions.get_crew() > 3)
         .choice("Avoid", avoid_gossip)
-        .hint("Squawk! A wise captain knows that knowledge is power, but loose lips sink ships!")
+        .hint("Squawk! A wise captain knows that knowledge is power, but lose lips sink ships!")
 }
