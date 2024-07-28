@@ -1,7 +1,5 @@
 use super::{
-    northern_seas::set_course_northern_sea,
-    prelude::*,
-    sea_events::set_next_port,
+    northern_seas::set_course_northern_sea, prelude::*, sea_events::set_next_port,
     sea_stories::the_bounty_hunters_event,
 };
 
@@ -13,7 +11,7 @@ fn embark(actions: &mut StoryActions) {
         environment: Environment::Sea(Sea::Intro),
     });
 
-    set_next_port(actions, 20);
+    set_next_port(actions, 30, Some(Sea::Northern));
 
     actions.delta_items(Item::Gold, 200);
     actions.delta_items(Item::Cannon, 3);
@@ -220,6 +218,7 @@ pub fn shady_cove(journey: &mut StoryActions) -> DayEvent {
         .line(captain!("Hello there map maker.", "We are in need of a map of the northern seas"))
         .line(map_merchant!("You're in luck, I have just what you need!"))
         .choice("Steal", steal_the_map)
+        .hint("Can't STEAL in BrOAD Daylight!")
         .conditional_choice("Buy", buy_map_cheap, journey.get_item(Item::Gold) >= 50)
 }
 

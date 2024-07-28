@@ -600,7 +600,7 @@ fn spawn_game_ui(
                                     ),
                                     style: Style {
                                         width: Val::Px(204.0),
-                                        height: Val::Px(150.0),
+                                        height: Val::Px(92.0),
                                         display: Display::Flex,
                                         flex_direction: FlexDirection::Column,
                                         margin: UiRect::all(Val::Auto).with_top(Val::Px(10.0)),
@@ -633,7 +633,7 @@ fn spawn_game_ui(
                                     ),
                                     style: Style {
                                         width: Val::Px(204.0),
-                                        height: Val::Px(150.0),
+                                        height: Val::Px(92.0),
                                         display: Display::Flex,
                                         flex_direction: FlexDirection::Column,
                                         margin: UiRect::all(Val::Auto).with_top(Val::Px(10.0)),
@@ -666,7 +666,7 @@ fn spawn_game_ui(
                                     ),
                                     style: Style {
                                         width: Val::Px(204.0),
-                                        height: Val::Px(150.0),
+                                        height: Val::Px(92.0),
                                         display: Display::Flex,
                                         flex_direction: FlexDirection::Column,
                                         margin: UiRect::all(Val::Auto).with_top(Val::Px(10.0)),

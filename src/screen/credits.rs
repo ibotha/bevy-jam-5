@@ -36,7 +36,7 @@ fn enter_credits(
         .ui_root()
         .insert(StateScoped(Screen::Credits))
         .with_children(|children| {
-            children.header("Made by",
+            children.header("Developed by",
                     fonts[&FontKey::LunchDS].clone_weak(),
                 );
             children.label("Julian",
@@ -53,12 +53,25 @@ fn enter_credits(
             children.label("Music - CC BY 3.0 by Kevin MacLeod",
                     fonts[&FontKey::LunchDS].clone_weak());
 
-            children.label("Music - Piratical Cycle by Isard & Eidean Botha",
+            children.label("Music - Piratical Cycle by Isard & Eidean Taya",
                     fonts[&FontKey::LunchDS].clone_weak());
-            children.label("Art - Justin",
+            children.label("Art - Justin, Isard, & Cara",
                     fonts[&FontKey::LunchDS].clone_weak());
-            children.button("Back", image_handles[&ImageKey::Button].clone_weak(),
-                    fonts[&FontKey::LunchDS].clone_weak()).insert(CreditsAction::Back);
+            children.button(
+                "Back",
+                image_handles[&ImageKey::Button].clone_weak(),
+                fonts[&FontKey::LunchDS].clone_weak())
+                .insert(Style {
+                    width: Val::Px(92.0),
+                    height: Val::Px(20.0),
+                    justify_content: JustifyContent::Center,
+                    justify_items: JustifyItems::Center,
+                    align_items: AlignItems::Center,
+                    padding: UiRect::all(Val::Px(0.0)).with_bottom(Val::Percent(0.0)),
+                    margin: UiRect::all(Val::Auto),
+                    ..default()
+                })
+                .insert(CreditsAction::Back);
         });
 
     commands.trigger(PlaySoundtrack::Key(SoundtrackKey::Credits));

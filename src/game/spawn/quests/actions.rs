@@ -5,7 +5,16 @@ use crate::game::spawn::{
     weather::DayWeather,
 };
 
-use super::{dialogue::DialogueQueue, prelude::*};
+use super::{
+    dialogue::DialogueQueue,
+    northern_seas::{
+        mysterious_island::{self, sighted_mysterious_island},
+        royal_navy_base::{self, sighted_navy_base},
+        trinket_seller::{self, sighted_trinket_seller},
+    },
+    prelude::*,
+    sirens_cove::{self, sighted_edge_of_the_world},
+};
 
 pub struct StoryActions<'a> {
     ship: &'a mut Ship,
@@ -285,6 +294,7 @@ impl<'a> StoryActions<'a> {
             moisture,
             wind,
         } = self.weather();
+        let cold_divisor = 1 + self.get_item(Item::GreekFire);
         match self.get_environment() {
             Environment::Port(_) => 0,
             Environment::Island(_) => {
@@ -311,12 +321,12 @@ impl<'a> StoryActions<'a> {
                 (H::Comfortable, M::Dry) => 2,
                 (H::Comfortable, M::Comfortable) => 0,
                 (H::Comfortable, M::Humid) => 3,
-                (H::Chilly, M::Dry) => 5,
-                (H::Chilly, M::Comfortable) => 4,
-                (H::Chilly, M::Humid) => 6,
-                (H::Freezing, M::Dry) => 7,
-                (H::Freezing, M::Comfortable) => 6,
-                (H::Freezing, M::Humid) => 10,
+                (H::Chilly, M::Dry) => 5 / cold_divisor,
+                (H::Chilly, M::Comfortable) => 4 / cold_divisor,
+                (H::Chilly, M::Humid) => 6 / cold_divisor,
+                (H::Freezing, M::Dry) => 7 / cold_divisor,
+                (H::Freezing, M::Comfortable) => 6 / cold_divisor,
+                (H::Freezing, M::Humid) => 10 / cold_divisor,
             }),
         }
     }
@@ -324,5 +334,21 @@ impl<'a> StoryActions<'a> {
     pub(crate) fn island_crew(&mut self, size: i32) {
         self.ship.left_behind = (self.ship.crew - size).max(0);
         self.delta_crew(-self.ship.left_behind);
+    }
+
+    pub(crate) fn no_course_set(&self) -> bool {
+        for event in &self.journey.events {
+            if [
+                sighted_trinket_seller,
+                sighted_navy_base,
+                sighted_edge_of_the_world,
+                sighted_mysterious_island,
+            ]
+            .contains(&event.event)
+            {
+                return false;
+            }
+        }
+        true
     }
 }

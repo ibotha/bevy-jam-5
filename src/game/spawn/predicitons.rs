@@ -207,6 +207,7 @@ pub fn predicted_selection(
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
                 padding: UiRect::all(Val::Px(10.0)),
+                margin: UiRect::all(Val::Px(3.0)),
                 ..default()
             },
             ..default()
@@ -216,7 +217,7 @@ pub fn predicted_selection(
                 text: Text::from_section(
                     predicted_text,
                     TextStyle {
-                        font_size: 14.0,
+                        font_size: 10.0,
                         color: LABEL_TEXT,
                         font: fonts[&FontKey::LunchDS].clone_weak(),
                     },

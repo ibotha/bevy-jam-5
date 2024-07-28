@@ -147,9 +147,9 @@ fn create_journey(_trigger: Trigger<CreateJourney>, mut commands: Commands) {
     let journey = Journey::generate(120.0, None, None);
     commands.insert_resource(journey);
     commands.insert_resource(Ship {
-        crew: 5,
+        crew: 7,
         left_behind: 0,
-        max_crew: 5,
+        max_crew: 15,
         food: 100,
         max_food: 100,
         health: 100,
@@ -158,6 +158,7 @@ fn create_journey(_trigger: Trigger<CreateJourney>, mut commands: Commands) {
     });
     commands.trigger(SetJouneyEvent(embark_event()));
     commands.trigger(Continue);
+    commands.trigger(UpdateShipStatsUI);
 }
 
 #[derive(Event, Debug)]
