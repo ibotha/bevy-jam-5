@@ -11,6 +11,7 @@ pub enum Item {
     SirenKiller,
     Journal,
     GreekFire,
+    SirenChild,
 }
 
 impl Display for Item {
@@ -25,6 +26,7 @@ impl Display for Item {
             Item::SirenKiller => "Siren Killer",
             Item::Journal => "Siren Killer's Journal",
             Item::GreekFire => "Greek Fire",
+            Item::SirenChild => "Siren Child",
         })
     }
 }

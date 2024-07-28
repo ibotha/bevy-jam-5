@@ -18,8 +18,10 @@ impl StoryActions<'_> {
         ));
 
         let damage = (-battle_favour).max(0);
-        self.delta_health(-damage);
-        self.delta_crew(-damage / 4);
+        if self.get_environment() == Environment::Sea(Sea::Any) {
+            self.delta_health(-damage);
+        }
+        self.delta_crew(-damage / 3);
         battle_favour
     }
 }

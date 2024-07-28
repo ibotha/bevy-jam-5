@@ -87,10 +87,35 @@ macro_rules! widow {
         dialogue!(WIDOW; $($x),*)
     };
 }
+
+#[macro_export]
+macro_rules! sirens {
+    ($($x:expr),*) => {
+        dialogue!(SIRENS; $($x),*)
+    };
+}
+#[macro_export]
+macro_rules! siren {
+    ($($x:expr),*) => {
+        dialogue!(SIREN; $($x),*)
+    };
+}
+#[macro_export]
+macro_rules! siren_child {
+    ($($x:expr),*) => {
+        dialogue!(SIREN_CHILD; $($x),*)
+    };
+}
 #[macro_export]
 macro_rules! prisoner {
     ($($x:expr),*) => {
         dialogue!(PRISONER; $($x),*)
+    };
+}
+#[macro_export]
+macro_rules! king_triton {
+    ($($x:expr),*) => {
+        dialogue!(KING_TRITON; $($x),*)
     };
 }
 
@@ -105,3 +130,7 @@ pub const MONSTER_HUNTER: &str = "Hunter Fluffikins III";
 pub const TRINKET_SELLER: &str = "Trinketier Keyir";
 pub const WIDOW: &str = "Old Woman";
 pub const PRISONER: &str = "Prisoner";
+pub const SIRENS: &str = "Sirens";
+pub const SIREN: &str = "Siren";
+pub const SIREN_CHILD: &str = "Siren Child";
+pub const KING_TRITON: &str = "King Triton";

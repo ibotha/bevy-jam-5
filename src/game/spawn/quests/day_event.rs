@@ -36,6 +36,13 @@ impl DayEvent {
         self
     }
 
+    pub fn c_line(mut self, d: Dialogue, c: bool) -> Self {
+        if c {
+            self.dialog.push(d);
+        }
+        self
+    }
+
     pub fn choice<T: ToString>(mut self, name: T, action: ChoiceFunction) -> Self {
         self.choices.insert(name.to_string(), action);
         self

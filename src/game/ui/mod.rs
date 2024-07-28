@@ -282,6 +282,7 @@ fn update_inventory(
                             ImageKey::NorthernSeaMap
                         }
                         super::spawn::quests::treasure::Item::GreekFire => ImageKey::GreekFire,
+                        super::spawn::quests::treasure::Item::SirenChild => ImageKey::SirenChild,
                     },
                     &fonts[&FontKey::LunchDS],
                     *amount,

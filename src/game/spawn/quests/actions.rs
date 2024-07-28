@@ -351,4 +351,8 @@ impl<'a> StoryActions<'a> {
         }
         true
     }
+
+    pub(crate) fn game_over(&mut self) {
+        self.journey.game_over = true;
+    }
 }

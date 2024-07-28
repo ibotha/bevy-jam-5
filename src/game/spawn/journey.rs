@@ -55,7 +55,7 @@ pub struct CreateJourney;
 
 #[derive(Resource, Debug)]
 pub struct Journey {
-    game_over: bool,
+    pub game_over: bool,
     pub events: Vec<FollowingEvent>,
     pub distance: i32,
     pub event: Option<DayEvent>,

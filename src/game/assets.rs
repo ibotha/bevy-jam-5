@@ -75,6 +75,7 @@ pub enum ImageKey {
     SirenKiller,
     GreekFire,
     BackdropStorm,
+    SirenChild,
 }
 
 impl AssetKey for ImageKey {
@@ -85,6 +86,15 @@ impl FromWorld for HandleMap<ImageKey> {
     fn from_world(world: &mut World) -> Self {
         let asset_server = world.resource::<AssetServer>();
         [
+            (
+                ImageKey::SirenChild,
+                asset_server.load_with_settings(
+                    "images/SirenChild.png",
+                    |settings: &mut ImageLoaderSettings| {
+                        settings.sampler = ImageSampler::nearest();
+                    },
+                ),
+            ),
             (
                 ImageKey::BackdropStorm,
                 asset_server.load_with_settings(
