@@ -10,7 +10,7 @@ fn investigate_shipwreck(actions: &mut StoryActions) {
 
     match (heat, wind, moisture) {
         (H::Comfortable, W::Low | W::Medium, M::Comfortable) => {
-            actions.delta_items(Item::Gold, 50);
+            actions.delta_items(Item::Gold, 25);
             actions.delta_crew(1);
             actions.add_dialogue(captain!(
                 "A successful expedition! We found some treasure and even recruited a survivor."

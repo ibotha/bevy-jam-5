@@ -35,7 +35,7 @@ fn accept_race_challenge(actions: &mut StoryActions) {
 
 fn engage_in_riddle_contest(actions: &mut StoryActions) {
     if actions.get_item(Item::MonkeyPaw) > 0 {
-        actions.delta_items(Item::Gold, 250);
+        actions.delta_items(Item::Gold, 100);
         actions.delta_crew(1);
         actions.delta_health(15);
         actions.add_dialogue(captain!("The Monkey's Paw glowed during the contest, guiding our answers! We won handily, earning gold, a new spectral crew member, and some mystical ship enhancements!"));

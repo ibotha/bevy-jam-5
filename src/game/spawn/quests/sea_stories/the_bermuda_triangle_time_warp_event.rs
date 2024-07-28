@@ -10,30 +10,30 @@ fn navigate_time_streams(actions: &mut StoryActions) {
 
     match (heat, wind, moisture) {
         (H::Comfortable, W::Medium, M::Comfortable) => {
-            actions.delta_items(Item::Gold, 3000);
-            actions.delta_health(250);
-            actions.delta_crew(12);
-            actions.delta_items(Item::Cannon, 20);
+            actions.delta_items(Item::Gold, 300);
+            actions.delta_health(25);
+            actions.delta_crew(2);
+            actions.delta_items(Item::Cannon, 1);
             actions.add_dialogue(captain!("Incredible! We've mastered the time streams! Our ship now exists in multiple time periods simultaneously, we've recruited legendary figures from history, and our holds are bursting with treasures from the past and future!"));
         }
         (H::Warm | H::Chilly, W::Low | W::High, M::Dry | M::Humid) => {
-            actions.delta_items(Item::Gold, 1500);
-            actions.delta_health(-40);
-            actions.delta_crew(-5);
-            actions.delta_items(Item::Cannon, 10);
+            actions.delta_items(Item::Gold, 150);
+            actions.delta_health(-5);
+            actions.delta_crew(-1);
+            actions.delta_items(Item::Cannon, 1);
             actions.add_dialogue(captain!("We've escaped the time warp, but at a cost. Five crew members were lost to different eras, our ship shows signs of both aging and futuristic upgrades, and we've acquired anachronistic treasures and weapons."));
         }
         (H::Blistering | H::Freezing, W::GaleForce, _) => {
-            actions.delta_crew(-10);
-            actions.delta_health(-120);
-            actions.delta_items(Item::Gold, 800);
+            actions.delta_crew(-1);
+            actions.delta_health(-10);
+            actions.delta_items(Item::Gold, 80);
             actions.add_dialogue(captain!("The time streams nearly tore us apart! We've lost ten crew members across time, our ship is a patchwork of different eras, but we've managed to salvage some extraordinary artifacts from various time periods."));
         }
         _ => {
-            actions.delta_items(Item::Gold, 1200);
-            actions.delta_health(80);
-            actions.delta_food(400);
-            actions.delta_items(Item::Cannon, 7);
+            actions.delta_items(Item::Gold, 120);
+            actions.delta_health(10);
+            actions.delta_food(10);
+            actions.delta_items(Item::Cannon, 1);
             actions.add_dialogue(captain!("We navigated the time anomaly cautiously. Our ship now flickers between past and future states, we've gathered provisions from multiple eras, and acquired some advanced weaponry from the future."));
         }
     }
@@ -41,24 +41,24 @@ fn navigate_time_streams(actions: &mut StoryActions) {
 
 fn attempt_temporal_mastery(actions: &mut StoryActions) {
     if actions.get_item(Item::MonkeyPaw) > 0 {
-        actions.delta_crew(15);
-        actions.delta_health(200);
-        actions.delta_items(Item::Gold, 2500);
-        actions.delta_items(Item::Cannon, 18);
+        actions.delta_crew(2);
+        actions.delta_health(20);
+        actions.delta_items(Item::Gold, 250);
+        actions.delta_items(Item::Cannon, 2);
         actions.add_dialogue(captain!("The Monkey's Paw resonated with the temporal energies! We've achieved mastery over time itself! Our crew now includes our own future selves, our ship can jump through time at will, and we've amassed a fortune from multiple timelines!"));
     } else {
-        actions.delta_food(300);
-        actions.delta_health(-80);
-        actions.delta_items(Item::Gold, 700);
-        actions.delta_crew(-4);
+        actions.delta_food(30);
+        actions.delta_health(-10);
+        actions.delta_items(Item::Gold, 70);
+        actions.delta_crew(-2);
         actions.add_dialogue(captain!("Our attempt at temporal mastery was partially successful. We can now perceive multiple timelines, but the strain caused four crew members to age rapidly and disintegrate. We've collected valuable artifacts from various eras, but at a great cost."));
     }
 }
 
 fn ride_out_the_anomaly(actions: &mut StoryActions) {
-    actions.delta_food(-200);
-    actions.delta_health(-50);
-    actions.delta_items(Item::Gold, 500);
+    actions.delta_food(-20);
+    actions.delta_health(-5);
+    actions.delta_items(Item::Gold, 50);
     actions.add_dialogue(captain!("We chose to ride out the time anomaly, letting it pass naturally. The experience was disorienting - we saw our ship age and rejuvenate repeatedly. We've emerged with some time-shifted artifacts, but the crew is shaken and our supplies depleted from experiencing multiple timelines simultaneously."));
 }
 

@@ -39,7 +39,7 @@ fn trade_with_sailor(actions: &mut StoryActions) {
         actions.add_dialogue(captain!("The sailor had a spare cannon he was willing to part with. It's a bit pricey, but it'll serve us well in future battles."));
     } else {
         actions.delta_items(Item::Gold, -50);
-        actions.delta_food(30);
+        actions.delta_food(10);
         actions.add_dialogue(captain!("We didn't have enough gold for the cannon, but we managed to trade for some of his preserved food supplies. It'll keep our crew fed for a while."));
     }
 }

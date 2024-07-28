@@ -10,20 +10,20 @@ fn accept_smuggling_job(actions: &mut StoryActions) {
 
     match wind {
         W::None | W::Low => {
-            actions.delta_items(Item::Gold, 200);
+            actions.delta_items(Item::Gold, 20);
             actions.add_dialogue(captain!(
                 "Smooth sailing! We've made a tidy profit from this venture."
             ));
         }
         W::Medium => {
-            actions.delta_items(Item::Gold, 100);
+            actions.delta_items(Item::Gold, 10);
             actions.delta_health(-5);
             actions.add_dialogue(captain!(
                 "We completed the job, but the choppy waters caused some minor damage."
             ));
         }
         W::High | W::GaleForce => {
-            actions.delta_items(Item::Gold, -50);
+            actions.delta_items(Item::Gold, -5);
             actions.delta_health(-15);
             actions.delta_crew(-1);
             actions.add_dialogue(captain!(
@@ -42,15 +42,15 @@ fn accept_smuggling_job(actions: &mut StoryActions) {
 
 fn reject_smuggling_job(actions: &mut StoryActions) {
     actions.delta_crew(1);
-    actions.delta_items(Item::Gold, -20);
+    actions.delta_items(Item::Gold, -5);
     actions.add_dialogue(captain!(
         "We may have lost some coin, but we gained a new crew member who respects our integrity."
     ));
 }
 
 fn bribe_smuggler(actions: &mut StoryActions) {
-    if actions.get_item(Item::Gold) >= 50 {
-        actions.delta_items(Item::Gold, -50);
+    if actions.get_item(Item::Gold) >= 25 {
+        actions.delta_items(Item::Gold, -25);
         actions.add_dialogue(captain!(
             "A necessary expense to keep our reputation clean."
         ));

@@ -10,12 +10,12 @@ fn explore_cave(actions: &mut StoryActions) {
 
     match (heat, wind, moisture) {
         (H::Comfortable, W::Low, M::Dry) => {
-            actions.delta_items(Item::Gold, 500);
+            actions.delta_items(Item::Gold, 50);
             actions.delta_health(5);
             actions.add_dialogue(captain!("Ahoy! We've struck gold in this cave! The conditions were perfect for exploration, and we've come out richer and stronger!"));
         }
         (H::Warm, W::Medium, M::Humid) => {
-            actions.delta_items(Item::Gold, 200);
+            actions.delta_items(Item::Gold, 20);
             actions.delta_crew(-1);
             actions.add_dialogue(captain!("We found some treasure, but the humid conditions made the cave treacherous. We lost one of our crew to a nasty fall."));
         }
@@ -25,7 +25,7 @@ fn explore_cave(actions: &mut StoryActions) {
             actions.add_dialogue(captain!("Blimey! The extreme conditions made the cave exploration a nightmare. We're lucky to have made it out alive, but we're worse for wear."));
         }
         _ => {
-            actions.delta_items(Item::Gold, 100);
+            actions.delta_items(Item::Gold, 10);
             actions.delta_food(-10);
             actions.add_dialogue(captain!("We found a small stash of gold, but the exploration took longer than expected. We've used up some of our provisions."));
         }
@@ -33,8 +33,8 @@ fn explore_cave(actions: &mut StoryActions) {
 }
 
 fn negotiate_with_natives(actions: &mut StoryActions) {
-    if actions.get_item(Item::Gold) >= 200 {
-        actions.delta_items(Item::Gold, -200);
+    if actions.get_item(Item::Gold) >= 20 {
+        actions.delta_items(Item::Gold, -20);
         actions.delta_items(Item::Cannon, 1);
         actions.delta_food(30);
         actions.add_dialogue(captain!("The natives were willing to trade! We've acquired a new cannon and some fresh provisions. It cost us some gold, but it's worth it for the firepower!"));

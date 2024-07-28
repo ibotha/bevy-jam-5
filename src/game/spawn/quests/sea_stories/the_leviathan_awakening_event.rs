@@ -11,27 +11,27 @@ fn confront_leviathan(actions: &mut StoryActions) {
     match (heat, wind, moisture) {
         (H::Comfortable, W::Medium, M::Comfortable) => {
             actions.delta_items(Item::Gold, 1200);
-            actions.delta_health(80);
+            actions.delta_health(40);
             actions.delta_crew(4);
             actions.delta_items(Item::Cannon, 6);
             actions.add_dialogue(captain!("Inconceivable! We've defeated the Leviathan! Its hide yields priceless treasures, its essence has empowered our ship, and some of its offspring have joined our crew! We're legends!"));
         }
         (H::Warm | H::Chilly, W::Low | W::High, M::Dry | M::Humid) => {
             actions.delta_items(Item::Gold, 600);
-            actions.delta_health(-30);
+            actions.delta_health(-15);
             actions.delta_crew(-2);
             actions.delta_items(Item::Cannon, 4);
             actions.add_dialogue(captain!("A Pyrrhic victory! We've slain the beast, but at great cost. We've lost two crew members and sustained heavy damage. Still, the Leviathan's remains have yielded incredible treasures and mystical weaponry."));
         }
         (H::Blistering | H::Freezing, W::GaleForce, _) => {
             actions.delta_crew(-5);
-            actions.delta_health(-70);
+            actions.delta_health(-35);
             actions.delta_items(Item::Gold, 300);
             actions.add_dialogue(captain!("Disaster! The Leviathan was too powerful in these conditions. We've lost five crew members and barely escaped with our lives. We managed to salvage some treasures from sunken ships in its wake, but at what cost?"));
         }
         _ => {
             actions.delta_items(Item::Gold, 400);
-            actions.delta_health(-20);
+            actions.delta_health(-10);
             actions.delta_food(150);
             actions.delta_items(Item::Cannon, 2);
             actions.add_dialogue(captain!("We engaged the Leviathan cautiously. While we couldn't defeat it, we managed to drive it off. We've salvaged treasures from its lair, gained some of its scales as incredibly durable armor, and found a bounty of fish in its feeding grounds."));

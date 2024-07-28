@@ -12,7 +12,7 @@ fn explore_atlantis(actions: &mut StoryActions) {
         (H::Comfortable | H::Warm, W::Low | W::Medium, M::Comfortable) => {
             actions.delta_items(Item::Gold, 500);
             actions.delta_health(30);
-            actions.delta_items(Item::Cannon, 3);
+            actions.delta_items(Item::Cannon, 2);
             actions.add_dialogue(captain!("Unbelievable! We've discovered Atlantean treasures beyond our wildest dreams. Our ship has been enhanced with their advanced technology, and we're rich beyond measure!"));
         }
         (H::Chilly | H::Freezing, W::Medium | W::High, M::Dry) => {

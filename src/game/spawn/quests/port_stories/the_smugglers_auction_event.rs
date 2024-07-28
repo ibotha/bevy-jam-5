@@ -10,22 +10,22 @@ fn participate_in_auction(actions: &mut StoryActions) {
 
     match (wind, moisture) {
         (W::None | W::Low, M::Dry) => {
-            actions.delta_items(Item::Gold, -200);
+            actions.delta_items(Item::Gold, -20);
             actions.delta_items(Item::Cannon, 2);
             actions.add_dialogue(captain!("Perfect conditions for a secret auction. We scored two cannons at a bargain price!"));
         }
         (W::Medium, M::Comfortable) => {
-            actions.delta_items(Item::Gold, -150);
+            actions.delta_items(Item::Gold, -15);
             actions.delta_items(Item::MonkeyPaw, 1);
             actions.add_dialogue(captain!("We managed to acquire a mysterious monkey's paw. It's said to grant wishes, but at what cost?"));
         }
         (W::High | W::GaleForce, _) => {
-            actions.delta_items(Item::Gold, -100);
+            actions.delta_items(Item::Gold, -10);
             actions.delta_crew(-1);
             actions.add_dialogue(captain!("The strong winds drew attention to the auction. We lost gold and a crew member in the ensuing raid!"));
         }
         _ => {
-            actions.delta_items(Item::Gold, -50);
+            actions.delta_items(Item::Gold, -5);
             actions.delta_food(20);
             actions.add_dialogue(captain!("Nothing too exciting at the auction, but we got a good deal on some exotic provisions."));
         }
@@ -33,7 +33,7 @@ fn participate_in_auction(actions: &mut StoryActions) {
 }
 
 fn inform_authorities(actions: &mut StoryActions) {
-    actions.delta_items(Item::Gold, 100);
+    actions.delta_items(Item::Gold, 10);
     actions.delta_crew(-2);
     actions.add_dialogue(captain!("We did the 'right' thing and got a reward, but lost two crew members who thought we betrayed their trust."));
 }

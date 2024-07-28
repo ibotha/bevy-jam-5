@@ -10,13 +10,13 @@ fn navigate_anomaly(actions: &mut StoryActions) {
 
     match (heat, wind, moisture) {
         (H::Comfortable, W::Low, M::Dry) => {
-            actions.delta_items(Item::Gold, 1500);
+            actions.delta_items(Item::Gold, 150);
             actions.delta_items(Item::Cannon, 3);
             actions.delta_health(30);
             actions.add_dialogue(captain!("Incredible! We've navigated through the anomaly and emerged in a pocket dimension! We've discovered untold riches, advanced cannons, and the ship seems stronger than ever. The crew swears we were gone for months, but only hours have passed outside!"));
         }
         (H::Warm, W::Medium, M::Comfortable) => {
-            actions.delta_items(Item::Gold, 800);
+            actions.delta_items(Item::Gold, 80);
             actions.delta_crew(-2);
             actions.delta_health(-15);
             actions.add_dialogue(captain!("We've returned from the anomaly, but at a cost. Two crew members vanished into thin air, and the ship's taken a beating from spatial distortions. However, we've brought back a fortune in gold from a parallel world!"));
@@ -27,7 +27,7 @@ fn navigate_anomaly(actions: &mut StoryActions) {
             actions.add_dialogue(captain!("Disaster! The anomaly nearly tore us apart! We've lost four crew to the void, and the ship's barely holding together. We're lucky to have escaped with our lives, but the horrors we've seen will haunt us forever."));
         }
         _ => {
-            actions.delta_items(Item::Gold, 500);
+            actions.delta_items(Item::Gold, 50);
             actions.delta_food(-30);
             actions.delta_health(-10);
             actions.add_dialogue(captain!("We've navigated the anomaly and returned with some interdimensional treasures. The journey took a toll on our supplies and the ship, but the gold we've brought back makes it worthwhile... I think."));
@@ -38,11 +38,11 @@ fn navigate_anomaly(actions: &mut StoryActions) {
 fn study_anomaly(actions: &mut StoryActions) {
     if actions.get_item(Item::Cannon) >= 1 {
         actions.delta_items(Item::Cannon, -1);
-        actions.delta_items(Item::Gold, 1000);
+        actions.delta_items(Item::Gold, 100);
         actions.delta_health(20);
         actions.add_dialogue(captain!("Eureka! By firing our cannon into the anomaly, we created a stable portal. We were able to reach through and grab a chest of gold from another dimension! The ship seems to have absorbed some of the anomaly's energy, making it stronger."));
     } else {
-        actions.delta_items(Item::Gold, 200);
+        actions.delta_items(Item::Gold, 20);
         actions.delta_crew(-1);
         actions.delta_health(-10);
         actions.add_dialogue(captain!("Without a cannon to stabilize the anomaly, our studies were dangerous. We gathered some strange gold coins, but lost a crewman to a sudden spatial rift. The ship's taken some damage from the volatile energies."));

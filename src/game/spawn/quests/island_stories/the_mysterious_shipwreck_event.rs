@@ -10,12 +10,12 @@ fn salvage_wreck(actions: &mut StoryActions) {
 
     match (wind, moisture) {
         (W::Low | W::None, M::Dry) => {
-            actions.delta_items(Item::Gold, 300);
+            actions.delta_items(Item::Gold, 30);
             actions.delta_items(Item::Cannon, 1);
             actions.add_dialogue(captain!("Arr! The conditions were perfect for salvage. We've recovered a hefty sum of gold and even a working cannon!"));
         }
         (W::Medium, M::Comfortable) => {
-            actions.delta_items(Item::Gold, 150);
+            actions.delta_items(Item::Gold, 15);
             actions.delta_health(-5);
             actions.add_dialogue(captain!("We managed to salvage some gold, but the shifting wreck made it dangerous. The ship took some minor damage in the process."));
         }
@@ -25,7 +25,7 @@ fn salvage_wreck(actions: &mut StoryActions) {
             actions.add_dialogue(captain!("The weather turned foul during our salvage attempt. We lost a crewman to the treacherous waves and the ship took a beating."));
         }
         _ => {
-            actions.delta_items(Item::Gold, 100);
+            actions.delta_items(Item::Gold, 10);
             actions.delta_food(-10);
             actions.add_dialogue(captain!("We recovered some gold, but the effort took longer than expected. We've used up more of our food supplies than I'd like."));
         }

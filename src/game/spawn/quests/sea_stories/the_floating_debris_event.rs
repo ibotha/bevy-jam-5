@@ -10,7 +10,7 @@ fn investigate_debris(actions: &mut StoryActions) {
 
     match wind {
         W::None | W::Low => {
-            actions.delta_items(Item::Gold, 75);
+            actions.delta_items(Item::Gold, 50);
             actions.delta_food(10);
             actions.add_dialogue(captain!("Lucky day! We found some valuable cargo and preserved food supplies among the debris."));
         }

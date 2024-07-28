@@ -10,13 +10,13 @@ fn accept_challenge(actions: &mut StoryActions) {
 
     match (wind, moisture) {
         (W::Low | W::None, M::Dry) => {
-            actions.delta_items(Item::Gold, 2000);
+            actions.delta_items(Item::Gold, 200);
             actions.delta_items(Item::Cannon, 2);
             actions.delta_health(20);
             actions.add_dialogue(captain!("By all that's holy! We've bested the ghost captain in his challenges of skill and wit. The spectral crew honored their word, gifting us their ethereal treasure and two enchanted cannons. The experience has somehow strengthened our very ship!"));
         }
         (W::Medium, M::Comfortable) => {
-            actions.delta_items(Item::Gold, 1000);
+            actions.delta_items(Item::Gold, 100);
             actions.delta_crew(-1);
             actions.delta_health(-10);
             actions.add_dialogue(captain!("We completed the ghost captain's trials, but at a cost. Poor Jenkins was spirited away during the final challenge. Still, we've won a king's ransom in ghostly gold, even if the whole ordeal has left us a bit shaken."));
@@ -27,7 +27,7 @@ fn accept_challenge(actions: &mut StoryActions) {
             actions.add_dialogue(captain!("Curse that phantom and his blasted ship! The challenges turned deadly in this weather. We lost three good men to the ghost crew, and our ship's barely holding together. We're lucky to have escaped with our lives and souls intact!"));
         }
         _ => {
-            actions.delta_items(Item::Gold, 500);
+            actions.delta_items(Item::Gold, 50);
             actions.delta_food(-25);
             actions.delta_health(-5);
             actions.add_dialogue(captain!("We managed to complete most of the ghost captain's challenges. He seemed impressed enough to award us some spectral gold, but the ordeal has left us drained and our supplies diminished."));
@@ -36,8 +36,8 @@ fn accept_challenge(actions: &mut StoryActions) {
 }
 
 fn negotiate_passage(actions: &mut StoryActions) {
-    if actions.get_item(Item::Gold) >= 500 {
-        actions.delta_items(Item::Gold, -500);
+    if actions.get_item(Item::Gold) >= 50 {
+        actions.delta_items(Item::Gold, -50);
         actions.delta_items(Item::Cannon, 1);
         actions.delta_health(15);
         actions.add_dialogue(captain!("The ghost captain accepted our offer of gold, impressed by our respectful approach. In return, he's granted us safe passage and gifted us with a cannon of ghostly origin. The crew's spirits are high after this supernatural encounter!"));
@@ -51,7 +51,7 @@ fn negotiate_passage(actions: &mut StoryActions) {
 fn flee_ghost_ship(actions: &mut StoryActions) {
     actions.delta_food(-40);
     actions.delta_health(-15);
-    actions.delta_items(Item::Gold, 100);
+    actions.delta_items(Item::Gold, 10);
     actions.add_dialogue(captain!("We turned tail and fled from that cursed ship, pushing our vessel to its limits. The escape has drained our supplies and stressed the ship, but as we sailed away, we found a small chest of gold floating in our wake. A parting gift... or a cruel joke?"));
 }
 
@@ -63,7 +63,7 @@ pub fn the_ghost_ships_challenge_event(actions: &mut StoryActions) -> DayEvent {
         .line(crew3!("We could try to bargain for safe passage instead, Cap'n. Might cost us some gold, but it'd be safer than taking on their challenges."))
         .line(captain!("This is unlike anything we've faced before, lads. Our next move could lead us to fortune or doom. What say you?"))
         .choice("Accept Challenge", accept_challenge)
-        .conditional_choice("Negotiate", negotiate_passage, actions.get_item(Item::Gold) >= 500)
+        .conditional_choice("Negotiate", negotiate_passage, actions.get_item(Item::Gold) >= 50)
         .choice("Flee", flee_ghost_ship)
         .hint("Squawk! The dead tell no tales, but they sure do love their games!")
 }

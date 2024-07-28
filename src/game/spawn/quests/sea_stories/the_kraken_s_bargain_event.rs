@@ -11,14 +11,14 @@ fn accept_bargain(actions: &mut StoryActions) {
     match (wind, moisture) {
         (W::None | W::Low, M::Dry | M::Comfortable) => {
             actions.delta_crew(-1);
-            actions.delta_items(Item::Gold, 300);
+            actions.delta_items(Item::Gold, 100);
             actions.delta_items(Item::Cannon, 2);
             actions.add_dialogue(captain!("The Kraken kept its word! It took one crew member but left us with treasure and cannons from sunken ships. A steep price, but the reward is substantial."));
         }
         (W::Medium, _) => {
             actions.delta_crew(-1);
             actions.delta_health(20);
-            actions.delta_food(30);
+            actions.delta_food(20);
             actions.add_dialogue(captain!("The Kraken took our crew member and in return, patched up our ship with some sort of mystical kelp. We also found our food stores mysteriously replenished!"));
         }
         (W::High | W::GaleForce, M::Humid) => {
@@ -35,13 +35,13 @@ fn accept_bargain(actions: &mut StoryActions) {
 
 fn attempt_negotiation(actions: &mut StoryActions) {
     if actions.get_item(Item::MonkeyPaw) > 0 {
-        actions.delta_items(Item::Gold, 200);
+        actions.delta_items(Item::Gold, 150);
         actions.delta_health(15);
         actions.delta_food(20);
         actions.add_dialogue(captain!("The Monkey's Paw glowed during our negotiation. The Kraken, fascinated by the artifact, agreed to our terms without taking a crew member! It even threw in some extra treasures and supplies."));
     } else {
         actions.delta_crew(-2);
-        actions.delta_items(Item::Gold, 400);
+        actions.delta_items(Item::Gold, 300);
         actions.add_dialogue(captain!("Our attempt to negotiate backfired. The Kraken demanded two crew members instead, but doubled the treasure in return. A costly bargain indeed."));
     }
 }

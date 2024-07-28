@@ -10,27 +10,27 @@ fn explore_lair(actions: &mut StoryActions) {
 
     match (heat, wind, moisture) {
         (H::Comfortable | H::Warm, W::Low | W::Medium, M::Comfortable) => {
-            actions.delta_items(Item::Gold, 600);
-            actions.delta_health(40);
-            actions.delta_items(Item::Cannon, 3);
+            actions.delta_items(Item::Gold, 200);
+            actions.delta_health(5);
+            actions.delta_items(Item::Cannon, 2);
             actions.add_dialogue(captain!("Unbelievable! We've found the Kraken's treasure hoard! Ancient artifacts, gold beyond measure, and even some advanced weaponry. Our ship feels stronger than ever!"));
         }
         (H::Chilly | H::Freezing, W::Medium | W::High, _) => {
             actions.delta_crew(-2);
-            actions.delta_items(Item::Gold, 300);
-            actions.delta_food(80);
+            actions.delta_items(Item::Gold, 100);
+            actions.delta_food(50);
             actions.add_dialogue(captain!("We've lost two brave souls to the Kraken's defenses, but we managed to snag some treasure and a massive haul of rare seafood. The crew is shaken but alive."));
         }
         (H::Blistering, W::High | W::GaleForce, M::Humid) => {
             actions.delta_crew(-4);
-            actions.delta_health(-50);
-            actions.delta_items(Item::Gold, 150);
+            actions.delta_health(-20);
+            actions.delta_items(Item::Gold, 75);
             actions.add_dialogue(captain!("Disaster! The Kraken returned while we were exploring! We barely escaped with our lives, losing four crew members and sustaining heavy damage. We grabbed what gold we could in our flight."));
         }
         _ => {
-            actions.delta_items(Item::Gold, 200);
+            actions.delta_items(Item::Gold, 75);
             actions.delta_health(15);
-            actions.delta_food(40);
+            actions.delta_food(15);
             actions.add_dialogue(captain!("We explored cautiously and came away with a decent haul of gold and exotic seafood. The ship seems to have absorbed some of the Kraken's essence, feeling more resilient."));
         }
     }
@@ -40,7 +40,7 @@ fn attempt_communication(actions: &mut StoryActions) {
     if actions.get_item(Item::MonkeyPaw) > 0 {
         actions.delta_crew(1);
         actions.delta_health(30);
-        actions.delta_items(Item::Gold, 400);
+        actions.delta_items(Item::Gold, 200);
         actions.add_dialogue(captain!("The Monkey's Paw glowed, allowing us to communicate with the Kraken! It's gifted us with one of its offspring as a crew member, some of its regenerative power, and a portion of its treasure hoard!"));
     } else {
         actions.delta_food(50);

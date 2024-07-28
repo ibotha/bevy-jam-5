@@ -10,25 +10,25 @@ fn enter_tomb(actions: &mut StoryActions) {
 
     match (heat, wind, moisture) {
         (H::Comfortable, W::Low, M::Dry) => {
-            actions.delta_items(Item::Gold, 3000);
-            actions.delta_items(Item::Cannon, 3);
+            actions.delta_items(Item::Gold, 300);
+            actions.delta_items(Item::Cannon, 2);
             actions.delta_health(25);
             actions.add_dialogue(captain!("Unbelievable! We've navigated the Pirate King's traps and riddles. His treasure hoard is ours, including three legendary cannons! The crew's morale is soaring, and the ship seems to have absorbed some of the tomb's ancient power!"));
         }
         (H::Warm, W::Medium, M::Comfortable) => {
-            actions.delta_items(Item::Gold, 1500);
+            actions.delta_items(Item::Gold, 150);
             actions.delta_crew(-2);
             actions.delta_health(-15);
             actions.add_dialogue(captain!("We've claimed the Pirate King's treasure, but at a steep cost. Two of our bravest fell to the tomb's traps. The gold we've found is substantial, but the air is heavy with our losses."));
         }
         (H::Blistering, W::High, _) | (_, W::GaleForce, _) => {
             actions.delta_crew(-4);
-            actions.delta_health(-35);
-            actions.delta_items(Item::Gold, 500);
+            actions.delta_health(-30);
+            actions.delta_items(Item::Gold, 50);
             actions.add_dialogue(captain!("Curse the Pirate King and his blasted tomb! The harsh conditions triggered ancient magics. We lost four good souls to the chaos, and the ship's barely afloat. We managed to grab some gold as we fled, but was it worth the price?"));
         }
         _ => {
-            actions.delta_items(Item::Gold, 1000);
+            actions.delta_items(Item::Gold, 100);
             actions.delta_food(-30);
             actions.delta_health(-10);
             actions.add_dialogue(captain!("We've braved the tomb and claimed a portion of the Pirate King's hoard. The journey took its toll on our supplies and the crew's health, but the gold will set us up nicely... if we can shake off the curse we all feel lingering."));
@@ -39,11 +39,11 @@ fn enter_tomb(actions: &mut StoryActions) {
 fn decipher_map(actions: &mut StoryActions) {
     if actions.get_item(Item::Gold) >= 300 {
         actions.delta_items(Item::Gold, -300);
-        actions.delta_items(Item::Gold, 2000);
+        actions.delta_items(Item::Gold, 200);
         actions.delta_items(Item::Cannon, 1);
         actions.add_dialogue(captain!("Our investment in scholars and supplies paid off! We deciphered the Pirate King's map, revealing a secret entrance. We've claimed a significant portion of his treasure and one of his fabled cannons, all without triggering the main traps!"));
     } else {
-        actions.delta_items(Item::Gold, 500);
+        actions.delta_items(Item::Gold, 50);
         actions.delta_health(-20);
         actions.delta_crew(-1);
         actions.add_dialogue(captain!("Without proper resources, our attempt to decipher the map was only partially successful. We found a side chamber with some gold, but triggered a trap that claimed one of our own. The ship feels... unsettled."));
@@ -53,7 +53,7 @@ fn decipher_map(actions: &mut StoryActions) {
 fn leave_tomb(actions: &mut StoryActions) {
     actions.delta_crew(2);
     actions.delta_food(40);
-    actions.delta_items(Item::Gold, 200);
+    actions.delta_items(Item::Gold, 20);
     actions.add_dialogue(captain!("We decided the risk wasn't worth it and left the tomb undisturbed. As we sailed away, we encountered a ship of treasure hunters. They joined our crew, grateful for the warning, and shared their supplies. We also traded some information for a small chest of gold. Sometimes, caution pays unexpected dividends."));
 }
 

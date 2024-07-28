@@ -3,7 +3,7 @@ use crate::game::spawn::quests::prelude::*;
 
 fn embrace_the_convergence(actions: &mut StoryActions) {
     actions.delta_items(Item::Gold, 1000);
-    actions.delta_health(50);
+    actions.delta_health(30);
     actions.delta_crew(25);
     actions.delta_items(Item::Cannon, 50);
     actions.add_dialogue(captain!("By all that's holy and unholy! We've become legends beyond imagination! Our ship has transformed into a living, interdimensional entity. We command the powers of gods, our crew includes beings from across the multiverse, and our wealth is beyond mortal comprehension!"));
@@ -12,7 +12,7 @@ fn embrace_the_convergence(actions: &mut StoryActions) {
 fn negotiate_with_cosmic_entities(actions: &mut StoryActions) {
     if actions.get_item(Item::MonkeyPaw) > 0 {
         actions.delta_crew(25);
-        actions.delta_health(400);
+        actions.delta_health(50);
         actions.delta_items(Item::Gold, 25);
         actions.delta_items(Item::Cannon, 4);
         actions.add_dialogue(captain!("The Monkey's Paw has ascended to a cosmic artifact! We've forged alliances with beings beyond comprehension. Our ship can now rewrite reality at will, and we've been granted stewardship over multiple dimensions!"));

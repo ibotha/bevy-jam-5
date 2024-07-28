@@ -10,12 +10,12 @@ fn participate_in_competition(actions: &mut StoryActions) {
 
     match (wind, moisture) {
         (W::None | W::Low, M::Comfortable) => {
-            actions.delta_items(Item::Gold, 100);
+            actions.delta_items(Item::Gold, 10);
             actions.delta_food(15);
             actions.add_dialogue(captain!("Perfect conditions for fishing! We won the competition and got a nice haul of fish to boot."));
         }
         (W::Medium, M::Dry | M::Comfortable) => {
-            actions.delta_items(Item::Gold, 50);
+            actions.delta_items(Item::Gold, 5);
             actions.delta_food(10);
             actions.add_dialogue(captain!("We didn't win, but we caught enough fish to make it worthwhile."));
         }
@@ -37,7 +37,7 @@ fn watch_competition(actions: &mut StoryActions) {
 }
 
 fn ignore_competition(actions: &mut StoryActions) {
-    actions.delta_items(Item::Gold, 25);
+    actions.delta_items(Item::Gold, 5);
     actions.delta_food(-5);
     actions.add_dialogue(captain!("We used the distraction of the competition to do some trading. Made a small profit, but missed out on restocking our food stores."));
 }

@@ -10,13 +10,13 @@ fn approach_ghost_ship(actions: &mut StoryActions) {
 
     match (wind, moisture) {
         (W::None | W::Low, M::Dry) => {
-            actions.delta_items(Item::Gold, 200);
+            actions.delta_items(Item::Gold, 100);
             actions.delta_items(Item::Cannon, 1);
             actions.add_dialogue(captain!("Incredible! The ghost ship was filled with ancient treasures. We've come away with gold and even an old cannon!"));
         }
         (W::Medium, M::Comfortable) => {
             actions.delta_crew(-1);
-            actions.delta_items(Item::Gold, 100);
+            actions.delta_items(Item::Gold, 50);
             actions.add_dialogue(captain!("We found some treasure aboard, but one of our crew vanished without a trace. The rest are shaken but alive."));
         }
         (W::High | W::GaleForce, M::Humid) => {
@@ -26,7 +26,7 @@ fn approach_ghost_ship(actions: &mut StoryActions) {
         }
         _ => {
             actions.delta_food(-10);
-            actions.delta_items(Item::Gold, 50);
+            actions.delta_items(Item::Gold, 25);
             actions.add_dialogue(captain!("The ghost ship vanished as we approached, leaving behind only a small chest of gold and an eerie chill in the air."));
         }
     }

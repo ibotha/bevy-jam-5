@@ -10,30 +10,30 @@ fn enter_portal(actions: &mut StoryActions) {
 
     match (heat, wind, moisture) {
         (H::Comfortable, W::Medium, M::Comfortable) => {
-            actions.delta_items(Item::Gold, 1500);
-            actions.delta_health(120);
-            actions.delta_crew(6);
-            actions.delta_items(Item::Cannon, 8);
+            actions.delta_items(Item::Gold, 150);
+            actions.delta_health(15);
+            actions.delta_crew(4);
+            actions.delta_items(Item::Cannon, 2);
             actions.add_dialogue(captain!("Unbelievable! We've explored Atlantis and returned! Our ship is infused with ancient technology, our holds overflow with Atlantean treasures, and we've recruited Atlantean scholars to our crew!"));
         }
         (H::Warm | H::Chilly, W::Low | W::High, M::Dry | M::Humid) => {
-            actions.delta_items(Item::Gold, 800);
-            actions.delta_health(60);
+            actions.delta_items(Item::Gold, 80);
+            actions.delta_health(15);
             actions.delta_crew(-2);
-            actions.delta_items(Item::Cannon, 5);
+            actions.delta_items(Item::Cannon, 2);
             actions.add_dialogue(captain!("We've returned from Atlantis, but at a cost. Two crew members were lost to the city's defenses, but we've acquired incredible Atlantean artifacts, advanced weaponry, and our ship has been greatly enhanced."));
         }
         (H::Blistering | H::Freezing, W::GaleForce, _) => {
-            actions.delta_crew(-4);
-            actions.delta_health(-60);
-            actions.delta_items(Item::Gold, 400);
+            actions.delta_crew(-3);
+            actions.delta_health(-5);
+            actions.delta_items(Item::Gold, 3);
             actions.add_dialogue(captain!("The portal was unstable in these conditions! We barely escaped Atlantis with our lives. We lost four crew members and the ship is badly damaged, but we managed to grab some Atlantean treasures before fleeing."));
         }
         _ => {
-            actions.delta_items(Item::Gold, 600);
-            actions.delta_health(40);
-            actions.delta_food(200);
-            actions.delta_items(Item::Cannon, 3);
+            actions.delta_items(Item::Gold, 60);
+            actions.delta_health(3);
+            actions.delta_food(10);
+            actions.delta_items(Item::Cannon, 2);
             actions.add_dialogue(captain!("We explored Atlantis cautiously. While we couldn't stay long, we've returned with valuable artifacts, advanced Atlantean cannons, and our ship has been partially upgraded with their technology."));
         }
     }
@@ -41,24 +41,24 @@ fn enter_portal(actions: &mut StoryActions) {
 
 fn study_portal(actions: &mut StoryActions) {
     if actions.get_item(Item::MonkeyPaw) > 0 {
-        actions.delta_crew(4);
-        actions.delta_health(100);
-        actions.delta_items(Item::Gold, 1000);
-        actions.delta_items(Item::Cannon, 6);
+        actions.delta_crew(2);
+        actions.delta_health(10);
+        actions.delta_items(Item::Gold, 100);
+        actions.delta_items(Item::Cannon, 2);
         actions.add_dialogue(captain!("The Monkey's Paw resonated with the Atlantean portal! We've gained incredible insights into Atlantean science, recruited Atlantean emissaries, and our ship now harnesses the power of Atlantis itself!"));
     } else {
-        actions.delta_food(100);
-        actions.delta_health(-20);
-        actions.delta_items(Item::Gold, 300);
+        actions.delta_food(10);
+        actions.delta_health(-10);
+        actions.delta_items(Item::Gold, 30);
         actions.delta_crew(-1);
         actions.add_dialogue(captain!("Our attempts to study the portal yielded some results, but the energies were overwhelming. We've gained some Atlantean knowledge and artifacts, but lost one crew member to the portal's unpredictable energies."));
     }
 }
 
 fn seal_the_portal(actions: &mut StoryActions) {
-    actions.delta_food(50);
-    actions.delta_health(20);
-    actions.delta_items(Item::Gold, 200);
+    actions.delta_food(10);
+    actions.delta_health(10);
+    actions.delta_items(Item::Gold, 20);
     actions.add_dialogue(captain!("We decided to seal the portal for the safety of all. The Atlanteans, grateful for our discretion, rewarded us with some of their technology and treasures. The crew feels proud of our responsible decision."));
 }
 

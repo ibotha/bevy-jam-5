@@ -10,20 +10,20 @@ fn navigate_through(actions: &mut StoryActions) {
 
     match (heat, wind) {
         (H::Comfortable | H::Warm, W::Low | W::Medium) => {
-            actions.delta_items(Item::Gold, 250);
-            actions.delta_health(25);
+            actions.delta_items(Item::Gold, 25);
+            actions.delta_health(5);
             actions.add_dialogue(captain!("Incredible! We've emerged with a hull full of gold from a long-lost shipwreck, and our ship seems stronger than ever!"));
         }
         (H::Chilly | H::Freezing, W::Medium | W::High) => {
             actions.delta_crew(-1);
-            actions.delta_food(40);
-            actions.delta_items(Item::Cannon, 2);
+            actions.delta_food(10);
+            actions.delta_items(Item::Cannon, 1);
             actions.add_dialogue(captain!("We've lost a crew member to the anomaly, but our food stores are overflowing and we've acquired advanced weaponry from what seemed to be the future!"));
         }
         (H::Blistering, W::High | W::GaleForce) => {
             actions.delta_crew(-2);
             actions.delta_health(-20);
-            actions.delta_items(Item::Gold, 100);
+            actions.delta_items(Item::Gold, 75);
             actions.add_dialogue(captain!("The anomaly nearly tore us apart! We lost two crew members and took heavy damage, but managed to snag some gold in the chaos."));
         }
         _ => {
@@ -37,13 +37,13 @@ fn navigate_through(actions: &mut StoryActions) {
 fn study_anomaly(actions: &mut StoryActions) {
     if actions.get_item(Item::MonkeyPaw) > 0 {
         actions.delta_crew(2);
-        actions.delta_health(15);
-        actions.delta_items(Item::Gold, 150);
+        actions.delta_health(10);
+        actions.delta_items(Item::Gold, 100);
         actions.add_dialogue(captain!("The Monkey's Paw seemed to resonate with the anomaly! We've gained incredible insights, two new crew members from another time, and a cache of gold!"));
     } else {
-        actions.delta_food(-15);
+        actions.delta_food(-10);
         actions.delta_health(-10);
-        actions.delta_items(Item::Gold, 50);
+        actions.delta_items(Item::Gold, 25);
         actions.add_dialogue(captain!("Our attempts to study the anomaly were mostly fruitless. We've lost time and resources, but did manage to salvage some gold from a spatial rift."));
     }
 }

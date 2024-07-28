@@ -10,7 +10,7 @@ fn follow_albatross(actions: &mut StoryActions) {
 
     match heat {
         H::Comfortable | H::Warm => {
-            actions.delta_items(Item::Gold, 100);
+            actions.delta_items(Item::Gold, 10);
             actions.delta_food(15);
             actions.add_dialogue(captain!("The albatross led us to calm waters teeming with fish, and we stumbled upon a small treasure on a nearby islet!"));
         }
@@ -29,7 +29,7 @@ fn follow_albatross(actions: &mut StoryActions) {
 
 fn capture_albatross(actions: &mut StoryActions) {
     actions.delta_food(10);
-    actions.delta_items(Item::Gold, -50);
+    actions.delta_items(Item::Gold, -25);
     actions.add_dialogue(captain!("We managed to capture the albatross. It'll make for a good meal, but the crew's morale has taken a hit. They say it's bad luck to kill an albatross."));
     // You might want to add a negative effect later due to killing the albatross
 }

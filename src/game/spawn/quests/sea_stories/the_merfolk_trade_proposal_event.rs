@@ -10,19 +10,19 @@ fn accept_trade(actions: &mut StoryActions) {
 
     match heat {
         H::Comfortable | H::Warm => {
-            actions.delta_items(Item::Gold, -100);
+            actions.delta_items(Item::Gold, -10);
             actions.delta_food(30);
             actions.delta_health(15);
             actions.add_dialogue(captain!("The merfolk were true to their word! We traded some gold for their enchanted kelp. Our food stores are full and the crew feels invigorated!"));
         }
         H::Chilly | H::Freezing => {
-            actions.delta_items(Item::Gold, -100);
+            actions.delta_items(Item::Gold, -10);
             actions.delta_food(20);
             actions.delta_crew(1);
             actions.add_dialogue(captain!("The trade was successful, but one of the merfolk decided to join our crew! They say they're curious about life on the surface."));
         }
         H::Blistering => {
-            actions.delta_items(Item::Gold, -100);
+            actions.delta_items(Item::Gold, -10);
             actions.delta_health(-10);
             actions.delta_items(Item::Cannon, 1);
             actions.add_dialogue(captain!("The heat made the merfolk irritable. They gave us a rusty old cannon instead of food, claiming it's a 'surface dweller thing'. At least it still works!"));

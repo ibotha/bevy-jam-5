@@ -10,9 +10,9 @@ fn investigate_eruption(actions: &mut StoryActions) {
 
     match (heat, wind) {
         (H::Blistering | H::Warm, W::Low | W::Medium) => {
-            actions.delta_items(Item::Gold, 200);
+            actions.delta_items(Item::Gold, 20);
             actions.delta_health(-10);
-            actions.delta_food(25);
+            actions.delta_food(15);
             actions.add_dialogue(captain!("Incredible! The eruption brought up ancient artifacts and rare fish. We've collected some valuable items, though our ship took minor damage from the heat."));
         }
         (H::Comfortable, W::Medium | W::High) => {
@@ -23,12 +23,12 @@ fn investigate_eruption(actions: &mut StoryActions) {
         }
         (H::Chilly | H::Freezing, W::High | W::GaleForce) => {
             actions.delta_crew(-2);
-            actions.delta_health(-20);
-            actions.delta_food(40);
+            actions.delta_health(-15);
+            actions.delta_food(20);
             actions.add_dialogue(captain!("The combination of cold air and hot water created treacherous conditions. We lost two crew members and took significant damage, but collected an abundance of stunned rare fish."));
         }
         _ => {
-            actions.delta_items(Item::Gold, 50);
+            actions.delta_items(Item::Gold, 15);
             actions.delta_food(15);
             actions.add_dialogue(captain!("We cautiously collected some minerals and fish brought up by the eruption. Nothing extraordinary, but it's a welcome addition to our stores."));
         }
@@ -37,9 +37,9 @@ fn investigate_eruption(actions: &mut StoryActions) {
 
 fn harness_thermal_energy(actions: &mut StoryActions) {
     if actions.get_item(Item::MonkeyPaw) > 0 {
-        actions.delta_health(30);
-        actions.delta_food(50);
-        actions.delta_items(Item::Gold, 100);
+        actions.delta_health(25);
+        actions.delta_food(25);
+        actions.delta_items(Item::Gold, 50);
         actions.add_dialogue(captain!("The Monkey's Paw glowed as we approached the volcano! We've somehow harnessed its energy, greatly strengthening our ship. We also collected valuable minerals and a bounty of cooked fish!"));
     } else {
         actions.delta_health(-5);

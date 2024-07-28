@@ -10,26 +10,26 @@ fn attempt_to_claim_trident(actions: &mut StoryActions) {
 
     match (heat, wind, moisture) {
         (H::Comfortable | H::Warm, W::Low | W::Medium, M::Comfortable) => {
-            actions.delta_items(Item::Gold, 500);
-            actions.delta_health(50);
-            actions.delta_crew(3);
+            actions.delta_items(Item::Gold, 50);
+            actions.delta_health(10);
+            actions.delta_crew(2);
             actions.add_dialogue(captain!("By Neptune's beard, we've done it! The Trident is ours! Our ship feels invincible, the seas bend to our will, and we've even gained some merperson allies!"));
         }
         (H::Chilly | H::Freezing, W::Medium | W::High, _) => {
             actions.delta_crew(-2);
             actions.delta_health(30);
-            actions.delta_food(100);
+            actions.delta_food(25);
             actions.add_dialogue(captain!("We couldn't claim the Trident, but Poseidon seemed impressed by our effort. He's blessed our ship with some of his power and provided us with an abundance of fish. Sadly, we lost two crew members to the sea."));
         }
         (H::Blistering, W::High | W::GaleForce, M::Humid) => {
             actions.delta_crew(-3);
-            actions.delta_health(-40);
+            actions.delta_health(-10);
             actions.add_dialogue(captain!("Poseidon's wrath is terrible! We've lost three crew members, and our ship is badly damaged. The Trident has disappeared back into the depths."));
         }
         _ => {
             actions.delta_items(Item::Gold, 200);
             actions.delta_health(20);
-            actions.delta_food(50);
+            actions.delta_food(25);
             actions.add_dialogue(captain!("We couldn't reach the Trident, but we found a sunken treasure on the way! Our ship feels somewhat empowered, and we've gathered plenty of fish."));
         }
     }
@@ -38,7 +38,7 @@ fn attempt_to_claim_trident(actions: &mut StoryActions) {
 fn negotiate_with_poseidon(actions: &mut StoryActions) {
     if actions.get_item(Item::MonkeyPaw) > 0 {
         actions.delta_crew(2);
-        actions.delta_health(40);
+        actions.delta_health(20);
         actions.delta_items(Item::Gold, 300);
         actions.add_dialogue(captain!("The Monkey's Paw glowed with an otherworldly light, catching Poseidon's attention! He's granted us some of his power, two merperson crew members, and a chest of divine gold coins!"));
     } else {
