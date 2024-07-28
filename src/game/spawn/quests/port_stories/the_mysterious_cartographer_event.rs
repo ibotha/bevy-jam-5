@@ -3,11 +3,11 @@ use super::port_stories_base;
 
 fn purchase_map(actions: &mut StoryActions) {
     if actions.get_item(Item::Gold) >= 100 {
-        actions.delta_items(Item::Gold, -100);
+        actions.delta_items(Item::Gold, -10);
         actions.add_dialogue(captain!("We've acquired the mysterious map. It hints at a valuable location, but deciphering it might take some time."));
         // We can potentially add a future event
     } else {
-        actions.delta_items(Item::Gold, -30);
+        actions.delta_items(Item::Gold, -3);
         actions.add_dialogue(captain!("We could only afford a partial copy of the map. It's intriguing, but not very useful on its own."));
     }
 }
@@ -19,8 +19,8 @@ fn trade_information(actions: &mut StoryActions) {
 }
 
 fn hire_cartographer(actions: &mut StoryActions) {
-    if actions.get_item(Item::Gold) >= 75 {
-        actions.delta_items(Item::Gold, -75);
+    if actions.get_item(Item::Gold) >= 25 {
+        actions.delta_items(Item::Gold, -25);
         actions.delta_crew(1);
         actions.add_dialogue(captain!("We've hired the cartographer to join our crew. Their skills should prove invaluable in charting new courses."));
     } else {

@@ -13,17 +13,17 @@ fn enter_regatta(actions: &mut StoryActions) {
 
     match (heat, wind) {
         (H::Comfortable, W::Medium) => {
-            actions.delta_items(Item::Gold, 300);
-            actions.delta_health(15);
+            actions.delta_items(Item::Gold, 100);
+            actions.delta_health(5);
             actions.add_dialogue(captain!("Perfect conditions! We won the regatta, claiming the grand prize and some structural improvements from the shipwright."));
         }
         (H::Warm, W::Low | W::Medium) => {
-            actions.delta_items(Item::Gold, 150);
+            actions.delta_items(Item::Gold, 75);
             actions.delta_crew(1);
             actions.add_dialogue(captain!("We came in second place. The prize money is nice, and a skilled sailor was impressed enough to join our crew."));
         }
         (H::Blistering, _) | (_, W::GaleForce) => {
-            actions.delta_health(-10);
+            actions.delta_health(-5);
             actions.delta_crew(-1);
             actions.add_dialogue(captain!("Disastrous weather! We had to withdraw from the race, damaging the ship and losing a crew member in the process."));
         }
@@ -36,18 +36,18 @@ fn enter_regatta(actions: &mut StoryActions) {
 
 fn sabotage_competitor(actions: &mut StoryActions) {
     if actions.get_crew() > 3 {
-        actions.delta_items(Item::Gold, 200);
+        actions.delta_items(Item::Gold, 20);
         actions.delta_crew(-1);
         actions.add_dialogue(captain!("Our sabotage was successful, but one crew member was caught and arrested. Still, we made off with a share of the prize money."));
     } else {
-        actions.delta_items(Item::Gold, -50);
+        actions.delta_items(Item::Gold, -5);
         actions.delta_health(-5);
         actions.add_dialogue(captain!("Without enough crew, our sabotage attempt was discovered. We lost our entry fee and had to make a quick escape, damaging the ship in the process."));
     }
 }
 
 fn bet_on_races(actions: &mut StoryActions) {
-    let bet_amount = 100;
+    let bet_amount = 50;
     if actions.get_item(Item::Gold) >= bet_amount {
         actions.delta_items(Item::Gold, -bet_amount);
 

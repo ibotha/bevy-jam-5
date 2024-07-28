@@ -10,13 +10,13 @@ fn confront_kraken(actions: &mut StoryActions) {
 
     match (wind, moisture) {
         (W::Low | W::None, M::Dry) => {
-            actions.delta_items(Item::Gold, 1000);
+            actions.delta_items(Item::Gold, 100);
             actions.delta_items(Item::Cannon, 2);
             actions.delta_health(20);
             actions.add_dialogue(captain!("By all that's holy! We've defeated the Kraken! Its lair is filled with gold from sunken ships, and we've salvaged two pristine cannons. The crew's morale is through the roof!"));
         }
         (W::Medium, M::Comfortable) => {
-            actions.delta_items(Item::Gold, 500);
+            actions.delta_items(Item::Gold, 50);
             actions.delta_crew(-2);
             actions.delta_health(-15);
             actions.add_dialogue(captain!("We've slain the beast, but at a terrible cost. Two brave souls lost to the depths, and the ship's taken a beating. Still, the Kraken's treasure is ours."));
@@ -27,7 +27,7 @@ fn confront_kraken(actions: &mut StoryActions) {
             actions.add_dialogue(captain!("Neptune's wrath! The Kraken was too powerful in this storm. We've lost four good men and the ship's barely afloat. We're lucky to escape with our lives!"));
         }
         _ => {
-            actions.delta_items(Item::Gold, 300);
+            actions.delta_items(Item::Gold, 30);
             actions.delta_crew(-1);
             actions.delta_health(-10);
             actions.add_dialogue(captain!("A pyrrhic victory if I ever saw one. We've slain the Kraken and taken some of its hoard, but lost a man and the ship's in dire need of repairs."));
@@ -36,8 +36,8 @@ fn confront_kraken(actions: &mut StoryActions) {
 }
 
 fn negotiate_with_kraken(actions: &mut StoryActions) {
-    if actions.get_item(Item::Gold) >= 300 {
-        actions.delta_items(Item::Gold, -300);
+    if actions.get_item(Item::Gold) >= 30 {
+        actions.delta_items(Item::Gold, -30);
         actions.delta_items(Item::Cannon, 3);
         actions.delta_health(30);
         actions.add_dialogue(captain!("I can't believe it worked! We offered the gold as tribute, and the Kraken gave us safe passage. It even allowed us to take some cannons from its graveyard of ships. The crew's calling it a miracle!"));

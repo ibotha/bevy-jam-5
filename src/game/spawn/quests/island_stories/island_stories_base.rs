@@ -25,7 +25,7 @@ pub fn island_stories_base(actions: &mut StoryActions) -> DayEvent {
     }
     .choice("Hunt", hunt)
     .choice("Walk", walk);
-    if actions.get_current_sea() != Sea::Northern || !actions.no_course_set() {
+    if actions.get_current_sea() == Sea::Northern && !actions.no_course_set() {
         e.choice("Leave Island", leave)
     } else {
         e

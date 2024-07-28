@@ -11,6 +11,7 @@ use rand::Rng;
 use rand::RngCore;
 use rand::SeedableRng;
 
+use crate::game::spawn::quests::sirens_cove::debug_sirens_cove;
 use crate::game::ui::UpdateInventoryList;
 use crate::game::weighted_random;
 use crate::screen::Screen;
@@ -31,8 +32,12 @@ use super::predicitons::Predictions;
 use super::predicitons::UpdateDarkMagicUi;
 use super::predicitons::UpdateParrotUi;
 use super::predicitons::UpdateSpyGlassUi;
+use super::quests::island_stories::the_just_walking_event;
+use super::quests::port_stories::the_day_at_port_event;
+use super::quests::sea_stories::the_plain_sailing_event;
 use super::quests::treasure::Item;
 use super::quests::Certainty;
+use super::quests::EventBuilder;
 use super::quests::FollowingEvent;
 use super::quests::Sea;
 use super::quests::StoryActions;
@@ -57,6 +62,7 @@ pub struct CreateJourney;
 pub struct Journey {
     pub game_over: bool,
     pub events: Vec<FollowingEvent>,
+    pub occured_events: HashSet<EventBuilder>,
     pub distance: i32,
     pub event: Option<DayEvent>,
     pub weather: DayWeather, // Can use this variable to grab the predicted weather for the coming day
@@ -82,6 +88,7 @@ impl Journey {
             game_over: false,
             weather: DayWeather::default(),
             event: None,
+            occured_events: HashSet::new(),
             distance: 0,
             current_day: 0,
             once_offs: HashSet::new(),
@@ -156,7 +163,7 @@ fn create_journey(_trigger: Trigger<CreateJourney>, mut commands: Commands) {
         max_health: 100,
         distance_travelled: 0,
     });
-    commands.trigger(SetJouneyEvent(embark_event()));
+    commands.trigger(SetJouneyEvent(debug_sirens_cove()));
     commands.trigger(Continue);
     commands.trigger(UpdateShipStatsUI);
 }
@@ -373,6 +380,16 @@ fn next_day(
         info!("{events:?}", events = journey.events);
         *event
     };
+
+    let required_events = [
+        the_plain_sailing_event,
+        the_just_walking_event,
+        the_day_at_port_event,
+    ];
+
+    if required_events.contains(&event) {
+        journey.occured_events.insert(event.clone());
+    }
 
     commands.trigger(SetJouneyEvent(event(&mut StoryActions::new(
         ship.as_mut(),

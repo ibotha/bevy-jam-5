@@ -10,12 +10,12 @@ fn take_idol(actions: &mut StoryActions) {
 
     match (heat, wind, moisture) {
         (H::Comfortable, W::Low, M::Dry) => {
-            actions.delta_items(Item::Gold, 500);
+            actions.delta_items(Item::Gold, 50);
             actions.delta_health(10);
             actions.add_dialogue(captain!("We've secured the idol without incident! It's pure gold and heavier than it looks. The crew feels invigorated, as if blessed by this strange artifact."));
         }
         (H::Warm, W::Medium, _) => {
-            actions.delta_items(Item::Gold, 300);
+            actions.delta_items(Item::Gold, 30);
             actions.delta_crew(-1);
             actions.delta_health(-5);
             actions.add_dialogue(captain!("We got the idol, but at a cost. The temple started collapsing as we left. We lost a crewman and the ship took some damage in our hasty escape."));
@@ -26,7 +26,7 @@ fn take_idol(actions: &mut StoryActions) {
             actions.add_dialogue(captain!("Cursed idol! As we tried to take it, the weather turned violent. We lost two men to mysterious accidents, and the ship's in bad shape. The idol vanished in the chaos!"));
         }
         _ => {
-            actions.delta_items(Item::Gold, 200);
+            actions.delta_items(Item::Gold, 20);
             actions.delta_food(-20);
             actions.add_dialogue(captain!("We managed to take the idol, but the whole ordeal took longer than expected. It's valuable, but not as much as we hoped. Our supplies have dwindled in the process."));
         }

@@ -10,12 +10,12 @@ fn navigate_fog(actions: &mut StoryActions) {
 
     match (wind, moisture) {
         (W::Low | W::None, M::Dry) => {
-            actions.delta_items(Item::Gold, 300);
+            actions.delta_items(Item::Gold, 30);
             actions.delta_health(10);
             actions.add_dialogue(captain!("We've done it! Navigated through the fog and found a hidden cove. There's abandoned pirate loot here, and the journey somehow invigorated our ship!"));
         }
         (W::Medium, M::Comfortable) => {
-            actions.delta_items(Item::Gold, 150);
+            actions.delta_items(Item::Gold, 15);
             actions.delta_crew(-1);
             actions.add_dialogue(captain!("We found some treasure, but the fog was disorienting. We... we lost a man overboard. May the sea have mercy on his soul."));
         }
@@ -25,7 +25,7 @@ fn navigate_fog(actions: &mut StoryActions) {
             actions.add_dialogue(captain!("Blasted fog! We've run aground on hidden reefs. The ship's taken heavy damage, and we lost two good men to the treacherous waters!"));
         }
         _ => {
-            actions.delta_items(Item::Gold, 100);
+            actions.delta_items(Item::Gold, 10);
             actions.delta_food(-20);
             actions.add_dialogue(captain!("We navigated the fog, finding a small treasure along the way. But it took longer than expected, and our food supplies have dwindled."));
         }
@@ -35,7 +35,7 @@ fn navigate_fog(actions: &mut StoryActions) {
 fn use_cannon(actions: &mut StoryActions) {
     if actions.get_item(Item::Cannon) >= 1 {
         actions.delta_items(Item::Cannon, -1);
-        actions.delta_items(Item::Gold, 500);
+        actions.delta_items(Item::Gold, 50);
         actions.add_dialogue(captain!("Brilliant idea! The cannon fire dispersed the fog, revealing a merchant ship. They surrendered without a fight, and we've taken their gold!"));
     } else {
         actions.delta_health(-5);

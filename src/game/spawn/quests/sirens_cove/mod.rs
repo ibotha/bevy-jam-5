@@ -27,7 +27,13 @@ pub fn no(actions: &mut StoryActions) {
     actions.change_environment(Environment::Sea(Sea::Northern));
 }
 
-pub fn debug_sirens_cove(actions: &mut StoryActions) -> DayEvent {
+pub fn debug_entery(actions: &mut StoryActions) {
+    actions.add_event(FollowingEvent {
+        environment: actions.get_environment(),
+        event: sighted_edge_of_the_world,
+        delay: Delay::None,
+        certainty: Certainty::Certain,
+    });
     actions.delta_items(Item::SirensScale, 3);
     actions.delta_items(Item::SirensCoveMap, 3);
     actions.delta_items(Item::NorthernSeaMap, 3);
@@ -40,7 +46,12 @@ pub fn debug_sirens_cove(actions: &mut StoryActions) -> DayEvent {
     actions.delta_items(Item::GreekFire, 1);
     actions.delta_items(Item::Cannon, 8);
     actions.delta_crew(4);
-    sighted_edge_of_the_world(actions)
+}
+
+pub fn debug_sirens_cove() -> DayEvent {
+    DayEvent::new()
+        .line(dialogue!("DEBUG"; "DEBUG"))
+        .choice("DEBUG", debug_entery)
 }
 
 pub fn sighted_edge_of_the_world(_actions: &mut StoryActions) -> DayEvent {

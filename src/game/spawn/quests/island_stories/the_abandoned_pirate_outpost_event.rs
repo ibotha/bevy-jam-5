@@ -10,12 +10,12 @@ fn explore_outpost(actions: &mut StoryActions) {
 
     match (heat, wind, moisture) {
         (H::Comfortable, W::Low, M::Dry) => {
-            actions.delta_items(Item::Gold, 400);
+            actions.delta_items(Item::Gold, 40);
             actions.delta_items(Item::Cannon, 1);
             actions.add_dialogue(captain!("Jackpot! We've found a hidden stash of gold and a well-preserved cannon. The dry weather kept everything in good condition."));
         }
         (H::Warm, W::Medium, M::Humid) => {
-            actions.delta_items(Item::Gold, 200);
+            actions.delta_items(Item::Gold, 20);
             actions.delta_health(-10);
             actions.add_dialogue(captain!("We found some gold, but the humid air made the old structures unstable. A partial collapse damaged our ship. We're lucky it wasn't worse."));
         }
@@ -25,7 +25,7 @@ fn explore_outpost(actions: &mut StoryActions) {
             actions.add_dialogue(captain!("Disaster! The extreme conditions triggered old traps in the outpost. We lost two crew members and the ship took a beating. There was no treasure to be found, curse our luck!"));
         }
         _ => {
-            actions.delta_items(Item::Gold, 150);
+            actions.delta_items(Item::Gold, 15);
             actions.delta_food(20);
             actions.add_dialogue(captain!("We found a modest sum of gold and some preserved rations. Not a bad haul, all things considered."));
         }
@@ -33,8 +33,8 @@ fn explore_outpost(actions: &mut StoryActions) {
 }
 
 fn recruit_marooned_pirate(actions: &mut StoryActions) {
-    if actions.get_item(Item::Gold) >= 100 {
-        actions.delta_items(Item::Gold, -100);
+    if actions.get_item(Item::Gold) >= 10 {
+        actions.delta_items(Item::Gold, -10);
         actions.delta_crew(1);
         actions.delta_health(5);
         actions.add_dialogue(captain!("We've convinced the old sea dog to join us. Cost us some gold, but his knowledge of these waters could prove invaluable. The crew's spirits are lifted by the new company."));

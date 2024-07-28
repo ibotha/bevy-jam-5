@@ -34,7 +34,7 @@ fn harvest_fruit(actions: &mut StoryActions) {
 
 fn search_for_valuables(actions: &mut StoryActions) {
     actions.delta_food(10);
-    actions.delta_items(Item::Gold, 100);
+    actions.delta_items(Item::Gold, 10);
     actions.delta_health(-5);
     actions.add_dialogue(captain!("While searching the grove, we found some gold coins buried under an old tree! Must be an old pirate stash. The searching was tiring work though."));
 }
