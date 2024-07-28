@@ -73,6 +73,23 @@ pub(super) fn select_random_sea_event(actions: &mut StoryActions, sea: Sea) -> E
         (the_celestial_sea_parting_event, 1),
         (island_spotted, 1),
     ];
-    weighted_random(Some(actions.get_journey_rng()), &choices).clone()
+
+    // Filter out any journeys that are in occured.
+    // Under Journey.get_oocured_events()
+    let occurred_events = actions.get_oocured_events();
+
+    let available_choices: Vec<_> = choices
+        .iter()
+        .filter(|(event, _)| !occurred_events.contains(event))
+        .cloned()  // Clone the tuple since we're working with references
+        .collect();
+
+    let choices_to_use = if available_choices.is_empty() {
+        &choices[..]
+    } else {
+        &available_choices[..]
+    };
+
+    weighted_random(Some(actions.get_journey_rng()), &choices_to_use).clone()
 }
 

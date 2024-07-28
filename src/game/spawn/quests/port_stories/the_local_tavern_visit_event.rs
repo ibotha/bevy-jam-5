@@ -3,7 +3,7 @@ use crate::game::spawn::quests::prelude::*;
 use rand::Rng;
 
 fn join_card_game(actions: &mut StoryActions) {
-    let luck = actions.get_rng().gen_range(-50..=100);
+    let luck: i32 = actions.get_rng().gen_range(-50..=100);
     if luck > 0 {
         actions.delta_items(Item::Gold, luck);
         actions.add_dialogue(captain!(format!(

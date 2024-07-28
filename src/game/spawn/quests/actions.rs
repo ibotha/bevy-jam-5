@@ -1,3 +1,4 @@
+use bevy::utils::hashbrown::HashSet;
 use rand::rngs::{StdRng, ThreadRng};
 
 use crate::game::spawn::{
@@ -160,6 +161,8 @@ impl<'a> StoryActions<'a> {
         if self.journey.environment == env {
             return;
         }
+
+        self.clear_occured_events();
 
         if let Environment::Sea(s) = env {
             self.journey.sea = s;
@@ -350,5 +353,13 @@ impl<'a> StoryActions<'a> {
             }
         }
         true
+    }
+
+    pub(crate) fn get_oocured_events(&self) -> &HashSet<EventBuilder> {
+        &self.journey.occured_events
+    }
+
+    pub(crate) fn clear_occured_events(&mut self) {
+        self.journey.occured_events.clear();
     }
 }

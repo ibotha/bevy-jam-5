@@ -31,11 +31,15 @@ use super::predicitons::Predictions;
 use super::predicitons::UpdateDarkMagicUi;
 use super::predicitons::UpdateParrotUi;
 use super::predicitons::UpdateSpyGlassUi;
+use super::quests::island_stories::the_just_walking_event;
+use super::quests::sea_stories::the_plain_sailing_event;
+use super::quests::port_stories::the_day_at_port_event;
 use super::quests::treasure::Item;
 use super::quests::Certainty;
 use super::quests::FollowingEvent;
 use super::quests::Sea;
 use super::quests::StoryActions;
+use super::quests::EventBuilder;
 use super::{
     quests::{day_event::DayEvent, dialogue::DialogueQueue, select_random_event, Environment},
     weather::{DayWeather, Heat, Moisture, Wind},
@@ -57,6 +61,7 @@ pub struct CreateJourney;
 pub struct Journey {
     game_over: bool,
     pub events: Vec<FollowingEvent>,
+    pub occured_events: HashSet<EventBuilder>,
     pub distance: i32,
     pub event: Option<DayEvent>,
     pub weather: DayWeather, // Can use this variable to grab the predicted weather for the coming day
@@ -82,6 +87,7 @@ impl Journey {
             game_over: false,
             weather: DayWeather::default(),
             event: None,
+            occured_events: HashSet::new(),
             distance: 0,
             current_day: 0,
             once_offs: HashSet::new(),
@@ -373,6 +379,17 @@ fn next_day(
         info!("{events:?}", events = journey.events);
         *event
     };
+
+    let required_events = [
+        the_plain_sailing_event,
+        the_just_walking_event,
+        the_day_at_port_event,
+    ];
+    
+    if required_events.contains(&event)
+    {
+        journey.occured_events.insert(event.clone());
+    }
 
     commands.trigger(SetJouneyEvent(event(&mut StoryActions::new(
         ship.as_mut(),
