@@ -25,14 +25,19 @@ pub(super) fn plugin(app: &mut App) {
     );
 }
 
+#[derive(Component)]
+pub struct BackDrop;
+
 fn enter_playing(mut commands: Commands, image_handles: Res<HandleMap<ImageKey>>) {
-    commands.spawn((
-        SpriteBundle {
-            texture: image_handles[&ImageKey::BackDrop].clone_weak(),
-            ..default()
-        },
-        StateScoped(Screen::Playing),
-    ));
+    commands
+        .spawn((
+            SpriteBundle {
+                texture: image_handles[&ImageKey::BackDrop].clone_weak(),
+                ..default()
+            },
+            StateScoped(Screen::Playing),
+        ))
+        .insert(BackDrop);
     commands.spawn((
         SpriteBundle {
             texture: image_handles[&ImageKey::Ship].clone_weak(),

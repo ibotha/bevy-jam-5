@@ -1,7 +1,7 @@
 #[cfg(feature = "dev")]
 mod dev_tools;
 mod game;
-mod screen;
+pub mod screen;
 mod ui;
 
 use bevy::{

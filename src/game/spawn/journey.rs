@@ -11,7 +11,8 @@ use rand::Rng;
 use rand::RngCore;
 use rand::SeedableRng;
 
-use crate::game::spawn::quests::sirens_cove::debug_sirens_cove;
+use crate::game::assets::HandleMap;
+use crate::game::assets::ImageKey;
 use crate::game::ui::UpdateInventoryList;
 use crate::game::weighted_random;
 use crate::screen::Screen;
@@ -163,7 +164,7 @@ fn create_journey(_trigger: Trigger<CreateJourney>, mut commands: Commands) {
         max_health: 100,
         distance_travelled: 0,
     });
-    commands.trigger(SetJouneyEvent(debug_sirens_cove()));
+    commands.trigger(SetJouneyEvent(embark_event()));
     commands.trigger(Continue);
     commands.trigger(UpdateShipStatsUI);
 }
@@ -294,6 +295,8 @@ fn continue_journey(
     }
 }
 
+use crate::screen::playing::BackDrop;
+
 fn next_day(
     _trigger: Trigger<NextDay>,
     mut commands: Commands,
@@ -301,6 +304,8 @@ fn next_day(
     mut ship: ResMut<Ship>,
     mut dialoges: ResMut<DialogueQueue>,
     mut predictions: ResMut<Predictions>,
+    backdrop: Query<Entity, With<BackDrop>>,
+    image_handles: Res<HandleMap<ImageKey>>,
 ) {
     *predictions = Predictions {
         ..Default::default()
@@ -387,8 +392,19 @@ fn next_day(
         the_day_at_port_event,
     ];
 
-    if required_events.contains(&event) {
+    if !required_events.contains(&event) {
         journey.occured_events.insert(event.clone());
+    }
+    if journey.sea == Sea::SirensCove {
+        commands.entity(backdrop.single()).insert(SpriteBundle {
+            texture: image_handles[&ImageKey::BackdropStorm].clone_weak(),
+            ..default()
+        });
+    } else {
+        commands.entity(backdrop.single()).insert(SpriteBundle {
+            texture: image_handles[&ImageKey::BackdropStorm].clone_weak(),
+            ..default()
+        });
     }
 
     commands.trigger(SetJouneyEvent(event(&mut StoryActions::new(
