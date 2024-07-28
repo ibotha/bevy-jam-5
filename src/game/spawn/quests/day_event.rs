@@ -1,3 +1,5 @@
+use rand::prelude::SliceRandom;
+use rand::thread_rng;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 use bevy::utils::HashMap;
@@ -23,11 +25,27 @@ impl PartialEq for DayEvent {
 
 impl DayEvent {
     pub fn new() -> Self {
+        let default_hints = vec![
+            "Squawk! Don't look at me, I'm just a parrot!",
+            "Squawk! Your guess is as good as mine, captain!",
+            "Awk! Polly perplexed!",
+            "Squawk! You're asking the wrong bird!",
+            "Awk! Birdie clueless!",
+            "Awk! Just here for seeds!",
+            "Squawk! Wisdom flew away!",
+            "Squawk! Hint machine broke!",
+            "Squawk! No hint! No hint!",
+            "Rawk! Bird brain empty!"
+        ];
+
+        let mut rng = rand::thread_rng();
+        let random_hint = default_hints.choose(&mut rng).map(|&s| s.to_string());
+
         Self {
             dialog: vec![],
             choices: HashMap::new(),
             id: get_id(),
-            hint_string: None,
+            hint_string: random_hint,
         }
     }
 
