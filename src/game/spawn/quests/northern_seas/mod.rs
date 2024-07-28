@@ -49,9 +49,6 @@ fn mysterious_island(actions: &mut StoryActions) {
 
 pub fn set_course_northern_sea(actions: &mut StoryActions) -> DayEvent {
     DayEvent::new()
-        .line(captain!(
-            "The world is our oyster, we can go anywhere in the northern sea."
-        ))
         .conditional_choice(
             "Trinket",
             trinket_seller,

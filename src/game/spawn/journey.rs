@@ -366,12 +366,9 @@ fn next_day(
         info!("selecting from random events! {potential_events:?}");
 
         let event = weighted_random(Some(&mut journey.rng), &potential_events);
-        let index = journey
-            .events
-            .iter()
-            .position(|e| e.event == *event)
-            .expect("Event is present");
-        journey.events.remove(index);
+        if let Some(index) = journey.events.iter().position(|e| e.event == *event) {
+            journey.events.remove(index);
+        }
         info!("{events:?}", events = journey.events);
         *event
     };

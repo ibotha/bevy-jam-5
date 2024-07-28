@@ -229,4 +229,3 @@ pub fn predicted_selection(
             });
         });
 }
-

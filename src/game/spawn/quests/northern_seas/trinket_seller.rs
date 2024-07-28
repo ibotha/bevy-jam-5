@@ -1,21 +1,40 @@
 use super::{super::prelude::*, set_course_northern_sea};
 
 fn purchase_paws(actions: &mut StoryActions) {
+    actions.add_event(FollowingEvent {
+        event: trinket_seller,
+        delay: Delay::None,
+        certainty: Certainty::Certain,
+        environment: Environment::Island(Island::TrinketSeller),
+    });
     actions.delta_items(Item::Gold, -50);
     actions.delta_items(Item::MonkeyPaw, 3);
 }
 
 fn purchase_sword(actions: &mut StoryActions) {
+    actions.add_event(FollowingEvent {
+        event: trinket_seller,
+        delay: Delay::None,
+        certainty: Certainty::Certain,
+        environment: Environment::Island(Island::TrinketSeller),
+    });
     actions.delta_items(Item::Gold, -150);
     actions.delta_items(Item::SirenKiller, 3);
 }
 
 fn purchase_greek_fire(actions: &mut StoryActions) {
+    actions.add_event(FollowingEvent {
+        event: trinket_seller,
+        delay: Delay::None,
+        certainty: Certainty::Certain,
+        environment: Environment::Island(Island::TrinketSeller),
+    });
     actions.delta_items(Item::Gold, -300);
     actions.delta_items(Item::GreekFire, 1);
 }
 
 pub fn sighted_trinket_seller(actions: &mut StoryActions) -> DayEvent {
+    actions.change_environment(Environment::Island(Island::TrinketSeller));
     set_course_northern_sea(actions)
         .line(narrator!("You arrive at the trinket seller."))
         .line(captain!("Have anything that can help with sirens?"))
@@ -25,4 +44,23 @@ pub fn sighted_trinket_seller(actions: &mut StoryActions) -> DayEvent {
         .conditional_choice("Monkey Paws", purchase_paws, actions.get_item(Item::Gold) >= 50)
         .conditional_choice("Greek Fire", purchase_greek_fire, actions.get_item(Item::Gold) >= 300)
         .conditional_choice("Sword", purchase_sword, actions.get_item(Item::Gold) >= 150 && actions.get_item(Item::SirenKiller) == 0)
+}
+pub fn trinket_seller(actions: &mut StoryActions) -> DayEvent {
+    actions.change_environment(Environment::Island(Island::TrinketSeller));
+    set_course_northern_sea(actions)
+        .conditional_choice(
+            "Monkey Paws",
+            purchase_paws,
+            actions.get_item(Item::Gold) >= 50,
+        )
+        .conditional_choice(
+            "Greek Fire",
+            purchase_greek_fire,
+            actions.get_item(Item::Gold) >= 300,
+        )
+        .conditional_choice(
+            "Sword",
+            purchase_sword,
+            actions.get_item(Item::Gold) >= 150 && actions.get_item(Item::SirenKiller) == 0,
+        )
 }

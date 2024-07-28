@@ -9,10 +9,13 @@ fn rest(actions: &mut StoryActions) {
     actions.delta_crew(1);
 }
 
-fn hunker_down(_actions: &mut StoryActions) {}
+fn hunker_down(actions: &mut StoryActions) {
+    actions.travel((actions.possible_distance() / 2).min(actions.get_crew()));
+}
 
 pub fn sea_stories_base(actions: &mut StoryActions) -> DayEvent {
     DayEvent::new()
         .choice("Sail", sail)
         .choice("Hunker", hunker_down)
 }
+

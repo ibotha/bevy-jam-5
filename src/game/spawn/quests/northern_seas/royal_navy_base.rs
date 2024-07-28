@@ -16,16 +16,32 @@ fn break_in(actions: &mut StoryActions) {
         actions.add_dialogue(prisoner!(
             "How kind of you, that gate was starting to annoy me."
         ));
-        actions.add_dialogue(prisoner!(
-            "How kind of you, that gate was starting to annoy me."
-        ));
     } else {
         actions.add_dialogue(crew1!("Oh boy! We have been spotted. "));
+        actions.add_dialogue(prisoner!("Prison break!!!"));
+        actions.add_dialogue(narrator!(
+            "A frantic fight breaks out and you lose some crew, a few of you manage to escape."
+        ));
+        actions.delta_crew(-2);
     }
+    actions.add_dialogue(prisoner!("Here. For the trouble."));
+    actions.delta_items(Item::Journal, 1);
 }
 
 fn blow_it_up(actions: &mut StoryActions) {
     actions.delta_items(Item::SirensCoveMap, 1);
+    match actions.weather().moisture {
+        M::Dry => {}
+        _ => {
+            actions.add_dialogue(crew1!("It's not lighting... you there, go check it out."));
+            actions.add_dialogue(crew!("Uh... alright..."));
+            actions.delta_crew(-2);
+        }
+    }
+    actions.add_dialogue(narrator!("KABOOOM."));
+    actions.add_dialogue(prisoner!("Prison break!!!"));
+    actions.add_dialogue(prisoner!("Thanks for the help! Here, for the trouble."));
+    actions.delta_items(Item::Journal, 1);
 }
 
 pub fn sighted_navy_base(actions: &mut StoryActions) -> DayEvent {

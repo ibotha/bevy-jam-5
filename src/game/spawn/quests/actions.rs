@@ -152,7 +152,8 @@ impl<'a> StoryActions<'a> {
             return;
         }
 
-        if let Environment::Sea(_) = env {
+        if let Environment::Sea(s) = env {
+            self.journey.sea = s;
             self.delta_crew(self.ship.left_behind);
             self.ship.left_behind = 0;
         }

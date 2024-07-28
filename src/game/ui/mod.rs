@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use rand::Rng;
 use ui_palette::{HEADER_TEXT, LABEL_TEXT};
 
 use crate::screen::{weather_maniac::ToggleWeatherGridEvent, Screen};
@@ -7,7 +8,8 @@ use crate::ui::prelude::*;
 use super::spawn::journey::{Continue, Journey, Ship};
 use super::spawn::predicitons::{Predictions, UpdateDarkMagicUi, UpdateParrotUi, UpdateSpyGlassUi};
 use super::spawn::quests::dialogue::Dialogue;
-use super::spawn::weather::AnyWeather;
+use super::spawn::quests::treasure::Item;
+use super::spawn::weather::{AnyWeather, Heat, Moisture, Wind};
 use super::{
     assets::{FontKey, HandleMap, ImageKey},
     spawn::journey::ChooseTask,
@@ -923,7 +925,8 @@ fn handle_game_action(
     mut commands: Commands,
     display: Res<FocusedDisplay>,
     mut predictions: ResMut<Predictions>,
-    journey: Res<Journey>,
+    mut journey: ResMut<Journey>,
+    mut ship: ResMut<Ship>,
 ) {
     for (interaction, action) in &mut button_query {
         if matches!(interaction, Interaction::Pressed) {
@@ -968,12 +971,47 @@ fn handle_game_action(
                 GameAction::Continue => commands.trigger(Continue),
 
                 GameAction::SpyGlassPredictionAction(action) => {
-                    let result = match action {
-                        PredictionAction::Heat => AnyWeather::Heat(journey.weather.heat),
-                        PredictionAction::Moisture => {
-                            AnyWeather::Moisture(journey.weather.moisture)
+                    let scales = *journey.inventory.get(&Item::SirensScale).unwrap_or(&0);
+                    let accurate = journey.rng.gen_range(0..(5 - scales).max(1)) < 2;
+                    let result = if accurate {
+                        match action {
+                            PredictionAction::Heat => AnyWeather::Heat(journey.weather.heat),
+                            PredictionAction::Moisture => {
+                                AnyWeather::Moisture(journey.weather.moisture)
+                            }
+                            PredictionAction::Wind => AnyWeather::Wind(journey.weather.wind),
                         }
-                        PredictionAction::Wind => AnyWeather::Wind(journey.weather.wind),
+                    } else {
+                        match action {
+                            PredictionAction::Heat => {
+                                let rand = journey.rng.gen_range(0..5);
+                                AnyWeather::Heat(match rand {
+                                    4 => Heat::Blistering,
+                                    3 => Heat::Warm,
+                                    2 => Heat::Comfortable,
+                                    1 => Heat::Chilly,
+                                    _ => Heat::Freezing,
+                                })
+                            }
+                            PredictionAction::Moisture => {
+                                let rand = journey.rng.gen_range(0..3);
+                                AnyWeather::Moisture(match rand {
+                                    2 => Moisture::Humid,
+                                    1 => Moisture::Comfortable,
+                                    _ => Moisture::Dry,
+                                })
+                            }
+                            PredictionAction::Wind => {
+                                let rand = journey.rng.gen_range(0..5);
+                                AnyWeather::Wind(match rand {
+                                    4 => Wind::GaleForce,
+                                    3 => Wind::High,
+                                    2 => Wind::Medium,
+                                    1 => Wind::Low,
+                                    _ => Wind::None,
+                                })
+                            }
+                        }
                     };
                     predictions.spy_glass = Some(result);
                     commands.trigger(UpdateSpyGlassUi)
@@ -990,6 +1028,27 @@ fn handle_game_action(
                     commands.trigger(UpdateParrotUi)
                 }
                 GameAction::DarkMagicPredictionAction(action) => {
+                    let mp = *journey.inventory.get(&Item::MonkeyPaw).unwrap_or(&0);
+                    if mp > 0 {
+                        journey.inventory.insert(Item::MonkeyPaw, mp - 1);
+                    } else {
+                        match journey.rng.gen_range(0..7) {
+                            5 | 4 | 3 => {
+                                let gold = *journey.inventory.get(&Item::Gold).unwrap_or(&0);
+                                journey.inventory.insert(Item::Gold, gold - gold.max(20));
+                            }
+                            2 => {
+                                let cannon = *journey.inventory.get(&Item::Cannon).unwrap_or(&0);
+                                journey
+                                    .inventory
+                                    .insert(Item::Cannon, cannon - cannon.max(1));
+                            }
+                            1 => {
+                                ship.crew -= ship.crew.min(1);
+                            }
+                            _ => {}
+                        }
+                    }
                     let result = match action {
                         PredictionAction::Heat => AnyWeather::Heat(journey.weather.heat),
                         PredictionAction::Moisture => {
