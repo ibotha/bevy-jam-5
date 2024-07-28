@@ -402,7 +402,7 @@ fn next_day(
         });
     } else {
         commands.entity(backdrop.single()).insert(SpriteBundle {
-            texture: image_handles[&ImageKey::BackdropStorm].clone_weak(),
+            texture: image_handles[&ImageKey::BackDrop].clone_weak(),
             ..default()
         });
     }

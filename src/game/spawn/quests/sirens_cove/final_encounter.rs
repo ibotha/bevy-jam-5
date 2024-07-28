@@ -126,7 +126,7 @@ pub fn final_encounter(actions: &mut StoryActions) -> DayEvent {
             "Coward, we can't stop when we are this close!"
         ))
         .line(captain!("Heavy decisions. What do you think is best Sage?"))
-        .choice("Bargain", bargain)
+        .conditional_choice("Bargain", bargain,  actions.get_item(Item::SirenChild) > 0)
         .choice("Attack", attack)
         .choice("Go Home", home)
         .choice("Steal", steal)

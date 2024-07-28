@@ -12,13 +12,13 @@ fn resupply(actions: &mut StoryActions) {
 }
 
 pub fn port_stories_base(actions: &mut StoryActions) -> DayEvent {
-    let e = if actions.get_current_sea() == Sea::Northern || actions.no_course_set() {
+    let e = if actions.get_current_sea() == Sea::Northern && actions.no_course_set() {
         set_course_northern_sea(actions)
     } else {
         DayEvent::new()
     }
     .conditional_choice("Resupply", resupply, actions.get_item(Item::Gold) > 20);
-    if actions.get_current_sea() != Sea::Northern || !actions.no_course_set() {
+    if actions.get_current_sea() != Sea::SirensCove && !actions.no_course_set() {
         e.choice("Embark", embark)
     } else {
         e
