@@ -1052,7 +1052,7 @@ fn handle_game_action(
                                 let cannon = *journey.inventory.get(&Item::Cannon).unwrap_or(&0);
                                 journey
                                     .inventory
-                                    .insert(Item::Cannon, cannon - cannon.max(1));
+                                    .insert(Item::Cannon, cannon - cannon.min(1));
                             }
                             1 => {
                                 dq.queue.push_back(
