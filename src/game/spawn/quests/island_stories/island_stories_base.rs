@@ -14,7 +14,7 @@ fn leave(actions: &mut StoryActions) {
 
 fn hunt(actions: &mut StoryActions) {
     actions.delta_food(20);
-    actions.delta_crew(actions.danger() / 2);
+    actions.delta_crew(actions.danger().max(0) / 2);
 }
 
 pub fn island_stories_base(actions: &mut StoryActions) -> DayEvent {

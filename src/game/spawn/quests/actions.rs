@@ -85,7 +85,7 @@ impl<'a> StoryActions<'a> {
     }
 
     pub fn delta_food(&mut self, arg: i32) {
-        let arg = arg.max(self.ship.max_food - self.ship.food);
+        let arg = arg.min(self.ship.max_food - self.ship.food);
         if arg == 0 {
             return;
         }
