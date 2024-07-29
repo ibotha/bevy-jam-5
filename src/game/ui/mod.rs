@@ -1062,6 +1062,8 @@ fn handle_game_action(
                             }
                             _ => {}
                         }
+                        commands.trigger(UpdateShipStatsUI);
+                        commands.trigger(UpdateInventoryList);
                     }
                     let result = match action {
                         PredictionAction::Heat => AnyWeather::Heat(journey.weather.heat),
