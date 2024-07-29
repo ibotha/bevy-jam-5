@@ -24,7 +24,7 @@ pub fn island_stories_base(actions: &mut StoryActions) -> DayEvent {
         DayEvent::new()
     }
     .choice("Hunt", hunt)
-    .choice("Walk", walk);
+    .choice("Walk On", walk);
     if actions.get_current_sea() != Sea::SirensCove && !actions.no_course_set() {
         e.choice("Leave Island", leave)
     } else {

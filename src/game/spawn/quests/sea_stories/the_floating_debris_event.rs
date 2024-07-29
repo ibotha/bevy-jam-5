@@ -41,12 +41,21 @@ fn avoid_debris(actions: &mut StoryActions) {
 pub fn the_floating_debris_event(actions: &mut StoryActions) -> DayEvent {
     sea_stories_base(actions)
         .line(crew1!("Cap'n! There's a large field of debris ahead!"))
-        .line(captain!("Debris, you say? Could be from a shipwreck or lost cargo. What can you see?"))
-        .line(crew2!("Lots of floating wood, sir. Some crates too, but it's hard to tell what's in 'em."))
-        .line(crew3!("Could be valuable salvage, Cap'n. But it might be risky to investigate too closely."))
-        .line(captain!("Hmm, we have a decision to make. What shall we do?"))
+        .line(captain!(
+            "Debris, you say? Could be from a shipwreck or lost cargo. What can you see?"
+        ))
+        .line(crew2!(
+            "Lots of floating wood, sir. Some crates too, but it's hard to tell what's in 'em."
+        ))
+        .line(crew3!(
+            "Could be valuable salvage, Cap'n. But it might be risky to investigate too closely."
+        ))
+        .line(captain!(
+            "Hmm, we have a decision to make. What shall we do?"
+        ))
         .choice("Investigate", investigate_debris)
         .choice("Salvage Wood", salvage_wood)
-        .choice("Avoid", avoid_debris)
+        //.choice("Avoid", avoid_debris)
         .hint("Squawk! One ship's trash could be a pirate's treasure!")
 }
+

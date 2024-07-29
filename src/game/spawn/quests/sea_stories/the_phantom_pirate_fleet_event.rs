@@ -65,6 +65,7 @@ pub fn the_phantom_pirate_fleet_event(actions: &mut StoryActions) -> DayEvent {
         .line(captain!("A phantom fleet, eh? This could be our greatest challenge yet... or our greatest opportunity. What's our course of action, crew?"))
         .choice("Engage", engage_in_battle)
         .conditional_choice("Diplomacy", attempt_diplomacy, actions.get_item(Item::MonkeyPaw) > 0)
-        .choice("Evade", attempt_to_evade)
+        //.choice("Evade", attempt_to_evade)
         .hint("Squawk! Even the dead can teach us a thing or two about sailing... or fighting!")
 }
+

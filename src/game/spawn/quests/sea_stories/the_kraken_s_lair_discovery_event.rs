@@ -65,6 +65,7 @@ pub fn the_kraken_s_lair_discovery_event(actions: &mut StoryActions) -> DayEvent
         .line(captain!("Neptune's beard! This could be the discovery of a lifetime... or our watery grave. What's our move, crew?"))
         .choice("Explore Lair", explore_lair)
         .conditional_choice("Communicate", attempt_communication, actions.get_item(Item::MonkeyPaw) > 0)
-        .choice("Leave Quietly", leave_quietly)
+        //.choice("Leave Quietly", leave_quietly)
         .hint("Squawk! Even the mightiest beasts have their secrets... and their treasures!")
 }
+

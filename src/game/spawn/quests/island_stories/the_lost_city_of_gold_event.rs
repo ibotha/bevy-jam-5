@@ -62,6 +62,7 @@ pub fn the_lost_city_of_gold_event(actions: &mut StoryActions) -> DayEvent {
         .line(captain!("This could change everything, crew. But one wrong move could spell our doom. What's our play?"))
         .choice("Explore City", explore_city)
         .conditional_choice("Decipher Map", decipher_map, actions.get_item(Item::Gold) >= 200)
-        .choice("Leave City", leave_city)
+        //.choice("Leave City", leave_city)
         .hint("Squawk! All that glitters is gold, but gold can't buy your life back!")
 }
+

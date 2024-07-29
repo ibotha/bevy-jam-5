@@ -18,6 +18,5 @@ pub fn sea_stories_base(actions: &mut StoryActions) -> DayEvent {
     } else {
         DayEvent::new()
     };
-    e.choice("Sail", sail).choice("Hunker", hunker_down)
+    e.choice("Sail On", sail).choice("Hunker", hunker_down)
 }
-

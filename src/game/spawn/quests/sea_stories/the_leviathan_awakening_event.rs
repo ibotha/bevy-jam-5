@@ -71,6 +71,7 @@ pub fn the_leviathan_awakening_event(actions: &mut StoryActions) -> DayEvent {
         .line(captain!("The Leviathan... I never thought I'd live to see the day. This could be our greatest triumph or our final voyage. What's our course, crew?"))
         .choice("Confront", confront_leviathan)
         .conditional_choice("Communicate", attempt_communication, actions.get_item(Item::MonkeyPaw) > 0)
-        .choice("Flee", flee_from_leviathan)
+        //.choice("Flee", flee_from_leviathan)
         .hint("Squawk! Even the mightiest creatures of the deep can be reasoned with... or defeated!")
 }
+

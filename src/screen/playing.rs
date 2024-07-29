@@ -1,6 +1,9 @@
 //! The screen state for the main game loop.
 
-use bevy::{input::common_conditions::input_just_pressed, prelude::*};
+use bevy::{
+    input::{common_conditions::input_just_pressed, mouse::MouseButtonInput, ButtonState},
+    prelude::*,
+};
 
 use super::{title::MenuFloating, Screen};
 use crate::game::{
@@ -21,12 +24,27 @@ pub(super) fn plugin(app: &mut App) {
             carry_on.run_if(in_state(Screen::Playing).and_then(
                 input_just_pressed(KeyCode::Space).or_else(input_just_pressed(KeyCode::Enter)),
             )),
+            check_for_click.run_if(in_state(Screen::Playing)),
         ),
     );
 }
 
 #[derive(Component)]
 pub struct BackDrop;
+
+fn check_for_click(
+    mut mb_events: EventReader<MouseButtonInput>,
+    query: Query<&Visibility, With<ContinueButton>>,
+    mut commands: Commands,
+) {
+    for event in mb_events.read() {
+        if (event.button == MouseButton::Left) && event.state == ButtonState::Pressed {
+            if query.single() == Visibility::Visible {
+                commands.trigger(Continue);
+            }
+        }
+    }
+}
 
 fn enter_playing(mut commands: Commands, image_handles: Res<HandleMap<ImageKey>>) {
     commands

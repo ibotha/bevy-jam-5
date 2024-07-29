@@ -71,6 +71,7 @@ pub fn the_awakening_of_the_kraken_god_event(actions: &mut StoryActions) -> DayE
         .line(captain!("This is it, lads. The moment every pirate dreams of but never lives to see. We stand at the crossroads of legend. What say you? Shall we risk everything for glory eternal?"))
         .choice("Challenge God", challenge_kraken_god)
         .conditional_choice("Bargain", bargain_with_kraken_god, actions.get_item(Item::Gold) >= 10000)
-        .choice("Flee", flee_kraken_god)
+        //.choice("Flee", flee_kraken_god)
         .hint("Squawk! Some legends are born, others are claimed... and some are drowned in the depths!")
 }
+

@@ -47,13 +47,24 @@ fn quick_rest(actions: &mut StoryActions) {
 
 pub fn the_tropical_fruit_grove_event(actions: &mut StoryActions) -> DayEvent {
     island_stories_base(actions)
-        .line(crew1!("Cap'n! There's a grove of fruit trees on this island!"))
-        .line(captain!("Aye, I see it. Could be a good chance to restock our supplies."))
-        .line(crew2!("The fruit looks ripe and plentiful. Should we gather as much as we can?"))
-        .line(crew3!("Or perhaps we could search the area? Old groves like this sometimes hide secrets."))
-        .line(captain!("We've got a few options here, crew. What'll it be?"))
+        .line(crew1!(
+            "Cap'n! There's a grove of fruit trees on this island!"
+        ))
+        .line(captain!(
+            "Aye, I see it. Could be a good chance to restock our supplies."
+        ))
+        .line(crew2!(
+            "The fruit looks ripe and plentiful. Should we gather as much as we can?"
+        ))
+        .line(crew3!(
+            "Or perhaps we could search the area? Old groves like this sometimes hide secrets."
+        ))
+        .line(captain!(
+            "We've got a few options here, crew. What'll it be?"
+        ))
         .choice("Harvest", harvest_fruit)
         .choice("Search", search_for_valuables)
-        .choice("Rest", quick_rest)
+        //.choice("Rest", quick_rest)
         .hint("Squawk! An orange a day keeps the scurvy away!")
 }
+

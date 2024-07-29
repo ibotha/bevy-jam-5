@@ -61,6 +61,7 @@ pub fn the_kraken_s_bargain_event(actions: &mut StoryActions) -> DayEvent {
         .line(captain!("By Neptune's beard! A bargain with the Kraken itself? What's our move, crew?"))
         .choice("Accept Bargain", accept_bargain)
         .conditional_choice("Negotiate", attempt_negotiation, actions.get_item(Item::MonkeyPaw) > 0)
-        .choice("Refuse and Flee", refuse_and_flee)
+        //.choice("Refuse and Flee", refuse_and_flee)
         .hint("Squawk! Even the mightiest beasts of the sea can surprise you!")
 }
+

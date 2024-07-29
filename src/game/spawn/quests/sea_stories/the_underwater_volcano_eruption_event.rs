@@ -63,6 +63,7 @@ pub fn the_underwater_volcano_eruption_event(actions: &mut StoryActions) -> DayE
         .line(captain!("An underwater volcano, eh? This could be interesting... or deadly. What's our move, crew?"))
         .choice("Investigate", investigate_eruption)
         .conditional_choice("Harness Energy", harness_thermal_energy, actions.get_item(Item::MonkeyPaw) > 0)
-        .choice("Retreat", retreat_to_safe_waters)
+        //.choice("Retreat", retreat_to_safe_waters)
         .hint("Squawk! Nature's fury can bring both peril and opportunity!")
 }
+

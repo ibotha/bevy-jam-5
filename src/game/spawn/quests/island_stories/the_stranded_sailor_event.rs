@@ -59,6 +59,7 @@ pub fn the_stranded_sailor_event(actions: &mut StoryActions) -> DayEvent {
         .line(captain!("We've got a decision to make, lads. What shall we do?"))
         .choice("Rescue", rescue_sailor)
         .conditional_choice("Trade", trade_with_sailor, actions.get_item(Item::Gold) >= 50)
-        .choice("Ignore", ignore_sailor)
+        //.choice("Ignore", ignore_sailor)
         .hint("Squawk! A helping hand today might save your own tomorrow!")
 }
+

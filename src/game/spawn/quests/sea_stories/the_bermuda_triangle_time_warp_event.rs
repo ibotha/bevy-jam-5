@@ -71,6 +71,7 @@ pub fn the_bermuda_triangle_time_warp_event(actions: &mut StoryActions) -> DayEv
         .line(captain!("A time warp in the Bermuda Triangle... This could be our greatest adventure or our ultimate doom. What's our course of action, crew?"))
         .choice("Navigate Time", navigate_time_streams)
         .conditional_choice("Master Time", attempt_temporal_mastery, actions.get_item(Item::MonkeyPaw) > 0)
-        .choice("Ride it Out", ride_out_the_anomaly)
+        //.choice("Ride it Out", ride_out_the_anomaly)
         .hint("Squawk! Time is but a river, and we're about to ride the rapids!")
 }
+

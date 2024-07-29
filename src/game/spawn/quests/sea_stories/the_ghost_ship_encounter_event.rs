@@ -59,6 +59,7 @@ pub fn the_ghost_ship_encounter_event(actions: &mut StoryActions) -> DayEvent {
         .line(captain!("This could be dangerous... or very rewarding. What's our move, crew?"))
         .choice("Approach", approach_ghost_ship)
         .conditional_choice("Communicate", attempt_communication, actions.get_item(Item::MonkeyPaw) > 0)
-        .choice("Flee", flee_from_ghost_ship)
+        //.choice("Flee", flee_from_ghost_ship)
         .hint("Squawk! Not all treasures are worth the risk, but some risks bring the greatest rewards!")
 }
+

@@ -51,13 +51,28 @@ fn decline_offer(actions: &mut StoryActions) {
 
 pub fn the_merfolk_trade_proposal_event(actions: &mut StoryActions) -> DayEvent {
     sea_stories_base(actions)
-        .line(crew1!("Cap'n! You won't believe this, but there are merfolk alongside the ship!"))
-        .line(captain!("Merfolk? Are you sure you haven't been drinking too much grog?"))
-        .line(crew2!("It's true, sir! They're offering to trade some sort of enchanted kelp for gold."))
-        .line(crew3!("They say it'll replenish our food stores and boost the crew's health, Cap'n."))
-        .line(captain!("Interesting... What do you think we should do, crew?"))
+        .line(crew1!(
+            "Cap'n! You won't believe this, but there are merfolk alongside the ship!"
+        ))
+        .line(captain!(
+            "Merfolk? Are you sure you haven't been drinking too much grog?"
+        ))
+        .line(crew2!(
+            "It's true, sir! They're offering to trade some sort of enchanted kelp for gold."
+        ))
+        .line(crew3!(
+            "They say it'll replenish our food stores and boost the crew's health, Cap'n."
+        ))
+        .line(captain!(
+            "Interesting... What do you think we should do, crew?"
+        ))
         .choice("Accept Trade", accept_trade)
-        .conditional_choice("Negotiate", negotiate_better_deal, actions.get_item(Item::MonkeyPaw) > 0)
-        .choice("Decline", decline_offer)
+        .conditional_choice(
+            "Negotiate",
+            negotiate_better_deal,
+            actions.get_item(Item::MonkeyPaw) > 0,
+        )
+        // .choice("Decline", decline_offer)
         .hint("Squawk! Sometimes the sea itself offers the sweetest deals!")
 }
+

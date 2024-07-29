@@ -4,6 +4,9 @@ pub(super) fn select_random_port_event(
     actions: &mut StoryActions,
     port: Port,
 ) -> super::EventBuilder {
+    if actions.get_oocured_events().len() > 5 {
+        return the_day_at_port_event;
+    }
     let choices = [
         (the_day_at_port_event as EventBuilder, 14), // Higher number has  a higher chance of being selected
         // Common events
@@ -25,14 +28,14 @@ pub(super) fn select_random_port_event(
         (the_dockside_heist_event, 4),
         (the_ports_grand_regatta_event, 4),
         // Very rare events
-        (the_mysterious_shipwreck_event, 3),
+        //(the_mysterious_shipwreck_event, 3),
         (the_cursed_cargo_event, 3),
         (the_sirens_song_festival_event, 3),
         (the_cursed_lighthouse_event, 3),
-        (the_haunted_shipwreck_event, 3),
+        //(the_haunted_shipwreck_event, 3),
         // Special events
         (the_ancient_pirate_kings_challenge_event, 2),
-        (the_lost_city_of_atlantis_resurfaces_event, 2),
+        //(the_lost_city_of_atlantis_resurfaces_event, 2),
         // legendary events
         (the_legendary_sea_monster_sighting_event, 1),
     ];
@@ -44,7 +47,7 @@ pub(super) fn select_random_port_event(
     let available_choices: Vec<_> = choices
         .iter()
         .filter(|(event, _)| !occurred_events.contains(event))
-        .cloned()  // Clone the tuple since we're working with references
+        .cloned() // Clone the tuple since we're working with references
         .collect();
 
     let choices_to_use = if available_choices.is_empty() {
@@ -53,6 +56,8 @@ pub(super) fn select_random_port_event(
         &available_choices[..]
     };
 
+    if available_choices.len() > 5 {
+        return the_day_at_port_event;
+    }
     weighted_random(Some(actions.get_journey_rng()), &choices_to_use).clone()
 }
-

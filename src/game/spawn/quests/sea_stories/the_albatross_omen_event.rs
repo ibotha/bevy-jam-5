@@ -42,12 +42,21 @@ fn ignore_albatross(actions: &mut StoryActions) {
 pub fn the_albatross_omen_event(actions: &mut StoryActions) -> DayEvent {
     sea_stories_base(actions)
         .line(crew1!("Cap'n! There's an albatross circling our ship!"))
-        .line(captain!("An albatross, you say? That's often considered a sign of good fortune."))
-        .line(crew2!("Aye, sir. But some say it can be an omen too, depending on how we treat it."))
-        .line(crew3!("What should we do, Cap'n? Follow it? Try to catch it? Or just ignore it?"))
-        .line(captain!("Hmm, this could be interesting. What's your gut telling you, crew?"))
+        .line(captain!(
+            "An albatross, you say? That's often considered a sign of good fortune."
+        ))
+        .line(crew2!(
+            "Aye, sir. But some say it can be an omen too, depending on how we treat it."
+        ))
+        .line(crew3!(
+            "What should we do, Cap'n? Follow it? Try to catch it? Or just ignore it?"
+        ))
+        .line(captain!(
+            "Hmm, this could be interesting. What's your gut telling you, crew?"
+        ))
         .choice("Follow", follow_albatross)
         .choice("Capture", capture_albatross)
-        .choice("Ignore", ignore_albatross)
+        //.choice("Ignore", ignore_albatross)
         .hint("Squawk! The winds of fate often blow in mysterious directions!")
 }
+

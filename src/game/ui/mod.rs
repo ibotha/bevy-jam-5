@@ -969,7 +969,7 @@ fn handle_game_action(
                         FocusedDisplay::DarkMagic
                     }));
                 }
-                GameAction::Continue => commands.trigger(Continue),
+                GameAction::Continue => {} //commands.trigger(Continue),
 
                 GameAction::SpyGlassPredictionAction(action) => {
                     let scales = *journey.inventory.get(&Item::SirensScale).unwrap_or(&0);

@@ -71,6 +71,7 @@ pub fn the_maelstrom_of_realities_event(actions: &mut StoryActions) -> DayEvent 
         .line(captain!("The Maelstrom of Realities... I thought it only a legend. This could rewrite the very nature of our existence. What's our move, crew?"))
         .choice("Navigate", navigate_maelstrom)
         .conditional_choice("Harness Energy", harness_maelstrom_energy, actions.get_item(Item::MonkeyPaw) > 0)
-        .choice("Avoid", avoid_maelstrom)
+        //.choice("Avoid", avoid_maelstrom)
         .hint("Squawk! Reality is but a suggestion to those brave enough to challenge it!")
 }
+

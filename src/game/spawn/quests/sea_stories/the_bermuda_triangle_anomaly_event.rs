@@ -63,6 +63,7 @@ pub fn the_bermuda_triangle_anomaly_event(actions: &mut StoryActions) -> DayEven
         .line(captain!("This could be our greatest opportunity... or our doom. What's our course of action, crew?"))
         .choice("Navigate Through", navigate_through)
         .conditional_choice("Study Anomaly", study_anomaly, actions.get_item(Item::MonkeyPaw) > 0)
-        .choice("Retreat", retreat_immediately)
+        //.choice("Retreat", retreat_immediately)
         .hint("Squawk! Sometimes the greatest discoveries lie beyond the edge of the map!")
 }
+

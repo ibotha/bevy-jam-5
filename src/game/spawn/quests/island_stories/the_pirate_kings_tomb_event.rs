@@ -66,6 +66,7 @@ pub fn the_pirate_kings_tomb_event(actions: &mut StoryActions) -> DayEvent {
         .line(captain!("This could be our greatest haul or our doom, lads. What's our move?"))
         .choice("Enter Tomb", enter_tomb)
         .conditional_choice("Decipher Map", decipher_map, actions.get_item(Item::Gold) >= 300)
-        .choice("Leave Tomb", leave_tomb)
+        //.choice("Leave Tomb", leave_tomb)
         .hint("Squawk! The greatest treasures often come with the deadliest curses!")
 }
+

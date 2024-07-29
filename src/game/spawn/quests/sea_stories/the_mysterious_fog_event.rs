@@ -50,13 +50,26 @@ fn wait_it_out(actions: &mut StoryActions) {
 
 pub fn the_mysterious_fog_event(actions: &mut StoryActions) -> DayEvent {
     sea_stories_base(actions)
-        .line(crew1!("Cap'n! A strange fog's rollin' in. Never seen anythin' like it!"))
+        .line(crew1!(
+            "Cap'n! A strange fog's rollin' in. Never seen anythin' like it!"
+        ))
         .line(captain!("Hmm, this is unusual. What can you see?"))
-        .line(crew2!("Not much, sir. It's thick as pea soup and seems to be glowin' slightly."))
-        .line(crew3!("I've heard tales of magical fogs that hide great treasures... or terrible dangers."))
-        .line(captain!("We need to make a decision. What's our course of action?"))
+        .line(crew2!(
+            "Not much, sir. It's thick as pea soup and seems to be glowin' slightly."
+        ))
+        .line(crew3!(
+            "I've heard tales of magical fogs that hide great treasures... or terrible dangers."
+        ))
+        .line(captain!(
+            "We need to make a decision. What's our course of action?"
+        ))
         .choice("Navigate", navigate_carefully)
-        .conditional_choice("Use Compass", use_mystical_compass, actions.get_item(Item::MonkeyPaw) > 0)
-        .choice("Wait", wait_it_out)
+        .conditional_choice(
+            "Use Compass",
+            use_mystical_compass,
+            actions.get_item(Item::MonkeyPaw) > 0,
+        )
+        // .choice("Wait", wait_it_out)
         .hint("Squawk! Sometimes the safest path leads to the greatest reward!")
 }
+

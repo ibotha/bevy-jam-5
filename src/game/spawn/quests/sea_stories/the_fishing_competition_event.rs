@@ -17,7 +17,9 @@ fn participate_in_competition(actions: &mut StoryActions) {
         (W::Medium, M::Dry | M::Comfortable) => {
             actions.delta_items(Item::Gold, 5);
             actions.delta_food(10);
-            actions.add_dialogue(captain!("We didn't win, but we caught enough fish to make it worthwhile."));
+            actions.add_dialogue(captain!(
+                "We didn't win, but we caught enough fish to make it worthwhile."
+            ));
         }
         (W::High | W::GaleForce, _) => {
             actions.delta_crew(-1);
@@ -26,7 +28,9 @@ fn participate_in_competition(actions: &mut StoryActions) {
         }
         _ => {
             actions.delta_food(5);
-            actions.add_dialogue(captain!("The competition was a bust, but we managed to catch a few fish for our stores."));
+            actions.add_dialogue(captain!(
+                "The competition was a bust, but we managed to catch a few fish for our stores."
+            ));
         }
     }
 }
@@ -44,13 +48,20 @@ fn ignore_competition(actions: &mut StoryActions) {
 
 pub fn the_fishing_competition_event(actions: &mut StoryActions) -> DayEvent {
     sea_stories_base(actions)
-        .line(crew1!("Cap'n! There's a big fishing competition happening in the harbor today!"))
+        .line(crew1!(
+            "Cap'n! There's a big fishing competition happening in the harbor today!"
+        ))
         .line(captain!("A fishing competition, you say? Interesting..."))
-        .line(crew2!("Aye, sir! First prize is 100 gold coins and the catch itself!"))
-        .line(crew3!("It could be a good chance to fill our stores and have some fun, Cap'n."))
+        .line(crew2!(
+            "Aye, sir! First prize is 100 gold coins and the catch itself!"
+        ))
+        .line(crew3!(
+            "It could be a good chance to fill our stores and have some fun, Cap'n."
+        ))
         .line(captain!("Hmm, what do you think we should do, crew?"))
         .choice("Participate", participate_in_competition)
         .choice("Watch", watch_competition)
-        .choice("Ignore", ignore_competition)
+        //.choice("Ignore", ignore_competition)
         .hint("Squawk! A good catch can fill both belly and coin purse!")
 }
+

@@ -60,6 +60,7 @@ pub fn the_hidden_cove_treasure_event(actions: &mut StoryActions) -> DayEvent {
         .line(captain!("We've got a decision to make, lads. What shall it be?"))
         .choice("Explore Cave", explore_cave)
         .conditional_choice("Negotiate", negotiate_with_natives, actions.get_item(Item::Gold) >= 100)
-        .choice("Leave", leave_island)
+        //.choice("Leave", leave_island)
         .hint("Squawk! Fortune favors the bold, but sometimes caution is the better part of valor!")
 }
+

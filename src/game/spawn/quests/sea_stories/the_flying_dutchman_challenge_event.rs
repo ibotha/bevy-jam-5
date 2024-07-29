@@ -61,6 +61,7 @@ pub fn the_flying_dutchman_challenge_event(actions: &mut StoryActions) -> DayEve
         .line(captain!("A challenge from the Flying Dutchman itself? This could be interesting... or deadly. What say you, crew?"))
         .choice("Accept Race", accept_race_challenge)
         .conditional_choice("Riddle Contest", engage_in_riddle_contest, actions.get_item(Item::MonkeyPaw) > 0)
-        .choice("Decline", decline_challenge)
+        //.choice("Decline", decline_challenge)
         .hint("Squawk! Even the undead enjoy a good competition now and then!")
 }
+

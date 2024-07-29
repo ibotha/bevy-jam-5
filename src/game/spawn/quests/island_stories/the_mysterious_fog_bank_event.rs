@@ -58,6 +58,7 @@ pub fn the_mysterious_fog_bank_event(actions: &mut StoryActions) -> DayEvent {
         .line(captain!("This could be an opportunity or a grave mistake. What's our course of action?"))
         .choice("Navigate Fog", navigate_fog)
         .conditional_choice("Use Cannon", use_cannon, actions.get_item(Item::Cannon) >= 1)
-        .choice("Avoid Fog", avoid_fog)
+        //.choice("Avoid Fog", avoid_fog)
         .hint("Squawk! Sometimes the greatest treasures hide behind the thickest veils!")
 }
+

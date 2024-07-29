@@ -65,6 +65,7 @@ pub fn the_time_rift_anomaly_event(actions: &mut StoryActions) -> DayEvent {
         .line(captain!("A time rift? This could be our most bizarre adventure yet. What's our move, crew?"))
         .choice("Enter Rift", enter_the_rift)
         .conditional_choice("Study Anomaly", study_the_anomaly, actions.get_item(Item::MonkeyPaw) > 0)
-        .choice("Avoid", avoid_the_anomaly)
+        //.choice("Avoid", avoid_the_anomaly)
         .hint("Squawk! Time waits for no man... unless you find a rift!")
 }
+

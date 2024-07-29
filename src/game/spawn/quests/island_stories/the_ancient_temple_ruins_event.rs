@@ -54,6 +54,7 @@ pub fn the_ancient_temple_ruins_event(actions: &mut StoryActions) -> DayEvent {
         .line(captain!("This could be a significant find, crew. But it's not without risks. What's our move?"))
         .choice("Explore Temple", explore_temple)
         .conditional_choice("Decipher Inscriptions", decipher_inscriptions, actions.get_item(Item::Gold) >= 50)
-        .choice("Leave Ruins", leave_ruins)
+        //.choice("Leave Ruins", leave_ruins)
         .hint("Squawk! Ancient treasures often come with ancient curses!")
 }
+
