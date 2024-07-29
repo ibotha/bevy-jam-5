@@ -4,12 +4,13 @@ use bevy::{
     input::{common_conditions::input_just_pressed, mouse::MouseButtonInput, ButtonState},
     prelude::*,
 };
+use log::info;
 
 use super::{title::MenuFloating, Screen};
 use crate::game::{
     assets::{HandleMap, ImageKey},
     spawn::{journey::Continue, level::SpawnLevel},
-    ui::ContinueButton,
+    ui::{ContinueButton, FocusedDisplay},
 };
 
 pub(super) fn plugin(app: &mut App) {
@@ -24,7 +25,7 @@ pub(super) fn plugin(app: &mut App) {
             carry_on.run_if(in_state(Screen::Playing).and_then(
                 input_just_pressed(KeyCode::Space).or_else(input_just_pressed(KeyCode::Enter)),
             )),
-            check_for_click.run_if(in_state(Screen::Playing)),
+            // check_for_click.run_if(in_state(Screen::Playing)),
         ),
     );
 }
@@ -35,11 +36,17 @@ pub struct BackDrop;
 fn check_for_click(
     mut mb_events: EventReader<MouseButtonInput>,
     query: Query<&Visibility, With<ContinueButton>>,
+    display: Res<FocusedDisplay>,
     mut commands: Commands,
 ) {
+    if *display != FocusedDisplay::Dialogue {
+        return;
+    }
     for event in mb_events.read() {
         if (event.button == MouseButton::Left) && event.state == ButtonState::Pressed {
-            if query.single() == Visibility::Visible {
+            let vis = query.single();
+            info!("AAh {vis:?}");
+            if vis == Visibility::Inherited || Visibility::Visible == vis {
                 commands.trigger(Continue);
             }
         }

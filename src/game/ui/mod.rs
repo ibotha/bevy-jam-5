@@ -27,7 +27,7 @@ fn show_continue(
 ) {
     let mut vis = query.single_mut();
     *vis = if trigger.event().0 {
-        Visibility::Visible
+        Visibility::Inherited
     } else {
         Visibility::Hidden
     }
@@ -749,6 +749,8 @@ fn spawn_game_ui(
                                                     bottom: Val::Px(10.0),
                                                     ..default()
                                                 },
+
+                                                visibility: Visibility::Inherited,
                                                 ..default()
                                             },
                                             ContinueButton,
@@ -969,7 +971,7 @@ fn handle_game_action(
                         FocusedDisplay::DarkMagic
                     }));
                 }
-                GameAction::Continue => {} //commands.trigger(Continue),
+                GameAction::Continue => commands.trigger(Continue),
 
                 GameAction::SpyGlassPredictionAction(action) => {
                     let scales = *journey.inventory.get(&Item::SirensScale).unwrap_or(&0);
