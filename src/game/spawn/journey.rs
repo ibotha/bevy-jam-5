@@ -199,7 +199,7 @@ fn choose_task(
     }
 
     let mut updates: Vec<String> = vec![];
-    updates.push(format!("Weather for day: {day}", day = journey.current_day));
+    updates.push(format!("End of day {day}", day = journey.current_day + 1));
     updates.push(format!("Heat: {heat}", heat = journey.weather.heat));
     updates.push(format!(
         "Moisture: {moisture}",

@@ -2,12 +2,13 @@ use bevy::prelude::*;
 use rand::Rng;
 use ui_palette::{HEADER_TEXT, LABEL_TEXT};
 
+use crate::dialogue;
 use crate::screen::{weather_maniac::ToggleWeatherGridEvent, Screen};
 use crate::ui::prelude::*;
 
 use super::spawn::journey::{Continue, Journey, Ship};
 use super::spawn::predicitons::{Predictions, UpdateDarkMagicUi, UpdateParrotUi, UpdateSpyGlassUi};
-use super::spawn::quests::dialogue::Dialogue;
+use super::spawn::quests::dialogue::{Dialogue, DialogueQueue};
 use super::spawn::quests::treasure::Item;
 use super::spawn::weather::{AnyWeather, Heat, Moisture, Wind};
 use super::{
@@ -929,6 +930,7 @@ fn handle_game_action(
     display: Res<FocusedDisplay>,
     mut predictions: ResMut<Predictions>,
     mut journey: ResMut<Journey>,
+    mut dq: ResMut<DialogueQueue>,
     mut ship: ResMut<Ship>,
 ) {
     for (interaction, action) in &mut button_query {
@@ -1037,16 +1039,25 @@ fn handle_game_action(
                     } else {
                         match journey.rng.gen_range(0..7) {
                             5 | 4 | 3 => {
+                                dq.queue.push_back(
+                                    dialogue!("Dark Magic"; "The dark magic takes your treasures."),
+                                );
                                 let gold = *journey.inventory.get(&Item::Gold).unwrap_or(&0);
-                                journey.inventory.insert(Item::Gold, gold - gold.max(20));
+                                journey.inventory.insert(Item::Gold, gold - gold.min(20));
                             }
                             2 => {
+                                dq.queue.push_back(
+                                    dialogue!("Dark Magic"; "The dark magic rusts your iron."),
+                                );
                                 let cannon = *journey.inventory.get(&Item::Cannon).unwrap_or(&0);
                                 journey
                                     .inventory
                                     .insert(Item::Cannon, cannon - cannon.max(1));
                             }
                             1 => {
+                                dq.queue.push_back(
+                                    dialogue!("Dark Magic"; "The dark magic takes a soul."),
+                                );
                                 ship.crew -= ship.crew.min(1);
                             }
                             _ => {}
