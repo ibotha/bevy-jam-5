@@ -18,7 +18,9 @@ pub fn port_stories_base(actions: &mut StoryActions) -> DayEvent {
         DayEvent::new()
     }
     .conditional_choice("Resupply", resupply, actions.get_item(Item::Gold) > 20);
-    if actions.get_current_sea() != Sea::SirensCove && !actions.no_course_set() {
+    if (actions.get_current_sea() == Sea::Intro)
+        || (actions.get_current_sea() != Sea::SirensCove && !actions.no_course_set())
+    {
         e.choice("Embark", embark)
     } else {
         e
